@@ -1,6 +1,6 @@
 
 
-DATA_DIR=./data
+DATA_DIR=./generated_data
 GEN_PARAMS_SCRIPT=./gen_param_file.py
 PARAMS_FILE=params.txt
 CONFIG_FILE=config.xml
