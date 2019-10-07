@@ -6,6 +6,8 @@
 *.ist
 *.acn
 *.acr
+*.nav
+*.snm
 *.alg
 *.bbl
 *.blg
