@@ -1,0 +1,148 @@
+#+OPTIONS: ':t *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline author:t
+#+OPTIONS: broken-links:nil c:nil creator:nil d:(not "LOGBOOK")
+#+OPTIONS: date:t e:t email:nil f:t inline:t num:t p:nil pri:nil
+#+OPTIONS: prop:nil stat:t tags:t tasks:t tex:t timestamp:t title:t
+#+OPTIONS: toc:nil todo:t |:t
+#+TITLE: What should be said
+#+DATE: <2019-06-04 Tue>
+#+AUTHOR: Stanislav Arnaudov
+#+EMAIL: arnaud@dhcp192
+#+LANGUAGE: en
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+#+CREATOR: Emacs 26.1.50 (Org mode 9.1.13)
+
+
+#+LATEX_HEADER: \usepackage[utf8]{inputenc}
+#+LATEX_HEADER: \usepackage[ngerman]{babel}
+# #+LATEX_HEADER_EXTRA: \selectlanguage{german}
+
+
+* Folie 1 
+
+Hallo, mein Name ist Stanislav und heute präsentieren ich Ihnen mein Thema zu Praxis der Forschung und genauer die State-of-the-art Recherche dazu. Das Thema geht um das Zusammenbringen von Differentialgleichungen und neuronalen Netzen. 
+
+
+* Folie 2
+Kurz zu Motivation. Was sind eigentlich die partiellen Differentialgleichungen? Wie der Name hinweist, die sind Gleichungen und zwar bei denen das Unbekannte eine Funktion ist. Die haben gewisse Rand- und initiale Bedingungen und sind im meisten Fällen festgelegt, durch irgendwelchen Zusammenhang zwischen den Ableitungen von der gesuchten Funktion. Bezüglich Nützlichkeit - PDEs werden ganz oft bei physikalischen Simulation verwenden. Beispielsweise Strömungssimulationen.
+
+
+Das Bild hier zeigt eine Lösung für einen Zeitpunk von einer Strömungssimulation. Die Farbe kann in dem Fall die Geschwindigkeit von der Flüssigkeit in einem Punk kodieren. Das bring uns zum zentralen Punk unser Arbeit. Die Bilder sind eine natürliche Repräsentation von den Lösungen von PDEs.
+
+PDEs sind außerdem schwer zu lösen. Man muss viel Rechnerleistung und Zeit widmen damit man auf ein solches Bild aufkommt. Unsere Forschung konzentriert sich um die Idee die Bildrepresentation von PDEs schneller und effizienter zu generieren.
+
+
+* Folie 3
+Heutzutage, immer wenn Bilder erwähnt werden, denk man CNNs. In letzten Jahren hat sich gezeigt, wie mächtig CNNs bei Computer Vision Aufgaben sind. Aus diesem Grund, ist auch unser Ansatz, ein Lösungsbild zu generieren nur anhand vom vorherigen Lösungsbild. Wir haben uns überlegt und wie schlagen ein Hybrid-System vor. Und zwar, im ersten Schritt lösen wir die PDE ganz normal -- numerisch, durch finite Differenzen Methode, was in der Regel langsam. Dann nehmen wir uns die Bildrepresentation der Lösung und führen den nächsten Schritt von der Simulation durch ein CNN aus. Das generiert ein neues Bild, das die nächste Lösung repräsentieren soll. Dementsprechend kann der Prozess wiederholt werden. 
+
+FDM - Gitter Erzeugung, finites Element in jeder Zelle definieren, ein riesiges LGS lösen. Deswegen ist langsam.
+ 
+
+* Folie 4
+
+Was bring uns aber eigentlich dieses Zusammenbringen von CNNs und PDEs.
+
+ Wenn wir jetzt über Simulationen reden, unser Ansatz bring höchstwahrscheinlich größeren Fehler mit. Spricht, die durchgeführten Simulationsschritten entsprechen quasi weniger der Realität. Das kann aber in Ordnung sein, falls der Fehler unter gewisser Schranke bleibt. Dafür kriegen wir aber ein ganz schnellere Durchführung und in vielen Situationen ist dies in der Tat ganz günstig. Es gibt fälle, wo man einfach eine grobe Simulation laufen lassen will. Da spielt ein beherrschbares Fehlermaß keine Rolle im Sinn von "Man kann damit umgehen". Wir hoffen, dass genau für solche Fälle unsere Methode von Nutzt sein kann.
+
+
+* Folie 5
+
+Jetzt sind aber zwei Arten von Fragen zu beantworten.
+
+ Und zwar, erstmals bezüglich CNNs in der Bildverarbeitung.
+
+- Wir wollen ein Lösungsbild haben und anhand davon ein neues generieren. Das ist also ein Bild-zu-Bild Transformation. Wir sind deswegen daran interessiert, in wie fern CNNs für Bildstranformation geeignet sind?
+
+Anderseits,
+
+- Wenn wir die numerische Seite vom Problem nachschauen -- kann man überhaupt mit NNs PDEs lösen und gibt es Beispiele davon? Dazu aber auch - kann man über CNNs physikalische Simulationen durchführen? Also die Information für ein System in einem Zeitpunkt zu betrachten und anhand davon, die Eigenschaften vom System im nächsten Zeitpunkt auszurechnen (über ein CNN natürlich).
+
+Diese Fragen und Überlegungen versuchen wir durch die SoA-Recherche zu adressieren.
+
+
+* Folie 6
+
+Zunächst betrachten wir die Bildverarbeitung mit CNNs. Genauer konzentrieren wir uns auf die Aufgaben, wo es um Bild-zu-Bild Transformation geht. Wie z.B. die Bildsegmentierung. Hier ist eine pixelweise Entscheidung über die Klassenzugehörigkeit zu treffen. In diesem Sinn, wird aus einem Eingabebild ein neues generiert, wo die relevanten Bereichen klar gemacht sind. Wir hier zum Beispiel. 
+
+
+* Folie 7
+
+Das erste Paper, das wir präsentieren wollen, illustriert einige wichtige Konzepte bei den CNNs für Bildtransofrmation. Diese Konzepte sehen wir bei fast jedem Netz für Segmentierung. 
+
+Einerseits sehen wir hier die sogenannte Encoder-Decoder Architektur. Dabei wird das Eingabebild erstmals durch einige Faltungsschichten durchpropagiert. In diesem ersten Schritt wird das Bild quasi kleiner und kleiner gemacht als die high-level Features extrahiert sind. Diese gehen dann den Decoder durch. Da wird eine Art Upsampling (oder Doconvulution) ausgeführt und die Featuremaps werden größer. Damit wird ein neues Bild erzeugt.
+
+Auf der anderen Seite ist das Netz hier das erste Beispiel, wo exklusiv nur Faltungsschichten verwenden sind. Also es gibt kein Fully-Connected-Layer. Da heißt das Netz ist ein großer Filter, der Information aus dem ganzen Bild nutzt, um die Pixels zu klassifizieren.
+
+... Ergebnisse 
+
+
+* Folie 8
+
+Das nächste Paper, das interessant für uns ist, ist dieses - "Adversrial Netowrks for image segmentation". Hier wird ebenso eine moderne Architekture im Kontext von Bildsegmentierung eingesetzt. Nämlich Generative Adversarial Networks. Bei denen gibt es eigentlich zwei Netze, die zusammen trainiert werden. Das eine heißt Generator und erzeugt Bilder anhand von irgendwelcher Eingabe. Das andere heißt Dsicriminator und die versucht zu raten, ob ein Eingabebild generiert wurde oder ist das ein echtes Bild. Der Ansatz ist - der Generator erzeugt Segmentierunsmasken und der Descriminator versucht zu sagen, ob das eine echte oder generierte Maske ist. Beim Trainieren sind die beiden Netzen in, so zu sagen, einem Kampf, bei dem die beiden besser werden. 
+
+Hier haben die Entwickler versucht (und geschafft natürlich) GAN anzuwenden, um zusammenhängenden Bereichen für die Segmentierung zu erzwingen. Normalerweise passiert das über eine Nachbearbeitung aber hier wird die ganze Aufgabe dem Netz übergeben.
+a
+... Ergebnisse 
+
+
+* Folie 9
+
+Danach haben wir wirklich ein Bleeding-Edge (SoA) Anwendung. Das Paper wurde im März veröfentlich. Was die Forscher in Nvidia gemacht haben, ist Bildsegmentierung aber umgekehrt. Was ich genau damit meine - die Eingabe ist jetzt eine Maske mit Bereichen und die Ausgabe ist ein photorealistisches Bild [das Beispiel hier zeigt genau das]. Die Aufgabe heißt "Semantic Image Syntesis". Soweit wir wissen, ist GauGAN (so heißt das Netzt von der Arbeit) das aktuelle SoA-Methode in diesem Bereich. 
+
+Hier sehen wir wieder die GAN-Architektur. Dazu kommt aber auch die "Spatially-Adaptive Denormalization"-Schichten (SPADE Layers), die die semantische Information über das ganze Netz propagieren. 
+
+Das System ist auf Datanbaken für Bildsegmentierung trainiert - COCO-Stuff und Cityscapes - und im Paper werden Ergebnisse gezeigt, die um Faktor 1.5 besser als der vorherige SoA-Stand sind.
+
+
+* Folie 10.1
+
+Jetzt wenden wir uns an den numerischen Anwendungen. Es gibt seit langer Zeit Versuche, formale Mathematik und NNs zusammenzubringen. Noch in 2002 wurde es gezeigt, dass man Netze trainieren kann, um einfache mathematische Rechnungen über das Netz zu machen. Noch vorher gab's dieses Paper, das gezeigt hat, dass man die gesuchte Funktion bei den Differentialgleichungen teilweise mit einem NN modellieren kann.
+
+
+* Folie 10.2
+Wir sind aber daran interessiert, wie Netze auf Simulationen angewandt werden - z.B auf Strömungssimulationen. Wir schauen also genauer an, wie die Netze gewisse physikalische Eigenschaften von einem System in verschiedenen Zeitpunkten ausrechnen können. Eigenschaften wie Geschwindigkeit, Druck oder Kraft.
+
+
+
+* Folie 11
+
+Die erste für uns interessante Anwendung hat mit Soft-Tissue Simulation zu tun. Ein bisschen Hintergrund - wenn eine OP vorbereiten wird, muss den Chirurgen bekannt gegeben, wie sich ein Organ bewegen würde, falls ein Teil vom Organ in Bewegung gesetzt ist oder eine Kraft da anpresst. Die Aufgabe ist also, die Geschwindigkeit im jeden Punkt vom Organ auszurechnen, gegeben die Geschwindigkeit von einem Teil des Organs. Aus technischen Gründen, ist das besonders schwierig über echte numerische Simulation zu machen. 
+
+CNNs können aber uns helfen und genau das wurde in diesem Paper gemacht. Die bekannte Encoder-Decoder Architektur ist wieder anwesend und es werden außerdem 3D-Faltungsschichten verwendetet. Das Organ wird als ein 3D Gitter aus Voxels dargestellt und in jedem Voxel steht die Information für diesen Punk. Das ganze Raum wird dem Netzt übergeben, mit Geschwindigkeiten nur im rotten Bereich hier. Mit dieser Information werden dann die Geschwidningekiten für die andren Voxels generiert.
+
+Bezüglich Ergebnisse - die Autoren behaupten, dass das System echtzeitfähig ist und der durchschnittliche Fehler 3mm ist, was akzeptable ist.
+
+
+* Folie 12
+
+Das letzte Paper, das wir anschauen werden, beschäftigt sich letztendlich mit Strömungssimulation. Wie schon ganz viel gesagt, bei solchen Anwendungen geht es um Ausrechnen bzgw. Vorhersagen von physikalischen Eigenschaften. Hier, anhand von Geschwindigkeiten (velocity divergence Feld) und Geometrie im Raum, wird Druck bestimmt.
+
+Die CNN ist relativ kompliziert. Es ist ein Fully-Convolutional Netz und im vorderen Schichteten werden Merkmalen auf verschiedenen Größenordnungen extrahiert und die werden danach zusammengebracht. Dann folgen ein Paar Schichten, die die Ausgabe generieren.
+
+Zu bemerken ist, dass das Netz nur in einem Teil von der ganzen Simulation verwendet wird. Dieses "Volicty divergence" Feld wird erstmals numerisch bestimmt und das Netz rechnet dann das Druck-Feld aus.
+
+Die Methode wurde mit Rauschsimualtionen bewertet. Die Ergebnisse zeigen, dass die generierten Simulationen visuell sehr nah (sogar fast unbemerkbar) zu der numerisch generierten Simulationen sind. Es ist also klar, dass CNNs auch in solchen Kontexten sinnvoll angewendet werden können.
+
+
+* Folie 13
+Zum Schluss sagen wir noch mal, was unser Problem war. 
+
+Wir wollen anhand von den Bildrepresenationen der Lösungen PDEs lösen bzw. Simulationen durchführen. Wir machen das ganze über CNNs für Bildstranformation. Wir hoffen, dass dieser Ansatz effizientere und schnellere Simulationen liefern kann.
+
+Unsere SoA-Recherche hat uns gezeigt, dass ähnliche Methoden schon erfolgreich angewandt sind. Dass es außerdem keine von ihnen die Bildrepresenationen von den Lösungen verwendet. Also es gibt Platz für Forschung. Und wir haben uns auch mit den typischen CNN-Architekturen kennen gelernt und wir können diese in unserer Arbeit nutzen.
+
+
+* Folie 14
+Und jetzt sind wir zum Ende. Ich bedanke mich für die Aufmerksmakeit.
+
+
+* Folie 15
+Fragen?
+
+
+
+
+#  LocalWords:  Simulationsschritten Fehlermaß Bildstranformation
+#  LocalWords:  Bildsegmentierung pixelweise Klassenzugehörigkeit
+#  LocalWords:  Eingabebild Bildtransofrmation Upsampling Featuremaps
+#  LocalWords:  Doconvulution Segmentierunsmasken

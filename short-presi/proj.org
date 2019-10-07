@@ -1,0 +1,104 @@
+#+OPTIONS: broken-links:nil c:nil creator:nil d:(not "LOGBOOK")
+#+OPTIONS: ':t *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline author:t
+#+OPTIONS: date:t e:t email:nil f:t inline:t num:t p:nil pri:nil
+#+OPTIONS: prop:nil stat:t tags:t tasks:t tex:t timestamp:t title:t
+#+OPTIONS: toc:nil todo:nil |:t
+#+TITLE: What should be said
+#+DATE: <2019-06-20 Thu>
+#+AUTHOR: Stanislav Arnaudov
+#+EMAIL: stanislav.arn@gmail.com
+#+LANGUAGE: en
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+
+#+LaTeX_CLASS_OPTIONS: [margin=0.05in, tmargin=0.01in]
+#+LATEX_HEADER: \usepackage[margin=1.5in, tmargin=1.0in]{geometry}
+
+
+
+* Introduction
+Hallo, mein Name ist Stanislav und heute präsentiere ich euch die Kurzvorstellung meines PdF-Projekts und die grobe Planung dazu. 
+
+
+* Motivation
+
+Nun ganz kurz zu Motivation. Was versuche ich eigentlich zu erreichen und warum? Wie schon besprochen, ich beschäftige mich teilweise mit Differentialgleichungen. Die treten ganz oft in der Natur und Physik auf. Mit ihnen kann man außerdem numerische Simulationen durchführen, zum Beispiel von Strömungen. Bei diesen Simulationen geht es sogar über eine Folge von Gleichungen, die gelöst werden müssen. Und zwar, die Lösung von einer der Gleichungen, bewirkt die (Anfangs)Bedingungen für die nächste. Zu bemerken ist, dass die Gleichungen schwer zu lösen sind und zwar im Sinn von, dass man viel Rechenleistung investieren muss, um mit einer Lösung aufzukommen. 
+
+Die Haupteigenschaft für meine Arbeit - die Lösungen haben eine natürliche Repräsentation - Bilder. Wie das Bild hier, es zeigt Strömung um eine Kugel. Unsere Überlegung ist jetzt, können wir diese Bilder mit einem neuronalen Netz generieren. Die Hoffnung dabei - auf diese Weise können gewisse Simulationen effizienter laufen lassen und der Fehlen (Abweichung von den echten Lösungen) klein genug halten.
+
+
+* Research topic and research question
+
+Mit diesen Grundlagen, können wir die Forschungsfrage und das Forschungsthema festlegen.
+
+** Topic
+Das allgemeine Thema meines Projekts ist der Zusammenhang zwischen den neuronalen Netzen und den Differentialgleichungen. Dieses Thema deckt ziemlich viel und meine Aufgabe ist einen konkreten Aspekt von diesem Zusammenhang zu untersuchen.
+
+Nämlich, wie kann man mit einem neuronalen Netz, die Bildrepresenationen von den Lösungen einer Simulation generieren.
+
+
+** Question
+Und genau das ist meine Forschungsfrage. Bei meinem Projekt geht's also, um die Erstellung (oder das Bauen) dieses Netzes, das Simulationsschritte durchführen kann, indem es die Bildrepresenationen der Lösungen verwendet und damit wird implizit eine Differentialgleichung gelöst.
+
+
+* System Structure
+
+Jetzt können wir das ganze System genauer betrachten und anhand von der Struktur, die wesentlichen Aufgaben definieren.
+-------------------
+Damit alles klar ist, ich erkläre kurz wie mein Zielsystem aussehen sollte.
+- Wie gesagt, unser Netz hat mit numerischen Simulationen zu tun. Bei Simulationen haben wir einige Zeitpunkte und für jeden Punkt sind gewisse Informationen zu generieren.
+- Diese Informationen entstehen durch das Lösen von einer Differentialgleichung, wobei mit jeder Lösung eine neue Gleichung festgelegt ist (für den nächsten Schritt).
+- Normalerweise wird für diese Aufgabe einen numerischen Löser verwendet. Das ist aber langsam und wir wollen den Prozess beschleunigen.
+- Dazu führen wir ein neuronales Netz ein. Das Netz soll eine Bildrepräsentation einer schon fertigen Lösung als Eingabe bekommen und die Repräsentation von der nächsten Lösung generieren.
+
+Mit Hilfe dieser Struktur des Systems können wir jetzt die Teilaufgaben im Projekt nennen.
+
+
+* Aufgaben
+
+** Numerical solver
+Erstmals, wie gesagt der numerische Löser wird nicht komplett ersetzt. Deswegen müssen wir uns um diesen Teil vom System kümmern. Hier kommt die Library HiFlow ins Spiel. Das ist eine allgemeine Biblithek zum Lösen von Differentialgleichungen, die hier in KIT benutzt wird.
+
+
+Zu den Aufgaben, die damit zu tun haben:
+- Mit der Bibliothek müssen wir erstmals die Daten generieren, die für das Trainieren vom Netz verwendet werden werden.
+- Außerdem, für das endgültige System, muss HiFlow auch den ersten Simulationsschritt durchführen, damit das Netz von einem Bild ausgehen kann.
+
+
+** Network
+
+Jetzt kommen wir zu das Netz selbst und die Aufgaben dazu. Das Netz soll ein Bild als Eingabe bekommen und ein Bild als Ausgabe generieren. 
+
+- Dafür ist zunächst die Architektur des Netzes festzulegen. .. wir kennen schon einige von der SoA-Recherche.
+
+- Danach kommt das Implementieren vom Netz in python durch eine Bibliothek - Tensorflow oder PyTorch. Höchstwahrscheinlich PyTorch
+
+- Wenn das Modell implementiert ist, müssen wir uns auch mit dem Finden von richtigen Hyperparametern vom Netz beschäftigen - wie viele Schichten und wie groß sollen die einzelnen Filter sein.
+
+
+** Training
+Wenn das Netz implementiert ist, soll man es natürlich mit echten Daten trainieren.
+
+Hier gibt's aber eine Unklarheit und zwar - was für eine Lossfunktion muss man verwenden. In ML, die Lossfunktion definiert quasi ein Maß, wie gut ein Modell einen oder mehreren Datenpunkten modelliert und genau dieses Maß wollen wir auf den Trainingsdaten minimieren. Es gibt einige Möglichkeiten für diese Wahl und welche die beste ist, ist noch nicht klar. Demetprechend ist das also eine weitere Aufgabe, die im Rahmen des Projekts behandelt werden muss.
+
+
+** Evaluating
+
+Wie bei jedem Machine Learning Projekt, am Ende kommt das Evaluieren vom gebauten Modell.
+
+Hier sind einige Fragen zu beantworten, nämlich
+- lässt sich das trainierte Netz auf andre Simulationen generalisieren. Was ich damit meine - wenn wir das Netz mit Daten von einer Strömung um eine Kugel trainieren, kann es auch die Strömung um ein Rechteck gut genug vorhersagen.
+
+- die andere Frage - wie schlecht wird der Fehler, wenn man durch das Netz einige Simulationsschritten durchführt. Also, was passiert wenn man die Ausgabe aus dem Netz wieder als Eingabe verwendet und was ist das Verhalten vom Fehler in diesem Fall.
+
+
+* Conclusion
+Damit bin ich zu Ende. Ich bedanke mich für die Aufmerksamkeit.
+
+
+* Time plan
+
+1. Generate Data - 2 weeks
+2. Implement Network - 3 weeks
+3. Train Network(s) - 4 weeks
+4. Evaluate Network(s) - 3 weeks

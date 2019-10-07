@@ -1,0 +1,374 @@
+#+OPTIONS: ':t *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline author:t
+#+OPTIONS: broken-links:nil c:nil creator:nil d:(not "LOGBOOK")
+#+OPTIONS: date:t e:t email:nil f:t inline:t num:t p:nil pri:nil
+#+OPTIONS: prop:nil stat:t tags:t tasks:t tex:t timestamp:t title:t
+#+OPTIONS: toc:nil todo:t |:t#+OPTIONS: ':t *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline author:t
+#+OPTIONS: broken-links:nil c:nil creator:nil d:(not "LOGBOOK")
+#+OPTIONS: date:t e:t email:nil f:t inline:t num:t p:nil pri:nil
+#+OPTIONS: prop:nil stat:t tags:t tasks:t tex:t timestamp:t title:t
+#+OPTIONS: toc:nil todo:t |:t
+
+#+OPTIONS: H:2
+#+EMAIL: stanislav.arn@gmail.com
+#+LANGUAGE: en
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+#+CREATOR: Emacs 26.1 (Org mode 9.2.1)
+
+#+TITLE: Towards Bringing Together Numerical Methods for Partial Differential Equation and Deep Neural Networks
+
+#+SUBTITLE: Research Proposal
+#+DATE: <{{{time(%d-%m-%Y)}}}>
+#+AUTHOR: Stanislav Arnaudov
+
+#+LATEX_COMPILER: pdflatex
+#+LaTeX_CLASS: llncs
+#+LATEX_HEADER: \usepackage[english]{babel}
+#+LATEX_HEADER: \usepackage{cite}
+#+LATEX_HEADER: \usepackage{parskip}
+#+LATEX_HEADER: \usepackage[margin=1.4in, tmargin=0.5in]{geometry}
+#+LATEX_HEADER: \usepackage{pgfgantt}
+#+LATEX_HEADER: \usepackage{svg}
+#+LATEX_HEADER: \usepackage{color}
+#+LATEX_HEADER: \usepackage{tikz}
+
+#+LATEX_HEADER: \institute{Karlsruhe Institute of Technology,\\Kaiserstrasse 12,76131 Karlsruhe, Germany\\ \url{http://www.kit.edu/english/}}
+#+LATEX_HEADER_EXTRA: \selectlanguage{english}
+
+#+begin_export latex
+\begin{abstract}
+The following research proposal is aimed at a better understanding of the applicability of convolutional neural networks in the context of solving partial differential equations (PDEs). We put forward an exploratory project limited to the two-dimensional case of the Navier-Stokes equation for incompressible flow. We want to study how and to what extent can neural networks generalize when used to predict the solutions of the consider PDE.
+\end{abstract}
+#+end_export
+
+#+TOC: headlines 2
+#+LATEX: \newpage
+
+* Problem statement and motivation
+<<sec:mot>>
+
+Differential equations are a central point of interest when it comes to simulation of natural processes \cite{pdsinphis, shen2007}. They are used in a wide variate of contexts ranging from physics \cite{adamyan2013} to economics \cite{wei2005}. The differential equations in physics simulation context are most often time-dependent. This means that there is a problem to be solved for each time-step. In this case, the initial conditions of a given time-step depend on the solutions to the problem from the previous time-step. Efficient ways to solve differential equations have been always researched to run such simulations in a faster and cost-effective manner. The classical approaches for solving them are through specialized numerical solvers. The process is involved and it consists of generating a grid over the examined input space, defining a finite element for each vertex on the grid and then solving a large system of linear equations. This is the traditional finite element method (FEM) for solving PDEs \cite{fembook}. A special case of the FEM is the well known finite difference method (FDM) \cite{fdmbook}. Although these numerical approaches have a solid mathematical basis, the solutions can be hard to calculate as the computational costs are not trivial. Machine learning techniques have started to come out and try addressing this issue. Our research centers around the ability of machine learning models to generate reasonable approximations of the solutions of partial differential equations (PDEs).
+
+\\
+ 
+Recent years have seen a significant surge of interest in neural networks and especially deep neural networks (DNNs) or convolutional neural networks (CNNs)[fn:1]. They have shown impressive results in a variety of tasks. Current state-of-the-art computer vision systems employ the use of CNNs in almost any context and problem \cite{simonyan2014, zeiler2013, krizhevsky2012, liu2014, simonyan2015}. This clearly illustrates the power of CNNs when it comes to image processing. Not only that, but DNNs have been successfully applied in numerical simulation systems. There DNNs have managed to solve and\textbackslash or assist real-world simulation tasks. More on the current uses of DNNs in Section [[sec:soa]].
+
+\\
+
+The overall research interest in DNN, together with the stated problems of the classical approaches to solving differential equations, has urged us to propose a study into the applicability of neural networks in generating solutions of partial differential equations. We want to investigate what can be achieved with neural networks in the context of differential equations and how the networks generalize in different directions. In Section [[sec:goals]] we describe our suggested system for solving PDEs through DNNs in detail. For now, we only say that we want to generate a solution of a time-dependent partial differential equation for a given time-step based on the solution from the previous timestep. An initial solution is assumed to be present in an image form and the generated solution is also in an image form. We are interested in the image representation of the solutions as in a lot of situations they are the end-result and the thing in which an examiner is interested. We believe our study is of value in these situations where high accuracy is not needed and the main concerns are running time and efficiency.
+
+\\
+
+We now want to motivate the use of DNNs in the context of PDEs more concretely. The described situation around the solutions of PDEs is too general and a study on every aspect of PDEs and the use of DNNs in a broad setting is impractical. For this reason, we have to impose several limitations on our considerations. We will do this by giving an overview of the exact problem we want to study.
+
+\\
+
+As mentioned before, PDEs are used in numerical simulations of natural processes. We consider a simulation of stationary laminar flow of liquid around an object. See [[fig:fig1][Figure 1]]. The liquid is assumed to be an incompressible Newtonian fluid. In our initial considerations, the object has a rectangular shape and it is placed inside of a channel. We limit ourselves to the two-dimensional case of the simulation as we intend to work mainly with the image representation of the solution. The fluid has certain /density/ and /viscosity/. On one side of the channel, we assume an inflow condition and an outflow condition on the other side. The /inflow-speed/ is adjustable and it is a parameter of the simulation. A no-slip condition is assumed at the boundary of the channel and the fluid. The described problem is modeled with the /incompressible Navier-Stoke equation/ \cite{salvi98}. We deal with the time-dependent case. The solutions for the time-steps of the equation represent the pressure and the velocity of the fluid in the $x$ and $y$ direction at any one point of the 2D space. The solutions can be conveniently represented as images. See [[fig:fig2][Figure 2]].
+
+
+
+[fn:1] We use "DNNs" and "CNNs" interchangeably.
+
+
+
+#+CAPTION:  The setup of the described simulation. At the both boundaries -- $(1)$ and $(2)$ -- we define the boundary conditions -- inflow and outflow. On the other sides of the channel and the on object boundary we impose no-slip conditions -- $(3)$
+#+NAME: fig:fig1
+#+ATTR_LATEX:
+[[./flow.png]]
+
+
+#+CAPTION: Solution for the velocity in the \(x\)-direction of the fluid inside the channel for some time-step of the simulation.
+#+NAME: fig:fig2
+#+ATTR_LATEX:
+[[./flow_solution.png]]
+
+\\
+
+In the described problem we can see the adjustable parameters of the simulation - the fluid parameters, the inflow-speed and the shape of the object. If any of these parameters are changed, the entire simulation has to be rerun from the beginning. With the classical approach to solving PDE, this costs a lot of time and processing power. This further motivates the use of DNNs in the hopes of increased efficiency. With our research, we want to study to what extent is this use reasonable. We also want to know how much DNNs can generalize the simulation parameters and how much worse the predicted solutions are. The central point of the proposed study is this investigation of the ability of DNNs to predict solutions of the incompressible Navier-Stoke equation for different simulation parameters. We give more details on how we want to study the generalization capabilities of DNNs in Section [[sec:goals]].
+
+\\
+
+We divide the parameters of interest in three general cases. Fluid parameters (fluid density and viscosity), initial simulation conditions (inflow speed) and input space (the object in the channel). These three cases are of central importance to our research. In our project, we want to quantify the ability of DNNs to generalize each of these parameters and show evidence on how each case is viable. This would suggest that DNNs can be used arbitrarily in the described numerical simulations. In this sense, we show that DNNs can be trained to solve certain differential equations where a variety of parameters can be freely varied. This will save processing power and running time while performing the simulation. The contribution of our research is to show that this is partially possible and give concrete numbers to what extent. We see our study as a step in the direction of developing a general DNN-framework that can be trained to solve PDEs.
+
+\\
+
+We briefly mentioned that we intend to mainly use the image representations of the solutions of the PDE to generate the solution for the next time-step. We now also want to motivate this choice. As said, the images are a natural representation of the solutions of PDEs. They allow a human observer to make sense of the simulation results and to better understand them. In this sense, we can say that in certain situations the images are the main result of the simulation. Furthermore, when two solutions from adjacent time-points are looked together, one can quickly see that the difference between them is not dramatic but rather subtle. This suggests that a machine learning model can capture these small differences and can transform an image of a solution into an image of the solution for the next time-step. As will be demonstrated in Section [[sec:soa]], DNNs are well established for image filtering and processing tasks. Finally, images represent a well-defined input space that is very convenient to use as input to a DNN. The raw solutions of PDEs are in the form of continuous data that in all cases has to be sampled in some way. By transforming it into an image, we discretized it and make it possible to further process it with standard image processing methods. All of those considerations justify our decision to concentrate on the image representations of the solutions and use them as our main data.
+
+
+* Related work
+<<sec:soa>>
+
+In our preliminary research on the topic, we investigated in two general directions. First, we looked at the current usage of DNNs in image-to-image mapping. As this is a central point of our work, we wanted to prove the theoretical validity of our idea to use DNNs to produce images with fine details based on other images. The other area where we focused our research was the use of DNNs in numerical simulations. The central point was to see what has already been done in this area of study. In the following sections, we summarize our findings and illustrate how our work differs from the existing research.
+
+
+** DNNs in Image Processing
+In this section, we present what we think is enough evidence that DNNs can perform complex image-to-image mapping tasks. The point of this is reassuring ourselves that the basis of our idea has enough merit and we can reasonably assume that our approach could work on some level.
+
+\\
+
+A classical task that is now almost exclusively performed by DNNs is the /image segmentation/. It comprises making a pixel-wise decision about a class-belonging among several possible. In this sense, each pixel gets transformed into one of several values, hence this is an image-to-image mapping task. *Fully Convolutional Networks for Semantic Segmentation* \cite{luc2016} is the first example where the was shown that segmentation can be performed by a network purely comprised of convolutional layers. Up to this point, NN-approaches have always been using some kind of fully connected layer as a part of the network's architecture while solving this particular task. *Semantic Segmentation using Adversarial Networks* \cite{goodfellow2014} introduced the technique of Adversarial Networks into the image segmentation problem. The developed network needs no post-processing of its output mask as the adversarial term is responsible for enforcing connectivity between the segmented regions. *DeepLabV2* \cite{chen2016} and *UperNet101* \cite{zhao2016} represent the current state-of-the-art networks that can perform image segmentation. \cite{chen2016} achieves score of almost 80% mIOU (mean Intersection over Union ). This clearly illustrates how DNNs can extract semantic information from an image and then generate a new one based on that. For our research, we need DNNs to be able to do exactly this.
+
+\\
+
+The area of image-to-image mapping is not limited to segmentation. *CartoonGAN* \cite{liu2017} is a network that can generate images in the style of an animated film. This is traditionally an artistic task but the proposed DNN manages to take a photograph as input and transform it into a cartoon style image. *Semantic Image Synthesis with Spatially-Adaptive Normalization* \cite{park2019} shows impressive results in the task of conditional image synthesis. The network can synthesize a photo-realistic image based only on a segmentation map indicating the different regions of the target image. Both of these examples show that DNNs can also generate images with high levels of detail. This is, again, exactly what we want from the DNNs as the image representations of the solutions of the PDEs can be quite detailed. The generation of fine details, however, should not be a problem for sufficiently deep networks as we have seen examples where this has been possible.
+
+\\
+
+In broader sense, \cite{pix2pixHD} presents a general approach in DNN-based image-to-image mapping tasks. The paper proposes a modified ResNet \cite{he2015} architecture and a GAN[fn:gan] based method for training a network. The authors have shown that their network can perform a wide variety of image-to-image mapping tasks. We, however, have not managed to find an instance where the approach is used to generate images of the solutions of some simulation. We can thus say that we look to build upon the work of \cite{pix2pixHD} and show that DNNs can also be used in this context.
+
+
+[fn:gan] Generative Adversarial Network
+
+
+** DNNs in Numerical Methods
+
+There has been a long-standing interest whether or not neural networks can be used in strictly mathematical contexts. Our research falls under this category as we try to offset the work of well defined numerical algorithms to a trainable DNN-model. There have been numerous attempts to do something similar.
+
+\\
+
+*Artificial Neural Networks for Solving Ordinary and Partial Differential Equations* \cite{lagaris1998} has demonstrated for a first time how neural networks can be applied in order to solve initial and boundary problems of ordinary and partial differential equations. There,^ a neural network is used to derive a trial solution of a differential equation. The loss function then can be used to model a particular equation. The end result is a function, defined partially by a neural network, over the whole input space.  Our approach is close to this in the sense that it does not aim to solve particular task but rather the study how and to what extent DNNs can be applied in the context of PDEs and draw some general conclusions. We, however, do not plan to derive a trial solution of our problem (incompressible Navier-Stoke equation) and write it in terms of a DNN. We want to use the already present solution data in order to train model that can generate new solutions. Further more, we do not use the considered space as a feature. The input to the model, in our case, is the solution from the previous time-step.
+
+\\
+
+*Solving Level Set Evolving Using Fully Convolution Network* \cite{wei2017} is an example of neural networks (in this case CNNs) being used in order to solve a particular numerical problem -- the level set method. The approach is very close to ours but it tackles a different problem. First, a geometry data is generated with a classical numerical solver for the problem. Then a network is trained to take the shape of the geometry at time $t$ and predict the shape in time $t+1$. This is essentially what we are trying to achieve but with the problem of the incompressible Navier-Stoke equation. Other than that, we also want to see how the incorporation of different simulation parameters affects the predicted solutions.
+
+\\
+
+*Artificial Neural Networks Approach for Solving Stokes Problem* \cite{baymani2010}  even addresses the exact problem as we are trying to address - the Navier-Stoke problems describing the motion of a fluid. The approach there, however, is similar to \cite{lagaris1998}. The authors first transform the equations in Poisson equation and derive a trial solution in terms of an artificial neural network. An optimization problem is then solved and the result, again, is a function of the considered space. To note is that the considered equations are not time dependent, in contrast to our work. Another key difference is again the overall approach and goals. We want to use the image representation of a present solution in order to generate a new one. In this sense, we can say that the implicitly solved differential equation is coded into the network itself. We also want to show the generalization capabilities of the network with respect to several simulation parameters. These are all point that were not considered in \cite{baymani2010}.
+
+\\
+
+*Convolutional Neural Networks for Steady Flow Approximation* \cite{guo2016} deals specifically with the prediction of the stabilized state of a laminar flow. The authors have developed a CNN the can predict the velocity of the flow based on the geometry in the considered space. The prediction is the converged speed in each point in the space. This means that the network does not performer time-steps of a simulation but rather predict only the final converged result that will no longer change in time. The model is trained with real simulation data. A variation of the signed distance function is used to describe the geometry in the space. Our proposed study, agian, differs form the descibed one in several ways . We consider mainly the image representation of a previous solution as a basis for the generation of the next solution. Our network is supposed to predict an actual time-steps of the simulation in contrast to the approach of \cite{guo2016}. It is true that at some point we also want to consider the geometry and be able to handle arbitrary geometries but this is only one aspect of our work. \cite{guo2016} also does not consider the parameters of the fluid that is being simulated. As explained, we want to be being able to use arbitrary parameters.
+
+\\
+
+Our work is closely related to *Hidden Fluid Mechanics: A Navier-Stokes Informed Deep Learning Framework for Assimilating Flow Visualization Data* \cite{raissi2018}. The paper considers the concentration of massless particles in a fluid and tries to predict their velocity and pressure. One similarity to our work is that the problem is modeled through the Navier-Stoke equations for incompressible fluid flow. The developed network is specifically tailored for the task. Parts of the architecture reflect the mathematical setup of the considered equations. In contrast, we propose a purely data-driven approach where the architecture of the network is kept general. Our model is then informed about the PDE-problem only by the training data. The other key difference to our approach lies in the input features for the network. In \cite{raissi2018} the feature space is defined by the position in space and time, as well as the concentration of the particles at that point. In our case, the time is not explicitly encoded in the data but the time-steps arise from the input-output relationship.
+
+\\
+
+The other work that we have found similar to ours is *Study of Deep Learning Methods for Reynolds-Averaged Navier-Stokes Simulations of Airfoil Flows* \cite{thuerey2018}. In there, a deep neural network is used to solve the Reynolds-Averaged Navier-Stokes equations in the context of simulating airflow around an airfoil. Even though the solved PDE is different, the approach is of the authors is similar to ours. The paper considers the 2D case of the problem. The key idea is to let the model learn a mapping between the initial conditions and the solutions of the PDE. The initial conditions are given in the form of matrices of velocities in two directions as well as a mask that describes the geometry in space. The output of the model is comprised of three separate matrices representing the velocities in the two directions and pressure fields. Even though the authors claim that their DNN can function on different geometries, only experiments with turbulent flows around airfoils are performed. To outline the differences to our proposed work:
++ In our case, the initial conditions for a given time-step are implicitly encoded in the solution of the previous time-step.
++ Our focus is on laminar flows and not on turbulent and thus we aim at solving the Navier-Stokes equations for incompressible flow.
++ We also partially want to study the effects of different geometries on the performance but we are not limited to that.
+
+\\
+
+We did note manage to find a comprehensive analysis on the problem of generalization of DNNs when applied to the problem of incompressible fluid flow according to the Navier-Stokes equation. This tells us that there is a gap that our research can begin to fill. Our work is somewhat theoretical in the sense that we do not solve a particular task but rather study certain aspects of the proposed approach. More concretely - our approach is to use the image representations of the solutions of a PDE and to quantify the generalization of DNNs when applied to fluid simulation. These two aspects differentiates us from works as \cite{pfeiffer2019} and \cite{georgiou2018} where the problem is to handle a concrete task. \cite{pfeiffer2019} tries predicting how an organ would move based on the velocities in certain parts of it. \cite{georgiou2018} focuses on analyzing certain properties of a flow around object based on other properties. Both works use DNNs in order to solve their tasks but they do not aim to draw general conclusions about the application of neural networks in solving certain differential equation.
+
+
+
+* Preliminary work
+<<sec:prem>>
+/In this section we discuss the work that is done so far in our research project./
+
+\\
+
+By now we have settled and experimented with the tool that will be used for the generation of real simulation data. As the models we aim to study are data-driven, we see this as the first crucial point in our research. We have chosen /HiFlow3/ \cite{gawlok2017} as our classical numerical solver. To quote the authors:
+#+BEGIN_QUOTE
+HiFlow3 is a multi-purpose finite element software providing powerful tools for efficient and accurate solution of a wide range of problems modeled by partial differential equations.
+#+END_QUOTE
+With HiFlow3 one can write a program that solves a particular problem involving solving a PDE. An example for solving the incompressible Navier-Stokes equation is already present and ready to be used. We have managed to run the simulation described in Section [[sec:mot]] and get solutions over 20 seconds period. The parameters of the performed simulations can be easily varied as those are given per configuration file.
+
+\\
+
+Even though HiFlow3 can solve PDEs, the library does not have its visualization module. The raw data of the solution can, however, be encoded in a file format that can be read by /ParaView/ \cite{ahrens2005}. ParaView is a software package used for visualization of simulation data in a scientific context. With this tool, we can first visualize the solutions generated by HiFlow3 and then export them in a convenient format. The final result is a collection of PNG files visualizing different time-steps of the simulation. With this setup, we have established a workflow where we can decide on certain simulation parameters, run a simulation, visualize it and then export it in an image format.
+
+\\
+Upon investigation of the generated images, we can see that for sufficiently small time-step (in the sense of time between two following solution images) the differences between images are small. Our hope is then that a DNN would be able to capture this difference and encode a model that can perform a transition between two images.
+
+
+* Goals and methodology
+<<sec:goals>>
+
+As motivated in Section [[sec:mot]], the proposed research has to do with the applicability of DNNs in solving PDEs. Our main concern is to study the generalization capabilities of DNNs with respect to different simulation parameters. This goal is, however, too general and to tackle it we have to break it down in more concrete and manageable chunks. In this section, we like to exactly specify these parts. We also give more insight into how we plan to achieve our goals.
+
+\\
+
+The general system we aim to build is a DNN-based model that can perform a simulation of an incompressible fluid flowing around an object in a channel. It is important to point out that our approach assumes that an initial solution of the simulation already exists and it's present in an image form. This means that we do not completely replace a classical numerical solver. This is illustrated in [[fig:fig3][Figure 3]].
+
+\\
+
+Developing a network that can take all of the simulation parameters into account is a challenging task. We believe that this falls outside of the scope of the project. Rather, what we are aiming to develop are four separate models, each exploring a single facet of the problem. Therefore, we partition our research on several points. All of them are concerned with DNNs trained with simulation data generated by the numerical solver described in Section [[sec:prem]].
+
+- Generalization purely in the time direction. We want to see if a DNN can be trained on part of the simulation data and then predict the rest of it. Here we do not vary any parameters. This is the base case and with it, we mainly want to validate the feasibility of our further considerations.
+
+- Generalization of fluid parameters -- viscosity and density. We want to see how DNNs perform when the viscosity and density of the fluid are considered as input. A successful network here would be able to perform simulations with arbitrary fluid parameters. The training data for this case has to come from multiple simulations, each having different values for the investigated parameters.
+
+- Generalization of the parameters of the boundary conditions -- inflow-speed. Similar to the previous point but the varied simulation parameter is the fluid speed at the boundaries of the channel. The training data here has to contain information about the used values for the corresponding parameters.
+
+- Generalization of the input space -- the object around which the flow is happening. Here we want to study the performance of a DNN that can consider the whole input space with the object in it. To note is that we intend to keep the other simulation parameters constant. The only thing that changes is the object around which the flow is happening.
+
+
+#+CAPTION: A high-level overview of the proposed system we want to study. The numerical solver is still present as we still rely on it to generate the first solution of the simulation. The solution is then encoded as an image and passed to the DNN that predicts the next solution.
+#+NAME: fig:fig3
+#+ATTR_LATEX:
+[[./overview.png]]
+
+\\
+
+In all cases, we deal with the evaluation of the goodness of a neural network. For this reason, we follow a standard approach when evaluating machine learning systems. For every sub-problem, our pipeline is as follows:
+1. Generate appropriate simulation data as per the described method is Section [[sec:prem]]. Group the data into test and train sets.
+2. Train a DNN for a certain time until the network achieves good performance on some validation set. The validation set is a part of the training set for the network.
+3. Evaluate the performance of the trained network on the test set of the simulation data and note the result.
+In the next subsections, we give details on several aspects of the methodology.
+
+
+** Network
+
+All tasks involve the use of a deep neural network. We briefly want to touch on the possible architecture of the networks that we plan to use. We do not intend to develop a completely new network for each of the subproblems but rather to slightly modify the design of the network that will be used for the baseline case. In our state-of-the-art research, we have seen a variety of approaches and techniques when it comes to the architecture of a network that perform image-to-image mapping. In our networks, we plan to incorporate DNN-design patterns as deconvolution, the encoder-decoder model and the generative-adversarial network model. We also think that a fully convolutional neural network will be appropriate for our use cases. As describe in Section [[sec:soa]], pix2pix \cite{pix2pixHD} provides a general framework for architectures that work well for image-to-image mapping tasks. We, therefore, plan to consider the use of one of the suggested architectures. Namely -- ResNet \cite{he2015} or UNet \cite{ronneberger2015}.
+
+\\
+
+As described in Section [[sec:mot]], the solutions of the simulation contain information about the velocity of the fluid in $x$ and $y$ directions as well as the pressure in each point. This means that we can generate 3 images per time-step, each representing a different value of the solutions. We, however, limited our considerations to the two velocities and take the image representations only of those. The proposed network should then take two images and predict the pair for the next time-step.
+
+
+** Data generation
+
+In Section [[sec:prem]] we briefly explained the technical details on the data generation process. In this section, we want to describe exactly what data we want to generate and give concrete values for the parameters. We also clarify how we have come up with the parameter values.
+
+\\
+
+When it comes to the flow of fluid, the /Reynolds number/ is one of the best predictors on what type of low will occur. It is marked with $Re$ and it is a dimensionless quantity that arises from the parameters of the fluid and the conditions in which the flow is happening. In our case, the inflow speed, density, and viscosity contribute to the value of the Reynolds number. If the Reynolds number is large ($Re>3000$), the flow tends to be turbulent. For lower values ($Re<3000$) the flow is laminar. Turbulent flow is simulated considerably harder than a laminar one. The numerical solver we use is intended to solve a simulation of laminar flow. If the flow becomes turbulent, the results will not be meaningful. Those considerations impose some restrictions on the values of the simulation parameters that we want to use. We intend to limit ourselves to simulations with Reynolds number in the range of $[10, 350]$. In this range, some interesting structures in the flow can still be observed (e.g. /Kármán vortex street/) but the flow is not yet turbulent and can be simulated through solving Navier-Stoke equations.
+
+\\
+
+The desired range for the Reynolds number limits the possible values for the other parameters of the simulation. Table [[tab:vals]] shows in what range we can vary a certain simulation parameter and still have appropriate Reynolds number under the condition that the other two parameters stay constant.
+
+#+NAME: tab:vals
+#+CAPTION: The values in the table apply only to our simulation setup. The formula for the Reynolds number also considers the characteristic length dimension of the input space. For this, we choose the squere root of the area of the channel. The notations are $\rho$ for fluid viscosity, $n$ for fluid density and $g$ for inflow speed at the boundary.
+| Variable Parameter | Value range      | $Re$ range | Conditions        |
+|--------------------+------------------+------------+-------------------|
+| /                  | <                | <          | <                 |
+| Viscosity $\rho$      | $[0.0009, 0.03]$ | $[9, 300]$ | $n=0.3,\, g=1.3$  |
+|                    |                  |            |                   |
+| Density $n$        | $[1, 33]$        | $[1, 300]$ | $\rho=0.03,\, g=0.3$ |
+|                    |                  |            |                   |
+| Inflow speed $g$   | $[0.1, 10]$      | $[1, 300]$ | $n=1,\, \rho=0.03$   |
+|--------------------+------------------+------------+-------------------|
+ 
+Because one of our models takes together density and viscosity into account, the generated simulation data for this case should be with all possible value pairs of viscosity and density. This means that the ranges for the density and viscosity have to be slightly adjusted. We have settled with values in $[1, 20]$ for density and values in $[0.015, 0.03]$ for the viscosity. The values for the inflow speed are as given in the table.
+
+\\
+
+The last practical aspect is the generation of density-viscosity value pairs. For this, we plan to divide the ranges into a certain amount (e.g. 20) of equal intervals. We can then take all value pairs of the grid defined by the two number ranges.
+
+
+** Evaluation
+
+Because our DNNs generate images as their output, we have to define a meaningful metric according to which we can compare a predicted image with a ground truth one. There are multiple ways of defining this metric and we are currently considering several possibilities:
++ /Mean Squeres/ - sum of squared differences between intensity values.
++ /Normalized correlation/ -  Correlation between intensity values divided by the square rooted autocorrelation of both images.
++ /L2 distance/ - The Euclidean distance between the corresponding pixels of the two images
+We have yet not settled with one matric. We assume that the normalized correlation can be a reasonable choice because we think that the general structure of the fluid can be captured with different absolute values which have certain relative change.
+
+\\
+
+The other aspect that we have to consider when evaluating the networks is the exact methodology. We want to evaluate the trained models in two evaluation cases.
+1. First, we want to study how the models perform on individual images. What we mean by that is, that the models should be evaluated by applying them only on real simulation images generated by the numerical solver. In this case, the DNN performs a single time-step of the simulation.
+2. The other case is applying the model recursively. This means that we use the output of the model again as an input. We can repeat this procedure for a certain amount of time-steps and then evaluate the goodness of all of the generated images. In this case, we are interested to see how the deviation accumulates.
+
+
+* Work plan
+<<sec:work>>
+
+In this section, we give a concrete and detailed plan for the tasks that will undertake in our research. We have divided the task into several phases and we discuss them in each of the subsections. Here we like to make a couple of general remarks.
+
+- The nature of the project suggests frequent modifications to the implemented model. For this reason, we have opted-out for an iterative approach. We do not plan to have a separate big implementation phase after which we proceed to the training and evaluating. Rather, our idea is to have multiple phases where implementation, training, evaluation, and modifications to the model are all happening iteratively.
+- We believe that the data generation can be done in parallel at the beginning of the project as the simulations can be run by the numerical solver without our involvement. More on this point in Section [[sec:time]].
+
+ 
+** Data generation
+This is the facet of the project where we mainly deal with Hiflow and ParaView. Thanks to the examples that come with Hiflow, we can easily run the simulation of interest and produce the solution data. Changing the parameters boils down to a chaining a configuration file and running a binary executable program. We plan to generate the training data for all of the models at the beginning of the project. As explained, the data generation process is not involved and can be performed without us needing to constantly put work into it. We can run a script on a remote computer that will automatically execute the simulation many times with different parameters. This would allow us to concentrate our attention elsewhere during the data generation itself. It is important, however, that this can only be done when we run the simulations. Once the solutions are generated, we need to manually load the data into ParaView and exported it as a sequence of images. This is the final goal of the training data generation step.
+
+\\
+
+To note is that we also have to save the parameters for each simulation in a conveniently loadable format. Later, when we need to load the generated images, we will need these parameters too as they are part of the input of some of the models.
+
+
+** Initial system development and evaluation
+
+This phase of the project is partially concerned with the collection of Python scripts that we will need to conduct all of our experiments. We plan on using the PyTorch \cite{pytorch} library for building models. The library offers a variety of utilities that ease the implementation of a system for loading data into memory, training a model with this data and then evaluating the results. Our goal is to create a pipeline suited to our needs. We can divide the whole envisioned system into several submodules.
+
+- Data loader - a data point in our case is defined through four images -- the image representations of the solutions (for $x$ and $y$ directions) of two time-steps of the simulation -- and possible several simulation parameters. All of the data will be stored in folders. We, therefore, need some sort of mechanism that knows the format of the data and the layout of the folders so that it can load the appropriate data in memory and provide it to the model in an appropriate form. Those tasks will be performed by the data loader module. PyTorch provides some general classes we need to adapt to our use case.
+- Model implementation - this is the part where we define and implement the actual architecture of the DNNs that we will use as models. As mentioned in Section [[sec:goals]], we plan to use a variant of ResNet as described in \cite{pix2pixHD}. The authors of \cite{pix2pixHD} even provide a PyTorch implementation of their used model under the BSD license. We want to adjust the implementation for our needs and integrated them into the envisioned pipeline.
+- Training infrastructure - this is the script that brings everything together. It should use the data loader to load the needed data into memory, instantiate the used model and then train the model in a training loop. In the end, the trained model is saved and possibly evaluated.
+- Evaluation infrastructure - once the model is trained, its performance has to be evaluated. For this reason, we have to implement a script that can test the model against real simulation data. As an evaluation metric, we plan on using the percentage deviation of the predicted images to the real ones. The evaluator script also has to be able to apply the model recursively -- the output of the model is used again as an input for several time-steps.
+
+\\
+
+Once every module is implemented, we can proceed to our first evaluation task. This involves training the defined model for a prolonged period and then evaluating its performance on a subset of the data. Adjustments to the model's hyperparameters are possible but we do not plan to do this excessively as we may cause ground truth leakage. At this stage, we train the DNN-model only with pure image data. The network does not consider the simulation parameters. Our goal with this is to have baseline results so that we have something to compare to the performance of future models. We hope that all of the models can achieve a deviation of under 10% as this makes them eligible for use in coarse simulation applications.
+
+\\
+
+A general note for all of our evaluation tasks - we plan on performing the training task on remote computers equipped with GPUs as this can dramatically reduce the time it takes to train a model.
+
+
+** Fluid viscosity and density network development and evaluation
+
+Once we have our base model results, we can proceed to the first case where the model also has to consider a couple of simulation parameters. Namely - the viscosity and density of the simulated fluid. We will not have to change all of the training pipeline's parts but rather just adjust the model to be able to accept two more real values as an input. On the other hand, the used training data will have to be more diverse and come from a lot of different simulations with different fluid parameters. This should not be a problem as we plan to have written the data loader in the most general way to be able to load arbitrary types of simulation data. With that being said, the training procedure does not differ substantially from the already described in the previous subsection.
+
+\\
+
+We again have two evaluation strategies for the already trained model. First off we want to see the average error when the model predicts a single solution based on the real one from the previous time-step. The other evaluation case is to see how does the model perform when applied recursively. In all cases, we hope to see the average error of under 10%.
+
+
+** Inflow speed network development
+This step is similar to the previous one. The difference is in the used simulation parameters. It is possible that we would not need to modify the network heavily as we assume that by this point, the model will be able to consider two real numbers as an extra input. In the case of inflow speed, the network has to consider a single real number. When training, we have to load the appropriate data that should come from simulations with variety of inflow speeds while the other parameters are fixed.
+
+\\
+
+We again follow the defined approach in evaluating the model. We investigate the average error while predicting a single solution with the model and then examine how the error accumulates by a recursive application.
+
+
+** Object in the input space network development
+The development of the last model has a couple of key differences in the previous steps. With this network, we first have to decide on the representation of the input space. For now, we have conceived two ways this could be done.
+1. /Binary mask/ -- the geometry of the object is represented as a separate binary image. The places where the geometry resides are marked with the value one and the free space is marked with the value zero.
+2. /Signed distance function (SDF)/ -- this is a commonly used representation of geometry in Euclidean space. The input space can then be considered as a discretization of a special function -- the SDF. The function has positive values at points \(x\) inside the geometry, it decreases in value as \(x\) approaches the boundary of the object where the signed distance function is zero, and it takes negative values outside of the object.
+In both cases, space is described as a matrix of numbers that can be looked at as a feature vector. The vector must then be integrated into the architecture of the network. Integrating a big vector of numbers can be quite different from integrating just one or two real numbers so we again have to try different modifications to the base model and choose the appropriate one.
+
+\\
+The training and evaluating procedures follow the already established methodology.
+
+
+* Time plan
+<<sec:time>>
+ 
+In this section, we present a concrete time plan for all of the tasks during the project. We also briefly discuss the dependencies between the sub-tasks and point out the defined milestones in the development.
+
+\\
+
+Figure \ref{fig:fig4} illustrates the proposed time plan in the form of a Gantt chart.
+
+\begin{figure}[!htb]
+\hspace*{-1in}
+\includegraphics[width=15cm,height=11cm]{./gannt.png}
+\caption{\label{fig:fig4} A gantt chart of the time plan. The third row gives the week number of each column. The hard dependencies are ilustrated with arrows between the time bars of the different tasks.}
+\end{figure}
+
+The time plan is comprised of the five phases discussed in Section [[sec:work]]. As illustrated in the chart, we believe that the data generation, to a large extent, can be done parallel to the initial system development. This is justified by the fact the running the simulations takes a lot of time and it requires almost no involvement on our part. The initial system is divided into two main parts -- the system development and the training of the base model. The other phases follow sequentially. Within them, we plan to perform an interative process of modifying the base model, training and evaluating it and then considering if more modifications are necessary.
+
+\\
+
+We have defined four milestones, one at the end of each phase. By reaching each milestone we can be certain that we have a built and evaluated model with appropriate results that can be discussed in the writing of the future paper. As long as the end of the second phase is reached, we can compare the results of the baseline model with the ones of the fluid parameters model. This means that with reaching the second milestone we can make a minimal sensible comparison of evaluation results.
+
+\\
+
+
+We like to explicitly mention one risk aspect of the development. The generated data at the beginning may turn out not to be enough for the sufficient training of some of the models. This should not be a big problem as we can quickly generate more simulation data in a short period -- one to two days.
+
+
+* Table of contents                                                  :ignore:
+# #+TOC: headlines 1
+
+
+* Bib things                                                         :ignore:
+
+#+LATEX: \newpage
+\bibliographystyle{alpha}
+\bibliography{bib}
+
+#  LocalWords:  CNNs PDEs PDE subchapter softmax deconvolution voxel
+#  LocalWords:  activations learnable voxels timestep incompressible
+#  LocalWords:  parallelization DNNs DNN descritized convolutional
+#  LocalWords:  Summarization ParaView Hiflow submodules subproblems
+#  LocalWords:  hyperparameters  discretization

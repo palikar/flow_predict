@@ -1,0 +1,122 @@
+#+OPTIONS: broken-links:nil c:nil creator:nil d:(not "LOGBOOK")
+#+OPTIONS: ':t *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline author:t
+#+OPTIONS: date:t e:t email:nil f:t inline:t num:t p:nil pri:nil
+#+OPTIONS: prop:nil stat:t tags:t tasks:t tex:t timestamp:t title:t
+#+OPTIONS: toc:nil todo:nil |:t
+#+TITLE: Pres
+#+DATE: <2019-09-26>
+#+AUTHOR: Stanislav Arnaudov
+#+EMAIL: stanislav.arn@gmail.com
+#+LANGUAGE: en
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+
+#+LaTeX_CLASS_OPTIONS: [margin=0.05in, tmargin=0.01in]
+#+LATEX_HEADER: \usepackage[margin=1.5in, tmargin=1.0in]{geometry}
+
+
+
+* Introduction
+Hallo, mein Name ist Stanislav und heute präsentiere ich euch den Forschung-Antrag zu meinem PdF Projekt.
+
+
+* Motivation
+
+** PDEs
+Nun ganz kurz zu Motivation. Wie schon besprochen, ich beschäftige mich teilweise mit partiellen Differentialgleichungen. Die treten ganz oft in der Natur und Physik auf. Mit ihnen kann man numerische Simulationen durchführen, zum Beispiel von Strömungen. Bei diesen Simulationen geht es sogar über eine Folge von Gleichungen, die gelöst werden müssen. Und zwar, die Lösung von einer der Gleichungen, bewirkt die (Anfangs)Bedingungen für die nächste. Zu bemerken ist, dass die Gleichungen schwer zu lösen sind und zwar im Sinn von, dass man viel Rechenleistung investieren muss, um mit einer Lösung aufzukommen. 
+
+- numerische Löser
+
+Die Haupteigenschaft für meine Arbeit - die Lösungen haben eine natürliche Repräsentation - Bilder. Wie das Bild hier, es zeigt die Strömung um eine Kugel. Unsere Überlegung ist jetzt, diese Lösungeng um eine Alternative Weise zu generieren.
+
+
+** Netze
+Heutzutage, immer wenn Bilder erwähnt werden, denk man DNNs (oder CNNs). Die sind eine echtes heißes Thema in letzten Jahren. Immer mehr Forschung wird in diesem Bereich dediziert und unser Projekt ist als Teil von dieser Forschung gedacht. Es hat sich gezeigt, dass DNNs bei Computer Vision oder Bildverarbeitung Aufgaben beeindruckende Ergebnisse liefern können. Und deswegen unsere Idee ist, die Mächtigkeit von DNNs im Kontext von PDEs zu untersuchen.
+
+Thema: Die Anwendbarkeit von DNNs beim Generieren von Lösungen von PDEs.
+
+** Konkretes Problem
+Bis jetzt alles gesagte ich aber zu breit und allgemein. Jetzt stellen wir eine konkretes Problem vor, wo wir unsere Forschung durchführen wollen.
+
+- 2D Fall
+- ein Kanal mit Flüssigkeit da drin - oder Fluid
+- wir haben außerdem ein Objekt im Kanal
+- und das Fluid fließt um das Objekt; auf einer Seite haben wir Einfließbedingung, auf der anderen Abfließ
+- das Fluid ist inkompressibel (unelastisch)
+
+das ganze Physik jetzt wird mit der Navier-Stoke Gleichung beschrieben. Die exakte Mathematik ist nicht so wichtig, wir wollen nur explizit sagen, dass dies DIE Gleichung ist, die wir betrachten wollen und mit DNNs versuchen zu lösen.
+
+Eingangsparameter
+- Viskosität und Dichte von dem Fluid
+- die Einfließ-Geschwindigkeit - wie schnell fließt das Fluid ein
+- das Objekt selbst, die Geometrie im Raum 
+
+Lösungen für jeden Zeitpunkt:
+- der Geschwindigkeitsfeld
+- der Drucksfeld
+
+
+** DNNs in unserem Kontext
+Ok, jetzt haben wir ein konkretes Problem, springen wir mal zurück zu DNNs. Die Lösungen von der Gleichung, die wir gerade besprochen haben, können als RGB-Bilder visualisiert werden. Und wie schon gesagt, DNNs haben die Möglichkeit erstaunlich gut mit Bildern zu funktionieren. Damit kommt unsere Grundlegende Idee, können wir nicht mit DNNs die Lösungsbilder der Simulation Vorhersagen. Und zwer, unter Verwendung der Lösungsbild von de, vorherigen Zeitpunkt. Die Annahme hier ist, dass ein solches Bild schon existiert.
+
+Das zu untersuchende System hat also die folgende Gestalt. Stellen wir uns vor, diese sind drei Zeitpunkte von einer Simulation. Am Anfang haben wir gewisse Anfangsbedingungen und dann müssen wir zunächst die  quasi "erste" Gleichung mit einem numerischen Löser lösen, damit wir eine Lösung betrachten können. Diese wird dann als Bild codiert und durch das Netz propagiert. Das Netz vorhersagt dann das Bild von der nächsten Lösung. In diesem sind, wird die Gleichung im Netz codiert.
+
+Zu Bemerken ist, dass der numerische Löser nicht komplett ersetzt wird. Wie gesagt, wir gehen von einem schon vorliegenden Bild aus.
+
+** Die zwei Fragen
+Jetzt entstehen aber zwei Fragen, Nämlich:
+
+- erstmals: Warum würden wir diese Bilder als Eingabe fürs Netz verwenden?
+  + gut definierter Eingaberaum, Zahl-Bereich ist fest, man muss die Information hier, so und so irgendwie abtasten; nah dazu, hier ist die Information kontinuierlich
+  + Ansatz nicht probiert
+  + die roh Daten sind kontinuierlich, man muss die so und so irgendwie abtasten
+  + DNNs sind gut etabliert für Bildverarbeitung-Aufgaben
+- auf andere Seite: die nächste Folie zeigt genau dass; diese sind Bilder, die wir schon generiert haben (mit Löser) und repräsentieren die Geschwindigkeit in x-Richtung für 4 Zeitpunkte der Simulation;
+  + in machen Situationen, diese sind die Ergebnisse, die man ansehen will. Interessante Strukturen werden sichtbar, man kann sich überlegen und passend Simulations-Parameter auswählen;
+  + genug wenn der Fehler nicht das wichtigste ist; die grobe Simulations-Ergebnisse werden verlangt;
+  + Bemerkung: die Bilder sind ähnlich mit erfassbare Unterschied dazwischen - die DNNs können diesen Unterschied "lernen".
+
+
+* Forschungsthema und Forschungsfrage
+Damit haben wir alles definiert und motivierte, um die Forschungsthema und Forschungsfrage festlegen zu können.
+
+- Thema: Die Anwendbarkeit von DNNs beim Generieren von Lösungen von PDEs im Kontext von numerischen Simulationen
+  + immer noch allgemein gehalten
+
+- Frage bzw. Unterfragen: Inwiefern können DNNs die Parameters von der beschriebenen Simulation generalisieren. Die Simulation - inkompressibele Fluid-Strömung um ein Objekt nach der Navier-Stoke Gleichung. Die Parameter, für die wir und interessieren:
+  - Viskosität und Dichte vom Fluid
+  - Einfließgeschweindigkeit
+  - Objekt im Raum
+Das Modell, das wir untersuchen wollen ist ein DNN, das auf Basis von Bilder funktioniert.
+
+Wir haben bis jetzt gesagt, dass das Modell mit Bilder funktionierte, aber nun soll es klar sein, dass wir wollen auch diese Parameter betrachten.
+
+
+* Verwandte Arbeiten
+Pellentesque dapibus suscipit ligula.  Donec posuere augue in quam.  Etiam vel tortor sodales tellus ultricies commodo.  Suspendisse potenti.  Aenean in sem ac leo mollis blandit.  Donec neque quam, dignissim in, mollis nec, sagittis eu, wisi.  Phasellus lacus.  Etiam laoreet quam sed arcu.  Phasellus at dui in ligula mollis ultricies.  Integer placerat tristique nisl.  Praesent augue.  Fusce commodo.  Vestibulum convallis, lorem a tempus semper, dui dui euismod elit, vitae placerat urna tortor vitae lacus.  Nullam libero mauris, consequat quis, varius et, dictum id, arcu.  Mauris mollis tincidunt felis.  Aliquam feugiat tellus ut neque.  Nulla facilisis, risus a rhoncus fermentum, tellus tellus lacinia purus, et dictum nunc justo sit amet elit.
+
+
+* Methodologie
+** Grundlegende Aspekte
+Pellentesque dapibus suscipit ligula.  Donec posuere augue in quam.  Etiam vel tortor sodales tellus ultricies commodo.  Suspendisse potenti.  Aenean in sem ac leo mollis blandit.  Donec neque quam, dignissim in, mollis nec, sagittis eu, wisi.  Phasellus lacus.  Etiam laoreet quam sed arcu.  Phasellus at dui in ligula mollis ultricies.  Integer placerat tristique nisl.  Praesent augue.  Fusce commodo.  Vestibulum convallis, lorem a tempus semper, dui dui euismod elit, vitae placerat urna tortor vitae lacus.  Nullam libero mauris, consequat quis, varius et, dictum id, arcu.  Mauris mollis tincidunt felis.  Aliquam feugiat tellus ut neque.  Nulla facilisis, risus a rhoncus fermentum, tellus tellus lacinia purus, et dictum nunc justo sit amet elit.
+
+
+** Zurück zu Definition
+Pellentesque dapibus suscipit ligula.  Donec posuere augue in quam.  Etiam vel tortor sodales tellus ultricies commodo.  Suspendisse potenti.  Aenean in sem ac leo mollis blandit.  Donec neque quam, dignissim in, mollis nec, sagittis eu, wisi.  Phasellus lacus.  Etiam laoreet quam sed arcu.  Phasellus at dui in ligula mollis ultricies.  Integer placerat tristique nisl.  Praesent augue.  Fusce commodo.  Vestibulum convallis, lorem a tempus semper, dui dui euismod elit, vitae placerat urna tortor vitae lacus.  Nullam libero mauris, consequat quis, varius et, dictum id, arcu.  Mauris mollis tincidunt felis.  Aliquam feugiat tellus ut neque.  Nulla facilisis, risus a rhoncus fermentum, tellus tellus lacinia purus, et dictum nunc justo sit amet elit.
+
+
+** Arbeitsplan und Methodologie
+Pellentesque dapibus suscipit ligula.  Donec posuere augue in quam.  Etiam vel tortor sodales tellus ultricies commodo.  Suspendisse potenti.  Aenean in sem ac leo mollis blandit.  Donec neque quam, dignissim in, mollis nec, sagittis eu, wisi.  Phasellus lacus.  Etiam laoreet quam sed arcu.  Phasellus at dui in ligula mollis ultricies.  Integer placerat tristique nisl.  Praesent augue.  Fusce commodo.  Vestibulum convallis, lorem a tempus semper, dui dui euismod elit, vitae placerat urna tortor vitae lacus.  Nullam libero mauris, consequat quis, varius et, dictum id, arcu.  Mauris mollis tincidunt felis.  Aliquam feugiat tellus ut neque.  Nulla facilisis, risus a rhoncus fermentum, tellus tellus lacinia purus, et dictum nunc justo sit amet elit.
+
+
+
+* Zeitplanung
+Pellentesque dapibus suscipit ligula.  Donec posuere augue in quam.  Etiam vel tortor sodales tellus ultricies commodo.  Suspendisse potenti.  Aenean in sem ac leo mollis blandit.  Donec neque quam, dignissim in, mollis nec, sagittis eu, wisi.  Phasellus lacus.  Etiam laoreet quam sed arcu.  Phasellus at dui in ligula mollis ultricies.  Integer placerat tristique nisl.  Praesent augue.  Fusce commodo.  Vestibulum convallis, lorem a tempus semper, dui dui euismod elit, vitae placerat urna tortor vitae lacus.  Nullam libero mauris, consequat quis, varius et, dictum id, arcu.  Mauris mollis tincidunt felis.  Aliquam feugiat tellus ut neque.  Nulla facilisis, risus a rhoncus fermentum, tellus tellus lacinia purus, et dictum nunc justo sit amet elit.
+
+
+* Schluss
+Damit bin ich zu Ende. Ich bedanke mich für die Aufmerksamkeit.
+
+
+* Wörter                                                            :ignore:
+#  LocalWords:  Haupteigenschaft PDEs Navier Stoke Unterfragen

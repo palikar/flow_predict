@@ -1,0 +1,162 @@
+#+OPTIONS: broken-links:nil c:nil creator:nil d:(not "LOGBOOK")
+#+OPTIONS: ':t *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline author:t
+#+OPTIONS: date:t e:t email:nil f:t inline:t num:t p:nil pri:nil
+#+OPTIONS: prop:nil stat:t tags:t tasks:t tex:t timestamp:t title:t
+#+OPTIONS: toc:nil todo:nil |:t
+#+TITLE: Was muss gesagt werden
+#+DATE: <2019-09-26>
+#+AUTHOR: Stanislav Arnaudov
+#+EMAIL: stanislav.arn@gmail.com
+#+LANGUAGE: en
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+
+#+LaTeX_CLASS_OPTIONS: [margin=0.05in, tmargin=0.01in]
+#+LATEX_HEADER: \usepackage[margin=1.5in, tmargin=1.0in]{geometry}
+
+
+
+* Introduction
+Hallo, mein Name ist Stanislav und heute präsentiere ich Ihnen den Forschung-Antrag zu meinem PdF Projekt.
+
+
+* Motivation
+
+** PDEs
+Wir fangen mit der Motivation an. Ich beschäftige mich teilweise mit partiellen Differentialgleichungen. Die treten ganz oft in der Natur und Physik auf. Mit ihnen kann man numerische Simulationen durchführen, zum Beispiel von Strömungen. Bei diesen Simulationen geht es sogar um eine Folge von Gleichungen, die gelöst werden müssen. Und zwar, die Lösung von einer der Gleichungen, bewirkt die (Anfangs)Bedingungen für die nächste. Zu bemerken ist, dass die Gleichungen schwer zu lösen sind und zwar im Sinn von, dass man viel Rechenleistung investieren muss, um mit einer Lösung aufzukommen. Die klassische Ansätze zum Lösen sind mittels numerischen Lösern und durch die Finite Elemente Methode.
+
+Die Haupteigenschaft für unsere Arbeit - die Lösungen haben eine natürliche Repräsentation - Bilder. Wie das Bild hier, es zeigt die Strömung um eine Kugel. Unsere erste Idee ist jetzt, die Möglichkeit zu untersuchen, diese Lösungen auf eine alternative Weise zu generieren. 
+
+
+** Netze
+Heutzutage, immer wenn Bilder erwähnt werden, denk man DNNs (oder CNNs). Die sind ein echt heißes Thema in letzten Jahren. Immer mehr Forschung wird in diesem Bereich dediziert und unser Projekt ist als Teil von dieser Forschung gedacht. Es hat sich gezeigt, dass DNNs bei Bildverarbeitung Aufgaben beeindruckende Ergebnisse liefern können. Und deswegen unsere Idee ist, die Mächtigkeit von DNNs im Kontext von PDEs zu untersuchen und zwar auf Basis von den Bildrepresentationen der Lösungen.
+
+Thema: Die Anwendbarkeit von DNNs beim Generieren von Lösungen von PDEs.
+
+
+** Konkretes Problem
+Bis jetzt alles gesagte ich aber zu breit und allgemein. Jetzt stellen wir ein konkretes Problem vor, wo wir unsere Forschung durchführen wollen.
+
+- Wir beschränken uns zum 2D Fall.
+- und nehmen uns einen Kanal mit Flüssigkeit da drin - oder Fluid
+- Es gibt außerdem ein Objekt im Kanal und das Fluid fließt um das Objekt herum; auf einer Seite haben wir Einfließbedingung, auf der anderen Abfließ
+- das Fluid ist außerdem inkompressibel, damit wir dies leichter beschreiben können (unelastisch)
+
+die ganze Physik jetzt wird mit der Navier-Stoke Gleichung beschrieben. Die exakte Mathematik ist nicht so wichtig, wir wollen nur explizit sagen, dass dies DIE Gleichung ist, die wir betrachten wollen und mit DNNs versuchen zu lösen.
+
+Die beschriebene Simulation besitzt gewisse Eingangsparameter:
+- Viskosität und Dichte von dem Fluid
+- die Einfließ-Geschwindigkeit - wie schnell fließt das Fluid ein
+- das Objekt selbst, die Geometrie im Raum 
+One thing is cahnged, the whole simulation must be restarted
+
+--------------
+
+Die Gleichung wird für jeden Zeitpunkt gelöst und die Lösungen sind:
+- das Geschwindigkeitsfeld
+- das Drucksfeld
+
+
+** DNNs in unserem Kontext
+Ok, jetzt haben wir ein konkretes Problem, springen wir mal zurück zu DNNs. Die Lösungen von der Gleichung, die wir gerade besprochen haben, können als Bilder visualisiert werden. Und wie schon gesagt, DNNs haben die Möglichkeit gut mit Bildern umzugehen. Damit kommt unsere grundlegende Idee, können wir nicht mit DNNs die Lösungsbilder der Simulation Vorhersagen. Und zwer, unter Verwendung der Lösungsbild von dem vorherigen Zeitpunkt. Die Annahme hier ist, dass ein solches Bild schon existiert.
+
+Das zu untersuchende System hat also die folgende Gestalt. Stellen wir uns vor, diese sind drei Zeitpunkte von einer Simulation. Am Anfang haben wir gewisse Anfangsbedingungen und dann müssen wir zunächst die  quasi "erste" Gleichung mit einem numerischen Löser lösen, damit wir eine Lösung betrachten können. Diese wird dann als Bild codiert und durch das Netz propagiert. Das Netz vorhersagt dann das Bild von der nächsten Lösung. In diesem sind, wird die Gleichung im Netz codiert.
+
+Zu Bemerken ist, dass der numerische Löser nicht komplett ersetzt wird. Wie gesagt, wir gehen von einem schon vorliegenden Bild aus.
+
+
+** Die zwei Fragen
+Jetzt entstehen aber zwei Fragen, Nämlich:
+
+- erstmals: Warum würden wir diese Bilder als Eingabe fürs Netz verwenden?
+  + Ansatz nicht probiert
+  + die roh Daten sind kontinuierlich, man muss die so und so irgendwie abtasten
+  + gut definierter Eingaberaum, Zahl-Bereich ist fest, man muss die Information hier, so und so irgendwie abtasten; nah dazu, hier ist die Information kontinuierlich
+  + DNNs sind gut etabliert für Bildverarbeitung-Aufgaben
+- auf andere Seite: die nächste Folie zeigt genau dass; diese sind Bilder, die wir schon generiert haben (mit Löser) und repräsentieren die Geschwindigkeit in x-Richtung für 4 Zeitpunkte der Simulation;
+  + in machen Situationen, diese sind die Ergebnisse, die man ansehen will. Interessante Strukturen werden sichtbar, man kann sich überlegen und passend Simulations-Parameter auswählen;
+  + genug wenn der Fehler nicht das wichtigste ist; die grobe Simulations-Ergebnisse werden verlangt;
+
+ Bemerkung: die Bilder sind ähnlich mit erfassbare Unterschied dazwischen - die DNNs können diesen Unterschied "lernen".
+
+
+* Forschungsthema und Forschungsfrage
+Damit haben wir alles definiert und motivierte, um die Forschungsthema und Forschungsfrage festlegen zu können.
+
+- Thema: Die Anwendbarkeit von DNNs beim Generieren von Lösungen von PDEs im Kontext von numerischen Simulationen
+  + immer noch allgemein gehalten
+
+- Frage bzw. Unterfragen: Inwiefern können DNNs die Parameter von der beschriebenen Simulation generalisieren. Die Simulation - inkompressible Fluid-Strömung um ein Objekt nach der Navier-Stoke Gleichung. Die Parameter, für die wir uns interessieren:
+  - Viskosität und Dichte vom Fluid
+  - Einfließgeschweindigkeit
+  - Objekt im Raum
+Das Modell, das wir untersuchen wollen ist ein DNN, das auf Basis von Bildern funktioniert.
+
+Wir haben bis jetzt gesagt, dass das Modell mit Bildern funktionierte, aber nun soll es klar sein, dass wir wollen auch diese Parameter betrachten.
+
+
+* Related Work
+Jetzt diskutieren wir kurz wo genau unsere Arbeit in de Forschungsfeld liegt
+- zwei Rictungen beim Recherchieren
+- Bildverrbeitung; fokusiert auf bild-zu-bild abbildung;
+- das paper, das wir diskutieren wollen ist pix2pix - da wird ein allgemeines vorghenen vorgestellt;
+- it is nottested for simulation data in the form of images
+- wir wollen pix2pix weiter engwickeln
+--------------
+- 
+
+
+* Methodologie
+Ok, jetzt fangen wir an zu erklären, was unsere Ansatz ist, damit wir eine Antwort der Forschungsfrage angeben können.
+
+** Grundlegende Aspekte
+Grundsätzlich ist unsere Projekt eine Untersuchung von Machine Learning Modellen. Deswegen folgen wir den üblichen Ansatz für solche Untersuchungen. Nämlich, die Aufgaben können sich in drei Aspekte unterteilen
+1. Generieren von Trainingsdaten:
+2. Aufbauen und trainieren von einem Modell, in unserem Fall ein DNN:
+3. Evaluieren vom Modell:
+
+Erstmal müssen wir das Generieren von echten Simulationsdaten berücksichtigen. Diese sind die Daten, mit denen wir später das Modell trainiere wollen, also müssen die schon in Bildform sein. Hier kommen die Tools HiFlow und ParaView ins Spiel. HiFlow ist ein allgemeiner Rahmenwerk für Lösen von Differentialgleichungen. Da ist unsere Simulation schon implementiert und wir können die mit beliebigen Parametern laufen lassen. Dann werden die Ergebnisse generiert aber nicht als Bilder visualisiert. Dafür müssen wir ParaView verwenden, was ein Tool für das visualisieren von Daten von Experimente ist. ParaView kann letztendlich alle Zeitpunkte der Simulation als Sequenz von Bilder speichern.
+
+\\
+
+Danach kommt das implementieren vom Modell selbst. Hier werden wir PyTorch als ML-Library benutzen. Unser Plan ist der Ansatz von pix2pix zu folgen, weil da allgemeine Architektur und Methode für Bild-zu-Bild Netze vorgestellt werden. Die gedachte Architektur basiert sich auf ResNet -- ein bekanntes und beliebtes Netz -- und GAN ist unserer allgemeiner Fortschritt beim Trainieren. Die Architektur muss natürlich irgendwann modifiziert werden, damit auch die Parameter von der Simulation betrachtet werden können.
+
+
+Für das Evaluieren wollen wir zwei Dinge Bemerken. Zunächst, der Fehlermaß ist offensichtlich die Abweichung von dem echten Lösungsbild für den entsprechenden Zeitpunkt der Simulation. Will wollen diese Abweichung als Prozent angeben, weil falls dies unter 10 Prozent ist, können wir behaupten, dass die Methode wirklich für grobe Simulationen geeignet ist. Die andre Sache - wir haben zwei so zu sagen Evaluationsszenarient. 
+- Was ist der Fehler beim Anwenden auf einzelnen Bilder - also es werden immer echte Daten als Eingabe verwendet.
+- Was passiert mit dem Fehler wenn das Model rekursiv angewandt ist - also Ausgabe ist wieder als Eingabe genommen; wie akkumuliert der Fehler dann
+Diese sind quasi die zu untersuchende Anwendungsfällen
+
+
+** Zurück zu Definition
+Jetzt kommen wir kurz zu der Forschungsfrage zurück. Da haben wir gesagt, dass wir die Generalisierung von diesen Parametern untersuchen wollen. Es ist aber klar, dass vom Anfang ein Netz zu entwickeln, dass alles kann, schwierig wäre. Deswegen, haben wir und entschieden, ein separates Modell für jeden Fall zu entwickeln. In diesem Sinn wollen wir iterativ arbeiten und das ganze Stück für Stück aufbauen.
+
+
+** Arbeitsplan und Methodologie
+Damit können wir den Arbeitsplan eingehen. Wir unterteilen den in vier allgemeinen Phasen:
+
+1. Initiale System - hier geht um das Entwickeln von alles was wir brauchen, um das Trainieren und Evaluieren von Modellen zu ermöglichen. Hier zählen wir das generieren von Trainingssaten und das Implementieren von einer quasi Library. Die Library ist nichts anderes als eine Sammlung von python-Skripts, die eine Pipeline bilden. Also Data Loader - damit das Laden von den Bilder in Speicher in geeigneter Form bequem ist, das Modell selbst und Evaluieren und Trainieren Infrastruktur, damit das Trainer und Evaluieren teilweise automatisch durchgeführt werden können.
+   Hier haben wir auch ein Baseline-Modell gedacht, das nur auf Bildbasis funktionieren sollte. Also das Modell wird mit 80% der Daten aus einer Simulation trainiert und dir Frage ist, können die anderen 20% vorhergesagt werden. Das soll als eine Basis für dir Entwicklung von den weiteren Modellen dienen. Und  Außerdem hätten wir dann bestimmte baseline Ergebnisse zum Vergleich.
+
+2. Fluid Parameter - hier wollen das Model so anpassen, so dass es die Viskosität und die Dichte des Fluids berücksichtigen kann. Die Hauptaufgabe ist mit der Architektur des Modells ein bisschen umzuspielen und zu überprüfen, was gut funktioniert, also wie können wir diese zwei reelle Zahlen als Eingabe fürs Netz verwenden. Nach gewisser Zeit kommt auch das Evaluieren nach den besprochenen Weisen.
+
+3. Genau dasselbe gilt auch für die Einfließ-Geschwindigkeit Modell. Hier haben wir einen Parameter, den wir ins Modell integrieren wollen. Das Evaluieren ist klar
+
+4. Die Situation beim letzten Modell ist aber unterschiedlich. Jetzt wollen wir den ganzen Eingaberaum betrachten. Unsere Überlegung für jetzt ist, den Raum durch eine binäre Maske zu beschreiben. Also 1 da wo Geometrie gibt und 0 da wo "Freiraum" ist. Das angepasste Modell soll dann diese Maske als quasi extra Eingabesbild bekommen.
+
+Die letzten drei Phasen sind ziemlich ähnlich bezüglich Vorgehen und es sieht folgendermaßen aus. Also, wir machen irgendwelche Modifikationen zum Modell, dann schauen was passiert, dann überlegen ob das gut genug ist und falls notwendig, nehmen wir weitere Modifikationen vor und so weiter und so fort.
+
+Diese Iteration motiviert auch unsere konkrete Zeitplanung für Projekt
+
+
+* Zeitplanung
+Der Zeitplan sieht so aus. Wir haben hier die 4 Phasen. Am Anfang ist auch die Datengenerierung, weil wir relativ sicher sind, dass dies auch parallel zu der Entwicklung passieren kann. Für jede Phase haben wir uns 3 oder 4 Wochen angerechnet. Eine Woche mehr am Anfang. Ich vermuten wir werden dann ein bisschen mehr Zeit brauchen als wir müssen von Grund auf neu viel Implementieren. Wir haben Vier Meilensteine am Ende jeder Phase festgelegt, wo wir ein fertiges und evaluiertes Modell haben sollen, spricht Ergebnisse.
+
+
+* Schluss
+Damit bin ich zum Ende. Ich bedanke mich für die Aufmerksamkeit.
+
+
+* Wörter                                                            :ignore:
+#  LocalWords:  Haupteigenschaft PDEs Navier Stoke Unterfragen
+#  LocalWords:  Machine Learning Lösungsbild

@@ -1,0 +1,215 @@
+% Created 2019-09-26 Thu 12:44
+% Intended LaTeX compiler: pdflatex
+\documentclass[margin=0.05in, tmargin=0.01in]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+\usepackage[margin=1.5in, tmargin=1.0in]{geometry}
+\author{Stanislav Arnaudov}
+\date{\textit{<2019-09-26 Thu>}}
+\title{Was muss gesagt werden}
+\hypersetup{
+ pdfauthor={Stanislav Arnaudov},
+ pdftitle={Was muss gesagt werden},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2.1)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+
+
+\section{Introduction}
+\label{sec:org7efff8f}
+Hallo, mein Name ist Stanislav und heute präsentiere ich euch den Forschung-Antrag zu meinem PdF Projekt.
+
+
+\section{Motivation}
+\label{sec:orga66f5f0}
+
+\subsection{PDEs}
+\label{sec:orgfc5d8d0}
+Wir fangen mit der Motivation an. Ich beschäftige mich teilweise mit partiellen Differentialgleichungen. Die treten ganz oft in der Natur und Physik auf. Mit ihnen kann man numerische Simulationen durchführen, zum Beispiel von Strömungen. Bei diesen Simulationen geht es sogar um eine Folge von Gleichungen, die gelöst werden müssen. Und zwar, die Lösung von einer der Gleichungen, bewirkt die (Anfangs)Bedingungen für die nächste. Zu bemerken ist, dass die Gleichungen schwer zu lösen sind und zwar im Sinn von, dass man viel Rechenleistung investieren muss, um mit einer Lösung aufzukommen. Die klassische Ansätze zum Lösen sind mittels numerischen Lösern und durch die Finite Elemente Methode.
+
+Die Haupteigenschaft für unsere Arbeit - die Lösungen haben eine natürliche Repräsentation - Bilder. Wie das Bild hier, es zeigt die Strömung um eine Kugel. Unsere erste Idee ist jetzt, die Möglichkeit zu untersuchen, diese Lösungen auf eine alternative Weise zu generieren. 
+
+
+\subsection{Netze}
+\label{sec:org5cd85d4}
+Heutzutage, immer wenn Bilder erwähnt werden, denk man DNNs (oder CNNs). Die sind ein echt heißes Thema in letzten Jahren. Immer mehr Forschung wird in diesem Bereich dediziert und unser Projekt ist als Teil von dieser Forschung gedacht. Es hat sich gezeigt, dass DNNs bei Bildverarbeitung Aufgaben beeindruckende Ergebnisse liefern können. Und deswegen unsere Idee ist, die Mächtigkeit von DNNs im Kontext von PDEs zu untersuchen und zwar auf Basis von den Bildrepresentationen der Lösungen.
+
+Thema: Die Anwendbarkeit von DNNs beim Generieren von Lösungen von PDEs.
+
+
+\subsection{Konkretes Problem}
+\label{sec:org8d4f92d}
+Bis jetzt alles gesagte ich aber zu breit und allgemein. Jetzt stellen wir ein konkretes Problem vor, wo wir unsere Forschung durchführen wollen.
+
+\begin{itemize}
+\item Wir beschränken uns zum 2D Fall.
+\item und nehmen uns einen Kanal mit Flüssigkeit da drin - oder Fluid
+\item Es gibt außerdem ein Objekt im Kanal und das Fluid fließt um das Objekt herum; auf einer Seite haben wir Einfließbedingung, auf der anderen Abfließ
+\item das Fluid ist außerdem inkompressibel, damit wir dies leichter beschreiben können (unelastisch)
+\end{itemize}
+
+die ganze Physik jetzt wird mit der Navier-Stoke Gleichung beschrieben. Die exakte Mathematik ist nicht so wichtig, wir wollen nur explizit sagen, dass dies DIE Gleichung ist, die wir betrachten wollen und mit DNNs versuchen zu lösen.
+
+Die beschriebene Simulation besitzt gewisse Eingangsparameter:
+\begin{itemize}
+\item Viskosität und Dichte von dem Fluid
+\item die Einfließ-Geschwindigkeit - wie schnell fließt das Fluid ein
+\item das Objekt selbst, die Geometrie im Raum
+\end{itemize}
+One thing is cahnged, the whole simulation must be restarted
+
+\noindent\rule{\textwidth}{0.5pt}
+
+Die Gleichung wird für jeden Zeitpunkt gelöst und die Lösungen sind:
+\begin{itemize}
+\item das Geschwindigkeitsfeld
+\item das Drucksfeld
+\end{itemize}
+
+
+\subsection{DNNs in unserem Kontext}
+\label{sec:org69f29ac}
+Ok, jetzt haben wir ein konkretes Problem, springen wir mal zurück zu DNNs. Die Lösungen von der Gleichung, die wir gerade besprochen haben, können als Bilder visualisiert werden. Und wie schon gesagt, DNNs haben die Möglichkeit gut mit Bildern umzugehen. Damit kommt unsere grundlegende Idee, können wir nicht mit DNNs die Lösungsbilder der Simulation Vorhersagen. Und zwer, unter Verwendung der Lösungsbild von dem vorherigen Zeitpunkt. Die Annahme hier ist, dass ein solches Bild schon existiert.
+
+Das zu untersuchende System hat also die folgende Gestalt. Stellen wir uns vor, diese sind drei Zeitpunkte von einer Simulation. Am Anfang haben wir gewisse Anfangsbedingungen und dann müssen wir zunächst die  quasi ``erste'' Gleichung mit einem numerischen Löser lösen, damit wir eine Lösung betrachten können. Diese wird dann als Bild codiert und durch das Netz propagiert. Das Netz vorhersagt dann das Bild von der nächsten Lösung. In diesem sind, wird die Gleichung im Netz codiert.
+
+Zu Bemerken ist, dass der numerische Löser nicht komplett ersetzt wird. Wie gesagt, wir gehen von einem schon vorliegenden Bild aus.
+
+
+\subsection{Die zwei Fragen}
+\label{sec:org08d5d74}
+Jetzt entstehen aber zwei Fragen, Nämlich:
+
+\begin{itemize}
+\item erstmals: Warum würden wir diese Bilder als Eingabe fürs Netz verwenden?
+\begin{itemize}
+\item Ansatz nicht probiert
+\item die roh Daten sind kontinuierlich, man muss die so und so irgendwie abtasten
+\item gut definierter Eingaberaum, Zahl-Bereich ist fest, man muss die Information hier, so und so irgendwie abtasten; nah dazu, hier ist die Information kontinuierlich
+\item DNNs sind gut etabliert für Bildverarbeitung-Aufgaben
+\end{itemize}
+\item auf andere Seite: die nächste Folie zeigt genau dass; diese sind Bilder, die wir schon generiert haben (mit Löser) und repräsentieren die Geschwindigkeit in x-Richtung für 4 Zeitpunkte der Simulation;
+\begin{itemize}
+\item in machen Situationen, diese sind die Ergebnisse, die man ansehen will. Interessante Strukturen werden sichtbar, man kann sich überlegen und passend Simulations-Parameter auswählen;
+\item genug wenn der Fehler nicht das wichtigste ist; die grobe Simulations-Ergebnisse werden verlangt;
+\end{itemize}
+
+Bemerkung: die Bilder sind ähnlich mit erfassbare Unterschied dazwischen - die DNNs können diesen Unterschied ``lernen''.
+\end{itemize}
+
+
+\section{Forschungsthema und Forschungsfrage}
+\label{sec:org19a54ef}
+Damit haben wir alles definiert und motivierte, um die Forschungsthema und Forschungsfrage festlegen zu können.
+
+\begin{itemize}
+\item Thema: Die Anwendbarkeit von DNNs beim Generieren von Lösungen von PDEs im Kontext von numerischen Simulationen
+\begin{itemize}
+\item immer noch allgemein gehalten
+\end{itemize}
+
+\item Frage bzw. Unterfragen: Inwiefern können DNNs die Parameter von der beschriebenen Simulation generalisieren. Die Simulation - inkompressible Fluid-Strömung um ein Objekt nach der Navier-Stoke Gleichung. Die Parameter, für die wir uns interessieren:
+\begin{itemize}
+\item Viskosität und Dichte vom Fluid
+\item Einfließgeschweindigkeit
+\item Objekt im Raum
+\end{itemize}
+\end{itemize}
+Das Modell, das wir untersuchen wollen ist ein DNN, das auf Basis von Bildern funktioniert.
+
+Wir haben bis jetzt gesagt, dass das Modell mit Bildern funktionierte, aber nun soll es klar sein, dass wir wollen auch diese Parameter betrachten.
+
+\section{Related Work}
+\label{sec:orgf396764}
+Jetzt diskutieren wir kurz wo genau unsere Arbeit in de Forschungsfeld liegt
+\begin{itemize}
+\item zwei Rictungen beim Recherchieren
+\item Bildverrbeitung; fokusiert auf bild-zu-bild abbildung;
+\item das paper, das wir diskutieren wollen ist pix2pix - da wird ein allgemeines vorghenen vorgestellt;
+\item it is nottested for simulation data in the form of images
+\item wir wollen pix2pix weiter engwickeln
+\end{itemize}
+
+\noindent\rule{\textwidth}{0.5pt}
+\begin{itemize}
+\item 
+\end{itemize}
+
+\section{Methodologie}
+\label{sec:org349e811}
+Ok, jetzt fangen wir an zu erklären, was unsere Ansatz ist, damit wir eine Antwort für die Forschungsfrage angeben können.
+
+\subsection{Grundlegende Aspekte}
+\label{sec:org5f1dcb5}
+Grundsätzlich ist unsere Projekt eine Untersuchung von Machine Learning Modellen. Deswegen folgen wir den üblichen Ansatz für solche Untersuchungen. Nämlich, die Aufgaben können sich in drei Aspekte unterteilen
+\begin{enumerate}
+\item Generieren von Trainingsdaten:
+\item Aufbauen und trainieren von einem Modell, in unserem Fall ein DNN:
+\item Evaluieren vom Modell:
+\end{enumerate}
+
+Erstmal müssen wir das Generieren von echten Simulationsdaten berücksichtigen. Diese sind die Daten, mit denen wir später das Modell trainiere wollen, also müssen die schon in Bildform sein. Hier kommen die Tools HiFlow und ParaView ins Spiel. HiFlow ist ein allgemeiner Rahmenwerk für Lösen von Differentialgleichungen. Da ist unsere Simulation schon implementiert und wir können die mit beliebigen Parametern laufen lassen. Dann werden die Ergebnisse generiert aber nicht als Bilder visualisiert. Dafür müssen wir ParaView verwenden, was ein Tool für das visualisieren von Daten von Experimente ist. ParaView kann letztendlich alle Zeitpunkte der Simulation als Sequenz von Bilder speichern.
+
+
+
+Danach kommt das implementieren vom Modell selbst. Hier werden wir PyTorch als ML-Library benutzen. Unser Plan ist der Ansatz von pix2pix zu folgen, weil da allgemeine Architektur und Methode für Bild-zu-Bild Netze vorgestellt werden. Die gedachte Architektur basiert sich auf ResNet -- ein bekanntes und beliebtes Netz -- und GAN ist unserer allgemeiner Fortschritt beim Trainieren. Die Architektur muss natürlich irgendwann modifiziert werden, damit auch die Parameter von der Simulation betrachtet werden können.
+
+
+Für das Evaluieren wollen wir zwei Dinge Bemerken. Zunächst, der Fehlermaß ist offensichtlich die Abweichung von dem echten Lösungsbild für den entsprechenden Zeitpunkt der Simulation. Will wollen diese Abweichung als Prozent angeben, weil falls dies unter 10 Prozent ist, können wir behaupten, dass die Methode wirklich für grobe Simulationen geeignet ist. Die andre Sache - wir haben zwei so zu sagen Evaluationsszenarient. 
+\begin{itemize}
+\item Was ist der Fehler beim Anwenden auf einzelnen Bilder - also es werden immer echte Daten als Eingabe verwendet.
+\item Was passiert mit dem Fehler wenn das Model rekursiv angewandt ist - also Ausgabe ist wieder als Eingabe genommen; wie akkumuliert der Fehler dann
+\end{itemize}
+Diese sind quasi die zu untersuchende Anwendungsfällen
+
+\subsection{Zurück zu Definition}
+\label{sec:orgaee98a2}
+Jetzt kommen wir kurz zu der Forschungsfrage zurück. Da haben wir gesagt, dass wir die Generalisierung von diesen Parametern untersuchen wollen. Es ist aber klar, dass vom Anfang ein Netz zu entwickeln, dass alles kann, schwierig wäre. Deswegen, haben wir und entschieden, ein separates Modell für jeden Fall zu entwickeln. In diesem Sinn wollen wir iterativ arbeiten und das ganze Stück für Stück aufbauen.
+
+
+\subsection{Arbeitsplan und Methodologie}
+\label{sec:org0517a2d}
+Damit können wir den Arbeitsplan eingehen. Wir unterteilen den in vier allgemeinen Phasen:
+
+\begin{enumerate}
+\item Initiale System - hier geht um das Entwickeln von alles was wir brauchen, um das Trainieren und Evaluieren von Modellen zu ermöglichen. Hier zählen wir das generieren von Trainingssaten und das Implementieren von einer quasi Library. Die Library ist nichts anderes als eine Sammlung von python-Skripts, die eine Pipeline bilden. Also Data Loader - damit das Laden von den Bilder in Speicher in geeigneter Form bequem ist, das Modell selbst und Evaluieren und Trainieren Infrastruktur, damit das Trainer und Evaluieren teilweise automatisch durchgeführt werden können.
+Hier haben wir auch ein Baseline-Modell gedacht, das nur auf Bildbasis funktionieren sollte. Also das Modell wird mit 80\% der Daten aus einer Simulation trainiert und dir Frage ist, können die anderen 20\% vorhergesagt werden. Das soll als eine Basis für dir Entwicklung von den weiteren Modellen dienen. Und  Außerdem hätten wir dann bestimmte baseline Ergebnisse zum Vergleich.
+
+\item Fluid Parameter - hier wollen das Model so anpassen, so dass es die Viskosität und die Dichte des Fluids berücksichtigen kann. Die Hauptaufgabe ist mit der Architektur des Modells ein bisschen umzuspielen und zu überprüfen, was gut funktioniert, also wie können wir diese zwei reelle Zahlen als Eingabe fürs Netz verwenden. Nach gewisser Zeit kommt auch das Evaluieren nach den besprochenen Weisen.
+
+\item Genau dasselbe gilt auch für die Einfließ-Geschwindigkeit Modell. Hier haben wir einen Parameter, den wir ins Modell integrieren wollen. Das Evaluieren ist klar
+
+\item Die Situation beim letzten Modell ist aber unterschiedlich. Jetzt wollen wir den ganzen Eingaberaum betrachten. Unsere Überlegung für jetzt ist, den Raum durch eine binäre Maske zu beschreiben. Also 1 da wo Geometrie gibt und 0 da wo ``Freiraum'' ist. Das angepasste Modell soll dann diese Maske als quasi extra Eingabesbild bekommen.
+\end{enumerate}
+
+Die letzten drei Phasen sind ziemlich ähnlich bezüglich Vorgehen und es sieht folgendermaßen aus. Also, wir machen irgendwelche Modifikationen zum Modell, dann schauen was passiert, dann überlegen ob das gut genug ist und falls notwendig, nehmen wir weitere Modifikationen vor und so weiter und so fort.
+
+Diese Iteration motiviert auch unsere konkrete Zeitplanung für Projekt
+
+
+\section{Zeitplanung}
+\label{sec:org6c62664}
+Der Zeitplan sieht so aus. Wir haben hier die 4 Phasen. Am Anfang ist auch die Datengenerierung, weil wir relativ sicher sind, dass dies auch parallel zu der Entwicklung passieren kann. Für jede Phase haben wir uns 3 oder 4 Wochen angerechnet. Eine Woche mehr am Anfang. Ich vermuten wir werden dann ein bisschen mehr Zeit brauchen als wir müssen von Grund auf neu viel Implementieren. Wir haben Vier Meilensteine am Ende jeder Phase festgelegt, wo wir ein fertiges und evaluiertes Modell haben sollen, spricht Ergebnisse.
+
+
+\section{Schluss}
+\label{sec:orgcfac6d1}
+Damit bin ich zum Ende. Ich bedanke mich für die Aufmerksamkeit.
+\end{document}

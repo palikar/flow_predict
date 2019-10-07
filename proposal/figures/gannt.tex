@@ -1,0 +1,131 @@
+\documentclass{standalone}
+
+\usepackage{color}
+\usepackage{tikz}
+\usepackage{pgfgantt}
+
+\begin{document}
+
+
+
+\begin{ganttchart}[
+  hgrid,
+  vgrid,
+  group peaks height=.2,
+  expand chart=\textwidth*2]{1}{23}
+
+  \gantttitle{Project plan}{23} \\
+  
+  \gantttitle{October 2019}{4}
+  \gantttitle{November 2019}{4}
+  \gantttitle{December 2019}{4}
+  \gantttitle{January 2020}{4}
+  \gantttitle{February 2020}{3}
+  \gantttitle{March 2020}{4} \\
+
+  \gantttitlelist{1,...,23}{1} \\
+
+  \ganttbar{Data Generation}{1}{4}
+  \ganttnewline[thick]
+  
+  \ganttgroup[inline, group inline label anchor = east]{Initial system development}{1}{4} \\
+  \ganttgroup[inline, group inline label anchor = east]{Fluid viscosity and density generalization}{5}{7} \\
+  \ganttgroup[inline, group inline label anchor = east]{Inflow speed generalization}{8}{10} \\
+
+  \ganttgroup[inline, group inline label anchor = east]{Object generalization}{11}{13}
+
+  \ganttnewline
+  
+  \ganttbar{Implementing a data loader}{1}{1} \\
+  \ganttbar[name=inital_model]{Implementing the initial models}{1}{2} \\
+  \ganttbar[name=eval_framework]{Implementing an evaluation infrastructure}{2}{2} \\
+
+  \ganttbar[name=training_0]{Training and adjusting models}{3}{4}
+  \ganttbar[name=training_1]{}{6}{7}
+  \ganttbar[name=training_2]{}{9}{10}
+  \ganttbar[name=training_3]{}{12}{13}
+
+  \ganttnewline
+
+  \ganttbar[name=eval_0]{Evaluation of the models}{3}{4}
+  \ganttbar[name=eval_1]{}{6}{7}
+  \ganttbar[name=eval_2]{}{9}{10}
+  \ganttbar[name=eval_3]{}{12}{13}
+  
+  \ganttnewline
+  
+  \ganttmilestone[name=mile_0, inline, milestone inline label node/.append style={below=4mm}]{Milestone 1}{4}
+  \ganttmilestone[name=mile_1, inline, milestone inline label node/.append style={below=4mm}]{Milestone 2}{7}
+  \ganttmilestone[name=mile_2, inline, milestone inline label node/.append style={below=4mm}]{Milestone 3}{10}
+  \ganttmilestone[name=mile_3, inline, milestone inline label node/.append style={below=4mm}]{Milestone 4}{13}
+
+  \ganttnewline
+
+  \ganttlink[link mid=0.8]{inital_model}{training_0}
+  \ganttlink[link mid=0.53]{inital_model}{eval_0}
+
+  \ganttlink[link mid = 0.5, link tolerance=0.1]{mile_0}{training_1}
+  \ganttlink[link mid = 0.5, link tolerance=0.1]{mile_1}{training_2}
+  \ganttlink[link mid = 0.5, link tolerance=0.1]{mile_2}{training_3}
+
+  \ganttlink[link mid = 0.5, link tolerance=0.1]{mile_0}{eval_1}
+  \ganttlink[link mid = 0.5, link tolerance=0.1]{mile_1}{eval_2}
+  \ganttlink[link mid = 0.5, link tolerance=0.1]{mile_2}{eval_3}
+
+  \ganttlink[link mid=0.53]{eval_0}{mile_0}
+  \ganttlink[link mid=0.53]{eval_1}{mile_1}
+  \ganttlink[link mid=0.53]{eval_2}{mile_2}
+  \ganttlink[link mid=0.53]{eval_3}{mile_3}
+
+  \ganttnewline[thick]
+
+  \ganttgroup[group peaks height=0,]{Buffer time}{14}{17}
+  \ganttgroup[group peaks height=0,]{}{5}{5}
+  \ganttgroup[group peaks height=0,]{}{8}{8}
+  \ganttgroup[group peaks height=0,]{}{11}{11}
+
+  \ganttnewline[thick]
+
+  \ganttgroup[inline]{Paper}{18}{23} \\
+  \ganttbar{Writing out an academic paper}{18}{23} \\  
+  \ganttbar{Preparing a presentation}{21}{23}
+
+  
+  % \ganttbar[name=modify_1]{Modifying models}{5}{5} \\
+  % \ganttlinkedbar{Training and adjusting models}{6}{7} \\
+  % \ganttbar[name=eval_1]{Evaluation of the models}{6}{7} \\
+  % 
+  % \ganttlink[link mid=.25]{modify_1}{eval_1}
+  % \ganttlink{eval_1}{elem12}
+  
+  % \ganttnewline[thick]
+  
+  %  \\
+  % \ganttbar[name=modify_2]{Modifying models}{8}{8} \\
+  % \ganttlinkedbar{Training and adjusting models}{9}{10} \\
+  % \ganttbar[name=eval_2]{Evaluation of the models}{9}{10} \\
+  % \ganttlink[link mid=.25]{modify_2}{eval_2}
+  % 
+  % \ganttlink[]{eval_2}{elem17}
+  
+  % \ganttnewline[thick]
+  
+  % 
+  % \ganttbar[name=modify_3]{Modifying models}{11}{11} \\
+  % \ganttlinkedbar{Training and adjusting models}{12}{13} \\
+  % \ganttbar[name=eval_3]{Evaluation of the models}{12}{13} \\
+  % 
+  % \ganttlink[link mid=.25]{modify_3}{eval_3}
+  % \ganttlink[]{eval_3}{elem22}
+  
+  % \ganttnewline[thick]
+
+
+\end{ganttchart}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "flow"
+%%% End:
