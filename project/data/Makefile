@@ -7,11 +7,10 @@ CONFIG_FILE=config.xml
 GEOMETRY_DIR=./geometry_data/
 
 
-MPI_NP=4
 DATA_GEN_SCRIPT=./gen_data.sh
 
 
-run_simulations: gen_params
+run_simulations:
 	@echo "Running simulations"
 	@bash $(DATA_GEN_SCRIPT) $(PARAMS_FILE) $(CONFIG_FILE) $(GEOMETRY_DIR) $(DATA_DIR)
 

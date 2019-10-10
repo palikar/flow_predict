@@ -1,6 +1,6 @@
 <Param>
 
-  <OutputPrefix>vd_441</OutputPrefix>
+  <OutputPrefix>c_1</OutputPrefix>
 
   <Mesh>
     <Filename>dfg2d_rect.inp</Filename>
@@ -17,9 +17,9 @@
 
   <FlowModel>
     <Type>Channel</Type>
-    <Density>22.0</Density>
-    <Viscosity>0.03</Viscosity>
-    <InflowSpeed>0.3</InflowSpeed>
+    <Density>0.4</Density>
+    <Viscosity>0.001</Viscosity>
+    <InflowSpeed>1.9</InflowSpeed>
     <InflowHeight>0.41</InflowHeight>
     <InflowWidth>0.41</InflowWidth>
     <LidSpeed>0.3</LidSpeed>
@@ -33,8 +33,8 @@
   <Instationary>
     <SolveInstationary>1</SolveInstationary>
     <Method>CrankNicolson</Method>
-    <Timestep>0.1</Timestep>
-    <Endtime>10.0</Endtime>
+    <Timestep>0.035</Timestep>
+    <Endtime>5</Endtime>
   </Instationary>
   
   <Boundary>

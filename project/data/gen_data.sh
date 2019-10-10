@@ -34,6 +34,7 @@ do
     echo "Running simulation: ${output}"
     set_params_f $visc $dens $inflow
     mkdir -p "${ROOT_DATA_DIR}/${output}"
+    echo "${dens}, ${visc}, ${inflow}" > ${ROOT_DATA_DIR}/${output}/params.txt
     cd "${ROOT_DATA_DIR}/${output}"
     mpirun -np ${MPI_NP} ${FLOW_EXEC} "${CONFIG_FILE}" "${GEOMETRY_DATA}"
     cd - > /dev/null
