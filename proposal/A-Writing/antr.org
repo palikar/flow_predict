@@ -234,17 +234,18 @@ When it comes to the flow of fluid, the /Reynolds number/ is one of the best pre
 
 The desired range for the Reynolds number limits the possible values for the other parameters of the simulation. Table [[tab:vals]] shows in what range we can vary a certain simulation parameter and still have appropriate Reynolds number under the condition that the other two parameters stay constant.
 
-#+NAME: tab:vals
+#+NAME:tab:vals
 #+CAPTION: The values in the table apply only to our simulation setup. The formula for the Reynolds number also considers the characteristic length dimension of the input space. For this, we choose the squere root of the area of the channel. The notations are $\rho$ for fluid viscosity, $n$ for fluid density and $g$ for inflow speed at the boundary.
-| Variable Parameter | Value range      | $Re$ range | Conditions        |
-|--------------------+------------------+------------+-------------------|
-| /                  | <                | <          | <                 |
-| Viscosity $\rho$      | $[0.0009, 0.03]$ | $[9, 300]$ | $n=0.3,\, g=1.3$  |
-|                    |                  |            |                   |
-| Density $n$        | $[1, 33]$        | $[1, 300]$ | $\rho=0.03,\, g=0.3$ |
-|                    |                  |            |                   |
-| Inflow speed $g$   | $[0.1, 10]$      | $[1, 300]$ | $n=1,\, \rho=0.03$   |
-|--------------------+------------------+------------+-------------------|
+
+| Variable Parameter | Value range        | $Re$ range | Conditions        |
+|--------------------+--------------------+------------+-------------------|
+| /                  | <                  | <          | <                 |
+| Viscosity $\rho$      | $[0.0009, 0.0001]$ | $[9, 300]$ | $n=0.3,\, g=1.3$  |
+|                    |                    |            |                   |
+| Density $n$        | $[10, 33]$         | $[1, 300]$ | $\rho=0.03,\, g=0.3$ |
+|                    |                    |            |                   |
+| Inflow speed $g$   | $[1.5, 5]$         | $[1, 300]$ | $n=10,\, \rho=0.03$  |
+|--------------------+--------------------+------------+-------------------|
  
 Because one of our models takes together density and viscosity into account, the generated simulation data for this case should be with all possible value pairs of viscosity and density. This means that the ranges for the density and viscosity have to be slightly adjusted. We have settled with values in $[1, 20]$ for density and values in $[0.015, 0.03]$ for the viscosity. The values for the inflow speed are as given in the table.
 
@@ -331,6 +332,7 @@ The development of the last model has a couple of key differences in the previou
 In both cases, space is described as a matrix of numbers that can be looked at as a feature vector. The vector must then be integrated into the architecture of the network. Integrating a big vector of numbers can be quite different from integrating just one or two real numbers so we again have to try different modifications to the base model and choose the appropriate one.
 
 \\
+
 The training and evaluating procedures follow the already established methodology.
 
 
@@ -356,7 +358,6 @@ The time plan is comprised of the five phases discussed in Section [[sec:work]].
 We have defined four milestones, one at the end of each phase. By reaching each milestone we can be certain that we have a built and evaluated model with appropriate results that can be discussed in the writing of the future paper. As long as the end of the second phase is reached, we can compare the results of the baseline model with the ones of the fluid parameters model. This means that with reaching the second milestone we can make a minimal sensible comparison of evaluation results.
 
 \\
-
 
 We like to explicitly mention one risk aspect of the development. The generated data at the beginning may turn out not to be enough for the sufficient training of some of the models. This should not be a big problem as we can quickly generate more simulation data in a short period -- one to two days.
 
