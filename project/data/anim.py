@@ -1,10 +1,12 @@
 #### import the simple module from the paraview
 from paraview.simple import *
+
 #### disable automatic camera reset on 'Show'
 paraview.simple._DisableFirstRenderCameraReset()
 
 # create a new 'XML Partitioned Unstructured Grid Reader'
-c_1_solution0 = XMLPartitionedUnstructuredGridReader(FileName=['<!file_place!>'])
+c_1_solution0 = XMLPartitionedUnstructuredGridReader(FileName=['<file_place>'])
+
 c_1_solution0.CellArrayStatus = ['Material Id', '_remote_index_', '_sub_domain_']
 c_1_solution0.PointArrayStatus = ['p', 'u', 'v']
 
@@ -20,7 +22,7 @@ SetActiveSource(c_1_solution0)
 # get active view
 renderView1 = GetActiveViewOrCreate('RenderView')
 # uncomment following to set a specific view size
-# renderView1.ViewSize = [1567, 782]
+renderView1.ViewSize = [1567, 782]
 
 # get color transfer function/color map for 'a_sub_domain_'
 a_sub_domain_LUT = GetColorTransferFunction('a_sub_domain_')
@@ -150,7 +152,7 @@ a_sub_domain_PWF.AllowDuplicateScalars = 1
 a_sub_domain_PWF.ScalarRangeInitialized = 1
 
 # set scalar coloring
-ColorBy(c_1_solution0Display, ('POINTS', 'u'))
+ColorBy(c_1_solution0Display, ('POINTS', '<var>'))
 
 # Hide the scalar bar for this color map if no visible data is colored by it.
 HideScalarBarIfNotNeeded(a_sub_domain_LUT, renderView1)
@@ -162,7 +164,7 @@ c_1_solution0Display.RescaleTransferFunctionToDataRange(True, False)
 c_1_solution0Display.SetScalarBarVisibility(renderView1, True)
 
 # get color transfer function/color map for 'u'
-uLUT = GetColorTransferFunction('u')
+uLUT = GetColorTransferFunction('<var>')
 uLUT.LockDataRange = 0
 uLUT.InterpretValuesAsCategories = 0
 uLUT.ShowCategoricalColorsinDataRangeOnly = 0
@@ -188,7 +190,7 @@ uLUT.ActiveAnnotatedValues = []
 uLUT.IndexedColors = []
 
 # get opacity transfer function/opacity map for 'u'
-uPWF = GetOpacityTransferFunction('u')
+uPWF = GetOpacityTransferFunction('<var>')
 uPWF.Points = [0.0, 0.0, 0.5, 0.0, 1.9, 1.0, 0.5, 0.0]
 uPWF.AllowDuplicateScalars = 1
 uPWF.ScalarRangeInitialized = 1
@@ -228,7 +230,7 @@ renderView1.CameraFocalPoint = [1.1, 0.205, 0.0]
 renderView1.CameraParallelScale = 0.8189392298065164
 
 # save animation images/movie
-WriteAnimation('<!output_place!>', Magnification=1, FrameRate=15.0, Compression=True)
+WriteAnimation('<output_place>', Magnification=1, FrameRate=15.0, Compression=True)
 
 #### saving camera placements for all active views
 
