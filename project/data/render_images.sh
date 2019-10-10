@@ -1,13 +1,24 @@
 #!/bin/bash
 
 set +e
+BASEDIR=$(dirname $0)
 
 SOLUTION_LIST=""
 PVPYTHON_EXE=${PVPYTHON_EXE:-"/usr/bin/python"}
 
+CROPPER_SCRIPT="${BASEDIR}/cropper.py"
+
 ROOT_FOLDER=$(realpath $1)
 SOLUTION_FOLDER=$2
 
+crop_images()
+{
+
+		FOLDER=$1
+
+		ls -d $FOLDER/* -1 | xargs -I "{}" python ${CROPPER_SCRIPT} "{}" "{}"
+		
+}
 
 # Get the solution files
 for sol in $(ls ${ROOT_FOLDER}/${SOLUTION_FOLDER}/images/ | sort --general-numeric-sort -r)
