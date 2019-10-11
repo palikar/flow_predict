@@ -44,8 +44,7 @@ def main():
 
             for sim_dir in dirs:
                 x_img_dir = os.path.join(sim_dir, 'images_x')
-                # y_img_dir = os.path.join(sim_dir, 'images_y')
-                # ü_img_dir = os.path.join(sim_dir, 'images_p')
+                
 
                 params_file = os.path.join(sim_dir, 'params.txt')
 
