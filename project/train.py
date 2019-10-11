@@ -117,7 +117,7 @@ for epoch in range(num_epochs):
 
     #updating learning rate
 
-    if epoch % 50 == 0:
+    if epoch %   == 0:
         mkdir("checkpoints")
         mkdir(os.path.join("checkpoints", args.model_name))
         # ...
