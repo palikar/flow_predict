@@ -25,3 +25,4 @@
 *.synctex.gz
 
 project/data/generated_data/
+project/checkpoints

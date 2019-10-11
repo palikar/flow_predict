@@ -7,6 +7,7 @@ import sys
 import math
 import argparse
 
+from utils import mkdir
 from dataloader import SimulationDataSet
 
 import torch
@@ -15,28 +16,21 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
 
+
 import numpy as np
 
 def get_dataconf_file(args):
     return args.model_type + '_dataconf.txt'
 
 
-
-parser = argparse.ArgumentParser(description='flowPredict pytorch implementation')
-
+parser = argparse.ArgumentParser(description='The training script of the flowPredict pytorch implementation')
 parser.add_argument('--data', dest='data_dir', required=True, help='Root directory of the generated data.')
-
+parser.add_argument('--model-name', dest='model_name', default='s_res_8', required=False, help='Name of the current model being trained')
 parser.add_argument('--config', dest='config', required=True, help='Configuration file for the system')
-
-parser.add_argument('--use-pressure', dest='use_pressure', required=False,
-                    action='store_true', default=False,
-                    help='Should the pressure field images to considered by the models')
-
-parser.add_argument('--model-type', dest='model_type',
-                    action='store', default='c',
-                    choices=['c', 'vd', 's', 'o'], required=False,
+parser.add_argument('--use-pressure', dest='use_pressure', required=False, action='store_true',
+                    default=False, help='Should the pressure field images to considered by the models')
+parser.add_argument('--model-type', dest='model_type', action='store', default='c', choices=['c', 'vd', 's', 'o'], required=False,
                     help='Type of model to be build. \'c\' - baseline, \'vd\' - fluid viscosity and density, \'s\' - inflow speed, \'o\' - object')
-
 parser.add_argument('--cuda', dest='cuda', action='store_true', default=False, help='Should CUDA be used or not')
 parser.add_argument('--threads', dest='threads', type=int, default=4, help='Number of threads for data loader to use')
 parser.add_argument('--batch-size', dest='batch_size', type=int, default=4, help='Training batch size.')
@@ -45,9 +39,13 @@ parser.add_argument('--shuffle', dest='shuffle', default=False, action='store_tr
 parser.add_argument('--epochs', dest='epochs', type=int, default=5, help='Number of epochs for which the model will be trained')
 parser.add_argument('--seed', dest='seed', type=int, default=123, help='Random seed to use. Default=123')
 
+
+
 print('===> Setting up basic structures ')
 
 args = parser.parse_args()
+
+print('--Model name:', args.model_name)
 
 if args.cuda and not torch.cuda.is_available():
     raise Exception("No GPU found, please run without --cuda")
@@ -70,6 +68,7 @@ shuffle_dataset = args.shuffle
 num_epochs = args.epochs
 threads = args.threads
 random_seed = args.seed
+model_name = args.model_name
 
 print('--model type:', model_type)
 print('--use pressure:', args.use_pressure)
@@ -79,6 +78,8 @@ print('--shuffle dataset:', shuffle_dataset)
 print('--num epochs:', num_epochs)
 print('--random seed:', random_seed)
 print('--worker threads:', threads)
+print('--cuda:', args.cuda)
+print('--device:', device)
 
 print('===> Loading datasets')
 
@@ -108,6 +109,17 @@ print('===> Loading model')
 print('===> Starting the training loop')
 
 # 
-# for epoch in range(num_epochs):
-#     for batch_index, data_point in enumerate(train_loader):
+for epoch in range(num_epochs):
+    for iteration, data in enumerate(train_loader, 1):
+        real_a, real_b = data[0].to(device), data[1].to(device)
+        # trainy things
+
+
+    #updating learning rate
+
+    if epoch % 50 == 0:
+        mkdir("checkpoints")
+        mkdir(os.path.join("checkpoints", args.model_name))
+        # ...
+        print("Checkpoint saved to {}".format(os.path.join("checkpoints", args.model_name)))
 
