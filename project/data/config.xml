@@ -1,6 +1,6 @@
 <Param>
 
-  <OutputPrefix>s_8</OutputPrefix>
+  <OutputPrefix>c_1</OutputPrefix>
 
   <Mesh>
     <Filename>dfg2d_rect.inp</Filename>
@@ -17,9 +17,9 @@
 
   <FlowModel>
     <Type>Channel</Type>
-    <Density>1</Density>
-    <Viscosity>0.3</Viscosity>
-    <InflowSpeed>1.96153846154</InflowSpeed>
+    <Density>0.3</Density>
+    <Viscosity>0.0009</Viscosity>
+    <InflowSpeed>1.3</InflowSpeed>
     <InflowHeight>0.41</InflowHeight>
     <InflowWidth>0.41</InflowWidth>
     <LidSpeed>0.3</LidSpeed>

@@ -23,3 +23,4 @@ clean:
 	@echo "Deleting data"
 	rm -rf $(DATA_DIR)
 	rm -rf $(PARAMS_FILE)
+	rm -rf anim_temp*.py

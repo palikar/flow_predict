@@ -2,7 +2,7 @@
 
 set +e
 
-BASEDIR=$(dirname $0)
+BASEDIR=$(realpath $(dirname $0))
 
 PARAMS_FILE=$(realpath $1)
 CONFIG_FILE=$(realpath $2)
@@ -15,7 +15,7 @@ FLOW_EXEC=${FLOW_EXEC:-"/home/arnaud/code_sys/Hiflow3_2.0/build/examples/flow/fl
 
 RENDER_SCRIPT=$(realpath "${BASEDIR}/render_images.sh")
 
-echo $RENDER_SCRIPT
+MPI_NP=${MPI_NP:-4}
 
 
 set_params_f()
@@ -39,8 +39,8 @@ do
     mkdir -p "${ROOT_DATA_DIR}/${output}"
     echo "${dens}, ${visc}, ${inflow}" > ${ROOT_DATA_DIR}/${output}/params.txt
     cd "${ROOT_DATA_DIR}/${output}"
-    mpirun -np ${MPI_NP} ${FLOW_EXEC} "${CONFIG_FILE}" "${GEOMETRY_DATA}"
-		eval "sh ${RENDER_SCRIPT} ${ROOT_DATA_DIR} ${output}"
+    mpirun -np ${MPI_NP} ${FLOW_EXEC} ${CONFIG_FILE} ${GEOMETRY_DATA} < /dev/null
     cd - > /dev/null
+    eval "sh ${RENDER_SCRIPT} ${ROOT_DATA_DIR} ${output}"
     count=`expr $count + 1`
 done < <(tail -n +2 ${PARAMS_FILE} | sed -e 's/\,/ /g') 

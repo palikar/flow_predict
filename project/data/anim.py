@@ -233,6 +233,9 @@ renderView1.CameraParallelScale = 0.8189392298065164
 WriteAnimation('<output_place>', Magnification=1, FrameRate=15.0, Compression=True)
 
 #### saving camera placements for all active views
+renderView1.CameraPosition = [1.1, 0.205, 2.016827658506227]
+renderView1.CameraFocalPoint = [1.1, 0.205, 0.0]
+renderView1.CameraParallelScale = 1.1189392298065164
 
 #### uncomment the following to render all views
 # RenderAllViews()

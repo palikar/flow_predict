@@ -13,25 +13,25 @@ import itertools
 ##########################################################
 
 # baseline model
-simple_speed = 3.5
-simple_viscosity = 0.1
-simple_density = 4
+simple_speed = 1.5
+simple_viscosity = 0.0009
+simple_density = 0.2
 
 # constant parameters to be used when the other ones are varied
 const_speed = 0.3
-const_viscosity = 0.3
-const_density = 1
+const_viscosity = 10
+const_density = 0.03
 
 # viscosity and density model
-viscosity_start = 0.015
-viscosity_end = 0.03
+viscosity_start = 0.0008
+viscosity_end = 0.0003
 
-density_start = 1
-density_end = 22
+density_start = 15
+density_end = 28
 
 # inflow speed model
-speed_start = 0.5
-speed_end = 10
+speed_start = 1.5
+speed_end = 5
 
 # count of the range devisions
 inflow_range_divisions = 40

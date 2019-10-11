@@ -12,7 +12,12 @@ WIDTH_BEGIN = 0
 WIDTH_END = -1
 
 def main():
-
+    input_file = sys.argv[1]
+    output_file = sys.argv[2]
+    
+    print('Cropping image:', input_file)
+    
+    im = Image.open(input_file)
     w, h = im.size
 
     w_begin = 0 if WIDTH_BEGIN == -1 else WIDTH_BEGIN
