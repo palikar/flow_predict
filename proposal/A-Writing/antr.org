@@ -222,37 +222,6 @@ All tasks involve the use of a deep neural network. We briefly want to touch on 
 As described in Section [[sec:mot]], the solutions of the simulation contain information about the velocity of the fluid in $x$ and $y$ directions as well as the pressure in each point. This means that we can generate 3 images per time-step, each representing a different value of the solutions. We, however, limited our considerations to the two velocities and take the image representations only of those. The proposed network should then take two images and predict the pair for the next time-step.
 
 
-** Data generation
-
-In Section [[sec:prem]] we briefly explained the technical details on the data generation process. In this section, we want to describe exactly what data we want to generate and give concrete values for the parameters. We also clarify how we have come up with the parameter values.
-
-\\
-
-When it comes to the flow of fluid, the /Reynolds number/ is one of the best predictors on what type of low will occur. It is marked with $Re$ and it is a dimensionless quantity that arises from the parameters of the fluid and the conditions in which the flow is happening. In our case, the inflow speed, density, and viscosity contribute to the value of the Reynolds number. If the Reynolds number is large ($Re>3000$), the flow tends to be turbulent. For lower values ($Re<3000$) the flow is laminar or intermittent. Turbulent flow is simulated considerably harder than a laminar one. The numerical solver we use is intended to solve a simulation of laminar flow. If the flow becomes turbulent, the results will not be meaningful. Those considerations impose some restrictions on the values of the simulation parameters that we want to use. We intend to limit ourselves to simulations with Reynolds number in the range of $[400, 1500]$. In this range, some interesting structures in the flow can still be observed (e.g. /Kármán vortex street/) but the flow is not yet turbulent and can be simulated through solving Navier-Stoke equations.
-
-\\
-
-The desired range for the Reynolds number limits the possible values for the other parameters of the simulation. Table [[table:values]] shows in what range we can vary a certain simulation parameter and still have appropriate Reynolds number under the condition that the other two parameters stay constant.
-
-#+NAME: table:values
-#+CAPTION: The values in the table apply only to our simulation setup. The formula for the Reynolds number also considers the characteristic length dimension of the input space. For this, we choose the squere root of the area of the channel. The notations are $\rho$ for fluid viscosity, $n$ for fluid density and $g$ for inflow speed at the boundary.
-| Variable Parameter | Value range        | $Re$ range    | Conditions        |
-|--------------------+--------------------+---------------+-------------------|
-| /                  | <                  | <             | <                 |
-| Viscosity $\rho$      | $[0.0009, 0.0001]$ | $[430, 1500]$ | $n=0.3,\, g=1.3$  |
-|                    |                    |               |                   |
-| Density $n$        | $[10, 33]$         | $[450, 1570]$ | $\rho=0.03,\, g=0.3$ |
-|                    |                    |               |                   |
-| Inflow speed $g$   | $[1.5, 5]$         | $[420, 1500]$ | $n=10,\, \rho=0.03$  |
-
- 
-Because one of our models takes together density and viscosity into account, the generated simulation data for this case should be with all possible value pairs of viscosity and density. This means that the ranges for the density and viscosity have to be slightly adjusted. We have settled with values in $[15, 28]$ for density and values in $[0.0008, 0.0003]$ for the viscosity. The values for the inflow speed are as given in the table.
-
-\\
-
-The last practical aspect is the generation of density-viscosity value pairs. For this, we plan to divide the ranges into a certain amount (e.g. 20) of equal intervals. We can then take all value pairs of the grid defined by the two number ranges.
-
-
 ** Evaluation
 
 Because our DNNs generate images as their output, we have to define a meaningful metric according to which we can compare a predicted image with a ground truth one. There are multiple ways of defining this metric and we are currently considering several possibilities:
