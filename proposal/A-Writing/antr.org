@@ -16,7 +16,6 @@
 #+CREATOR: Emacs 26.1 (Org mode 9.2.1)
 
 #+TITLE: Towards Bringing Together Numerical Methods for Partial Differential Equation and Deep Neural Networks
-
 #+SUBTITLE: Research Proposal
 #+DATE: <{{{time(%d-%m-%Y)}}}>
 #+AUTHOR: Stanislav Arnaudov
@@ -31,7 +30,6 @@
 #+LATEX_HEADER: \usepackage{svg}
 #+LATEX_HEADER: \usepackage{color}
 #+LATEX_HEADER: \usepackage{tikz}
-
 #+LATEX_HEADER: \institute{Karlsruhe Institute of Technology,\\Kaiserstrasse 12,76131 Karlsruhe, Germany\\ \url{http://www.kit.edu/english/}}
 #+LATEX_HEADER_EXTRA: \selectlanguage{english}
 

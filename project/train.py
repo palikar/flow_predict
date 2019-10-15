@@ -9,7 +9,7 @@ import argparse
 
 from utils import mkdir
 from dataloader import SimulationDataSet
-from models import define_G
+from models import define_G, define_D, get_scheduler
 
 import torch
 import torch.nn as nn
@@ -105,19 +105,30 @@ import numpy as np
 # train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, sampler=train_sampler, shuffle=False, num_workers=threads)
 # test_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, sampler=test_sampler, shuffle=False, num_workers=threads)
 
+optimizer_g = optim.Adam(net_g.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
+optimizer_d = optim.Adam(net_d.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
+
 device='cpu'
-
 print('===> Loading model')
+
 net_g = define_G(6, 6, 32, gpu_id=device).float()
+net_d = define_D(12, 64, 'batch', gpu_id=device).float()
 
-# summary(net_g, input_size=(6, 512, 512))
+net_g_scheduler = get_scheduler(optimizer_g, opt)
+net_d_scheduler = get_scheduler(optimizer_d, opt)
 
-in_img = np.random.rand(1, 6, 512, 512)
-in_img = torch.from_numpy(in_img).float()
+optimizer_g = optim.Adam(net_g.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
+optimizer_d = optim.Adam(net_d.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
 
-for i in range(1, 20):
-    out_img  = net_g(in_img)
-    print(out_img.shape)
+
+summary(net_g, input_size=(6, 512, 512))
+
+# in_img = np.random.rand(1, 6, 512, 512)
+# in_img = torch.from_numpy(in_img).float()
+
+# for i in range(1, 20):
+#     out_img  = net_g(in_img)
+#     print(out_img.shape)
 
 
 
