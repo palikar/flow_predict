@@ -8,20 +8,21 @@ from torch.optim import lr_scheduler
 
 
 
-def get_scheduler(optimizer, opt):
-    if opt.lr_policy == 'lambda':
+def get_scheduler(optimizer, args):
+    
+    if args.lr_policy == 'lambda':
         def lambda_rule(epoch):
-            lr_l = 1.0 - max(0, epoch + opt.epoch_count - opt.niter) / float(opt.niter_decay + 1)
+            lr_l = 1.0 - max(0, epoch + args.epochs - args.niter) / float(args.niter_decay + 1)
             return lr_l
         scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda_rule)
-    elif opt.lr_policy == 'step':
-        scheduler = lr_scheduler.StepLR(optimizer, step_size=opt.lr_decay_iters, gamma=0.1)
-    elif opt.lr_policy == 'plateau':
+    elif args.lr_policy == 'step':
+        scheduler = lr_scheduler.StepLR(optimizer, step_size=args.lr_decay_iters, gamma=0.1)
+    elif args.lr_policy == 'plateau':
         scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.2, threshold=0.01, patience=5)
-    elif opt.lr_policy == 'cosine':
-        scheduler = lr_scheduler.CosineAnnealingLR(optimizer, T_max=opt.niter, eta_min=0)
+    elif args.lr_policy == 'cosine':
+        scheduler = lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.niter, eta_min=0)
     else:
-        return NotImplementedError('learning rate policy [%s] is not implemented', opt.lr_policy)
+        return NotImplementedError('learning rate policy [%s] is not implemented', args.lr_policy)
 
     return scheduler
 
@@ -72,7 +73,7 @@ def define_G(input_nc, output_nc, ngf, norm='batch', use_dropout=True, init_gain
 
 def define_D(input_nc, ndf, n_layers_D=3, norm='batch', use_sigmoid=False, init_gain=0.02, gpu_id='cuda:0'):
     norm_layer = get_norm_layer(norm_type=norm)
-    net = NLayerDiscriminator(input_nc, ndf, n_layers_D, norm_layer=norm_layer, use_sigmoid=use_sigmoid)
+    net = NLayerDiscriminator(input_nc, ndf=ndf, n_layers=n_layers_D, norm_layer=norm_layer, use_sigmoid=use_sigmoid)
     return init_net(net, init_gain, gpu_id)
 
 

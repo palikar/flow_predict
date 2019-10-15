@@ -1,0 +1,29 @@
+
+
+
+
+
+* Evaluation
+
+
+
+** Qulitative
+- take the test sampler
+- get some indecies
+- pass them throught the network
+- for x and y, save the prediction on bottom and actual on top
+- visualize a time step: input ot top, output out bottom
+
+** Quantitative - individual images
+- run over the test set
+- save average PSNR
+- save average MSE
+- plot MSE for the test examples
+
+** Quantitative - individual recursive
+- get the datset and the split location
+
+- get image, apply the model
+
+- start in the train set, end in the test set
+

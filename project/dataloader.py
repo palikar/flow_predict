@@ -121,28 +121,10 @@ class SimulationDataSet(data.Dataset):
             a = np.concatenate((a_x, a_y, a_p))
             b = np.concatenate((b_x, b_y, b_p))
         else:
-            a = np.stack([a_x, a_y])
-            b = np.stack([b_x, b_y])
-        
+            a = np.concatenate([a_x, a_y])
+            b = np.concatenate([b_x, b_y])
+
         return self.return_func(a, b, index)
 
     def __len__(self):
         return len(self.paths_a)
-
-
-
-
-
-# root_path = "./data/generated_data/"
-# data_file = "c_dataconf.txt"
-
-# sim_data = SimulationDataLoader(root_path, data_file, {})
-# sim_data_loader = DataLoader(dataset=sim_data, num_workers=2, batch_size=20, shuffle=True)
-
-
-# print(len(sim_data))
-
-# s = sim_data[5][1].shape
-# print(s)
-# # for batch in sim_data_loader:
-# #     print(batch)
