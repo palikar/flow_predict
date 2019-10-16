@@ -7,30 +7,37 @@ import random
 
 import torch
 import torch.nn as nn
-
 import numpy as np
 
 from utils import mkdir
 from utils import correlation
 from utils import merge_and_save
 from utils import RedirectStdStreams
+from config import config
 from dataloader import UnNormalize
 
-from skimage.metrics import structural_similarity as ssim_metr
+# from skimage.metrics import structural_similarity as ssim_metr
 
+
+def ssim_metr(*args, **kargs):
+    return 0.3
+    
 
 
 class Evaluator:
-
-
     
     def __init__(self, args, root_dir, device='cpu'):
         self.args = args
         self.root_dir = root_dir
         self.criterionMSE = nn.MSELoss().to(device)
         self.device = device
-        self.denormalize = UnNormalize([0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
-                                       [0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
+
+        if args.use_pressure:
+            self.denormalize = UnNormalize([0.5]*9,
+                                           [0.5]*9)
+        else:
+            self.denormalize = UnNormalize([0.5]*6,
+                                           [0.5]*6)
 
 
     def recusive_application_performance(self, net, dataset, split_point, samples=20):
@@ -72,7 +79,6 @@ class Evaluator:
             list_hand.write('{} {}\n'.format('psnr: ',  ','.join(str(i) for i in psnr)))
             list_hand.write('{} {}\n'.format('ssim: ',  ','.join(str(i) for i in ssim)))
         
-            
             
     def individual_images_performance(self, net, test_dataloader):
 
@@ -118,8 +124,14 @@ class Evaluator:
     def prepare_tensor_img(self, tens_img):
         d = self.denormalize(tens_img).detach().cpu().numpy()
         x = np.transpose(d[:3], (1,2,0))*255
-        y = np.transpose(d[3:], (1,2,0))*255
-        return x, y
+
+        if self.args.use_pressure:
+            y = np.transpose(d[3:6], (1,2,0))*255
+            p = np.transpose(d[6:], (1,2,0))*255
+            return x, y, p
+        else:
+            y = np.transpose(d[3:], (1,2,0))*255
+            return x, y
     
 
     def snapshots(self, net, sampler, dataset, samples=5):
@@ -128,23 +140,38 @@ class Evaluator:
             input_img, target = dataset[index]
             predicted = net(input_img.expand(1,-1,-1,-1))
 
+            if not self.args.use_pressure:
+                predicted_x, predicted_y = self.prepare_tensor_img(predicted[0])
+                input_img_x, input_img_y = self.prepare_tensor_img(input_img)
+                target_x, target_y       = self.prepare_tensor_img(target)
+            else:
+                predicted_x, predicted_y, predicted_p = self.prepare_tensor_img(predicted[0])
+                input_img_x, input_img_y, input_img_p = self.prepare_tensor_img(input_img)
+                target_x, target_y, target_p          = self.prepare_tensor_img(target)
             
-            predicted_x, predicted_y = self.prepare_tensor_img(predicted[0])
-            input_img_x, input_img_y = self.prepare_tensor_img(input_img)
-            target_x, target_y =       self.prepare_tensor_img(target)
 
             merge_and_save(target_x, predicted_x,
-                           'Real image_x', 'Predicred image_x',
-                           './checkpoints/snapshots/x_prediction_{}_{}.png'.format(i, random.randint(0, 10000)))
+                           'Real image_x', 'Predicted image (x)',
+                           os.path.join(config['output_dir'], 'snapshots', 'x_prediction_{}_{}.png'.format(index, random.randint(0, 10000))))
 
             merge_and_save(target_y, predicted_y,
-                           'Real image_y', 'Predicred image_y',
-                           './checkpoints/snapshots/y_prediction_{}_{}.png'.format(i, random.randint(0, 10000)))
+                           'Real image_y', 'Predicted image (y)',
+                           os.path.join(config['output_dir'], 'snapshots', 'y_prediction_{}_{}.png'.format(index, random.randint(0, 10000))))
 
             merge_and_save(input_img_x, predicted_x,
                            'Time step t (x)', 'Time step t+1 (x)',
-                           './checkpoints/snapshots/x_timestep_{}_{}.png'.format(i, random.randint(0, 10000)))
-
+                           os.path.join(config['output_dir'], 'snapshots', 'x_timestep_{}_{}.png'.format(index, random.randint(0, 10000))))
+            
             merge_and_save(input_img_y, predicted_y,
                            'Time step t (y)', 'Time step t+1 (y)',
-                           './checkpoints/snapshots/y_timestep_{}_{}.png'.format(i, random.randint(0, 10000)))
+                           os.path.join(config['output_dir'], 'snapshots', 'y_timestep_{}_{}.png'.format(index, random.randint(0, 10000))))
+
+            if self.args.use_pressure:
+                merge_and_save(target_p, predicted_p,
+                           'Real image_y', 'Predicted image (p)',
+                           os.path.join(config['output_dir'], 'snapshots', 'p_prediction_{}_{}.png'.format(index, random.randint(0, 10000))))
+
+                merge_and_save(input_img_p, predicted_p,
+                               'Time step t (x)', 'Time step t+1 (p)',
+                               os.path.join(config['output_dir'], 'snapshots', 'p_timestep_{}_{}.png'.format(index, random.randint(0, 10000))))
+                

@@ -65,16 +65,22 @@ def init_net(net, init_gain=0.02, gpu_id='cuda:0'):
     return net
 
 
-def define_G(input_nc, output_nc, ngf, norm='batch', use_dropout=True, init_gain=0.02, gpu_id='cuda:0'):
-    norm_layer = get_norm_layer(norm_type=norm)
-    net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=9)
-    return init_net(net, init_gain, gpu_id)
+
+def define_G(input_nc, output_nc, ngf, norm='batch', use_dropout=True, init_gain=0.02, gpu_id='cuda:0', n_blocks=9, args={}):
+    if args.model_path is not None:
+        net = torch.load(args.model_path).to(device)
+        return net
+    else:
+        norm_layer = get_norm_layer(norm_type=norm)
+        net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=9)
+        return init_net(net, init_gain, gpu_id)
 
 
 def define_D(input_nc, ndf, n_layers_D=3, norm='batch', use_sigmoid=False, init_gain=0.02, gpu_id='cuda:0'):
     norm_layer = get_norm_layer(norm_type=norm)
     net = NLayerDiscriminator(input_nc, ndf=ndf, n_layers=n_layers_D, norm_layer=norm_layer, use_sigmoid=use_sigmoid)
     return init_net(net, init_gain, gpu_id)
+
 
 
 

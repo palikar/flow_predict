@@ -8,6 +8,7 @@ import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 
 from utils import load_img
+from config import config
 
 
 
@@ -48,6 +49,8 @@ class SimulationDataSet(data.Dataset):
         self.viscosities = []
         self.speeds = []
 
+        self.size = (config['input_width'], config['input_height'])
+        
         self.root_dir = root_dir
         
         with open(data_file, 'r') as handle:
@@ -127,14 +130,15 @@ class SimulationDataSet(data.Dataset):
         a_path = self.paths_a[index]
         b_path = self.paths_b[index]
 
-        a_x = load_img(os.path.join(self.root_dir, a_path[0]))
-        a_y = load_img(os.path.join(self.root_dir, a_path[1]))
-        b_x = load_img(os.path.join(self.root_dir, b_path[0]))
-        b_y = load_img(os.path.join(self.root_dir, b_path[1]))
+        a_x = load_img(os.path.join(self.root_dir, a_path[0]), size=self.size)
+        a_y = load_img(os.path.join(self.root_dir, a_path[1]), size=self.size)
+
+        b_x = load_img(os.path.join(self.root_dir, b_path[0]), size=self.size)
+        b_y = load_img(os.path.join(self.root_dir, b_path[1]), size=self.size)
 
         if self.args.use_pressure:
-            b_p = load_img(os.path.join(self.root_dir, b_path[2]))
-            a_p = load_img(os.path.join(self.root_dir, a_path[2]))
+            b_p = load_img(os.path.join(self.root_dir, b_path[2]), size=self.size)
+            a_p = load_img(os.path.join(self.root_dir, a_path[2]), size=self.size)
         
         if self.args.use_pressure:
             a = np.concatenate((a_x, a_y, a_p), axis=2)

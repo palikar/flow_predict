@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from __future__ import print_function
 
 import os
 import json
@@ -9,9 +8,11 @@ import argparse
 
 from utils import mkdir
 from dataloader import SimulationDataSet
-from models import define_G, define_D, get_scheduler, update_learning_rate
-from models import GANLoss
+from models import define_G, define_D, get_scheduler, update_learning_rate, GANLoss
 from evaluate import Evaluator
+from config import config
+
+import numpy as np
 
 import torch
 import torch.nn as nn
@@ -20,10 +21,13 @@ from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
 from torchsummary import summary
 
-from PIL import Image, ImageDraw, ImageFont
 
-import numpy as np
 
+def create_directories():
+    mkdir(config['output_dir'])
+    mkdir(os.path.join(config['output_dir'], args.model_name))
+    mkdir(os.path.join(config['output_dir'], 'snapshots'))
+    
 def get_dataconf_file(args):
     return args.model_type + '_dataconf.txt'
 
@@ -31,9 +35,7 @@ def get_dataconf_file(args):
 parser = argparse.ArgumentParser(description='The training script of the flowPredict pytorch implementation')
 parser.add_argument('--data', dest='data_dir', required=True, help='Root directory of the generated data.')
 parser.add_argument('--model-name', dest='model_name', default='s_res_8', required=False, help='Name of the current model being trained')
-parser.add_argument('--config', dest='config', required=True, help='Configuration file for the system')
-parser.add_argument('--use-pressure', dest='use_pressure', required=False, action='store_true',
-                    default=False, help='Should the pressure field images to considered by the models')
+parser.add_argument('--use-pressure', dest='use_pressure', required=False, action='store_true', default=False, help='Should the pressure field images to considered by the models')
 parser.add_argument('--model-type', dest='model_type', action='store', default='c', choices=['c', 'vd', 's', 'o'], required=False,
                     help='Type of model to be build. \'c\' - baseline, \'vd\' - fluid viscosity and density, \'s\' - inflow speed, \'o\' - object')
 parser.add_argument('--cuda', dest='cuda', action='store_true', default=False, help='Should CUDA be used or not')
@@ -46,10 +48,10 @@ parser.add_argument('--seed', dest='seed', type=int, default=123, help='Random s
 parser.add_argument('--niter', type=int, dest='niter', default=100, help='Number of iterations at starting learning rate')
 parser.add_argument('--niter_decay', type=int, dest='niter_decay', default=100, help='Number of iterations to linearly decay learning rate to zero')
 parser.add_argument('--lr_policy', type=str, default='lambda', help='learning rate policy: lambda|step|plateau|cosine')
-parser.add_argument('--print-summeries', default=False, action='store_true', help='Print summeries of the genereated networks')
-
-
-
+parser.add_argument('--print-summeries', dest='print_summeries', default=False, action='store_true', help='Print summeries of the genereated networks')
+parser.add_argument('--evaluate', default=False, action='store_true', dest='evaluate' , help='Evaluate the trained model at the end')
+parser.add_argument('--no-train', default=False, action='store_true', dest='no_train' , help='Do not train the model with the trianing data')
+parser.add_argument('--model-path', default=None, action='store', dest='model_path' , help='Optional path to the model\'s weights.')
 print('===> Setting up basic structures ')
 
 args = parser.parse_args()
@@ -59,16 +61,14 @@ print('--Model name:', args.model_name)
 if args.cuda and not torch.cuda.is_available():
     raise Exception("No GPU found, please run without --cuda")
 
+random_seed = args.seed
+
+np.random.seed(random_seed)
 torch.manual_seed(args.seed)
 if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
 device = torch.device("cuda:0" if args.cuda else "cpu")
-
-
-
-with open(args.config, 'r') as config_handle:    
-    config = json.load(config_handle)
 
 model_type = args.model_type
 test_train_split = args.test_train_split
@@ -76,7 +76,6 @@ batch_size = args.batch_size
 shuffle_dataset = args.shuffle
 num_epochs = args.epochs
 threads = args.threads
-random_seed = args.seed
 model_name = args.model_name
 
 print('--model type:', model_type)
@@ -98,11 +97,8 @@ dataset = SimulationDataSet(args.data_dir, dataconf_file, args)
 dataset_size = len(dataset)
 indices = list(range(dataset_size))
 split = int(np.floor(test_train_split * dataset_size))
-
 if shuffle_dataset:
-    np.random.seed(random_seed)
     np.random.shuffle(indices)
-    
 train_indices, test_indices = indices[:split], indices[split:]
 
 print('--training samples count:', len(train_indices))
@@ -116,11 +112,11 @@ test_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, sample
 
 print('===> Loading model')
 
-net_g = define_G(6, 6, 32, gpu_id=device).float()
-net_d = define_D(12, 64, n_layers_D=3, gpu_id=device).float()
+net_g = define_G(config['g_input_nc'], config['g_output_nc'], config['g_nfg'], n_blocks=config['g_layers'], gpu_id=device, args=args).float()
+net_d = define_D(config['d_input_nc'], config['d_nfg'], n_layers_D=config['d_layers'], gpu_id=device).float()
 
-optimizer_g = optim.Adam(net_g.parameters(), lr=0.001, betas=(0.9, 0.999))
-optimizer_d = optim.Adam(net_d.parameters(), lr=0.001, betas=(0.9, 0.999))
+optimizer_g = optim.Adam(net_g.parameters(), lr=config['adam_lr'], betas=(config['adam_b1'], config['adam_b2']))
+optimizer_d = optim.Adam(net_d.parameters(), lr=config['adam_lr'], betas=(config['adam_b1'], config['adam_b2']))
 
 net_g_scheduler = get_scheduler(optimizer_g, args)
 net_d_scheduler = get_scheduler(optimizer_d, args)
@@ -131,102 +127,101 @@ criterionMSE = nn.MSELoss().to(device)
 
 if args.print_summeries:
     print('Generator network:')
-    summary(net_g, input_size=(6, 512, 512))
+    summary(net_g, input_size=(config['g_input_nc'], config['input_width'], config['input_height']))
     print('Detector network:')
-    summary(net_d, input_size=(12, 512, 512))
+    summary(net_d,input_size=(config['d_input_nc'], config['input_width'], config['input_height']))
 
-print('===> Starting the training loop')
+if not args.no_train:
+    print('===> Starting the training loop')
 
-mkdir("./checkpoints")
-mkdir(os.path.join("./checkpoints", args.model_name))
-mkdir(os.path.join("./checkpoints", 'snapshots'))
+create_directories()
+
+evaluator = Evaluator(args, config['output_dir'], device=device)
 
 train_loader_len = len(train_loader)
-losses_path = "./checkpoints/{}/losses.txt".format(args.model_name)
-test_losses_path = "./checkpoints/{}/losses_test.txt".format(args.model_name)
+losses_path = os.path.join(config['output_dir'], args.model_name, 'losses.txt')
+test_losses_path = os.path.join(config['output_dir'], args.model_name, 'losses_test.txt')
 
-evaluator = Evaluator(args, "./checkpoints", device=device)
+for epoch in range(num_epochs if not args.no_train else 0):
+    epoch_loss_d = 0
+    epoch_loss_g = 0
 
-# evaluator.snapshots(net_g, test_sampler, dataset, samples=1)
-# evaluator.individual_images_performance(net_g, test_loader)
-evaluator.recusive_application_performance(net_g, dataset, split, samples=10)
+    for iteration, batch in enumerate(train_loader, 1):
 
-# for epoch in range(num_epochs):
-#     epoch_loss_d = 0
-#     epoch_loss_g = 0
-
-#     for iteration, batch in enumerate(train_loader, 1):
-
-#         net_g.train()
-#         net_d.train()
+        net_g.train()
+        net_d.train()
         
-#         real_a, real_b = batch[0].to(device), batch[1].to(device)
-#         fake_b = net_g(real_a)
+        real_a, real_b = batch[0].to(device), batch[1].to(device)
+        fake_b = net_g(real_a)
 
-#         ##############################
-#         # Training the descriminator #
-#         ##############################
-#         optimizer_d.zero_grad()
+        ##############################
+        # Training the descriminator #
+        ##############################
+        optimizer_d.zero_grad()
         
-#         fake_ab = torch.cat((real_a, fake_b), 1)
-#         pred_fake = net_d(fake_ab.detach())
-#         loss_d_fake = criterionGAN(pred_fake, False)
+        fake_ab = torch.cat((real_a, fake_b), 1)
+        pred_fake = net_d(fake_ab.detach())
+        loss_d_fake = criterionGAN(pred_fake, False)
 
-#         real_ab = torch.cat((real_a, real_b), 1)
-#         pred_real = net_d(real_ab)
-#         loss_d_real = criterionGAN(pred_real, True)
+        real_ab = torch.cat((real_a, real_b), 1)
+        pred_real = net_d(real_ab)
+        loss_d_real = criterionGAN(pred_real, True)
 
-#         loss_d = (loss_d_fake + loss_d_real) * 0.5
+        loss_d = (loss_d_fake + loss_d_real) * 0.5
 
-#         loss_d.backward()
-#         optimizer_d.step()
+        loss_d.backward()
+        optimizer_d.step()
 
-#         ##############################
-#         #   Training the generator   #
-#         ##############################
+        ##############################
+        #   Training the generator   #
+        ##############################
+        optimizer_g.zero_grad()
 
-#         fake_ab = torch.cat((real_a, fake_b), 1)
-#         pred_fake = net_d(fake_ab)
-#         loss_g_gan = criterionGAN(pred_fake, True)
-#         loss_g_l1 = criterionL1(fake_b, real_b) * 10
+        fake_ab = torch.cat((real_a, fake_b), 1)
+        pred_fake = net_d(fake_ab)
+        loss_g_gan = criterionGAN(pred_fake, True)
+        loss_g_l1 = criterionL1(fake_b, real_b) * config['lambda_L1']
 
-#         loss_g = loss_g_gan + loss_g_l1
+        loss_g = loss_g_gan + loss_g_l1
 
-#         loss_g.backward()
-#         optimizer_g.step()
+        loss_g.backward()
+        optimizer_g.step()
 
-#         epoch_loss_d += loss_d.item()
-#         epoch_loss_g += loss_g.item()
+        epoch_loss_d += loss_d.item()
+        epoch_loss_g += loss_g.item()
 
-#         print("> Epoch[{}]({}/{}): Loss_D: {:.4f} Loss_G: {:.4f}".format(
-#             epoch, iteration, train_loader_len, loss_d.item(), loss_g.item()))
+        print("> Epoch[{}]({}/{}): Loss_D: {:.5f} Loss_G: {:.5f}".format(
+            epoch, iteration, train_loader_len, loss_d.item(), loss_g.item()))
 
-#     update_learning_rate(net_g_scheduler, optimizer_g)
-#     update_learning_rate(net_d_scheduler, optimizer_d)
+    update_learning_rate(net_g_scheduler, optimizer_g)
+    update_learning_rate(net_d_scheduler, optimizer_d)
 
-#     epoch_loss_d /= train_loader_len
-#     epoch_loss_g /= train_loader_len
-#     with open(losses_path, 'w+') as losses_hand:
-#         losses_hand.write('epoch: {}, gen:{:.5f}, desc:{:.5f}'.format(epoch, epoch_loss_g, epoch_loss_d))
+    epoch_loss_d /= train_loader_len
+    epoch_loss_g /= train_loader_len
+    with open(losses_path, 'w+') as losses_hand:
+        losses_hand.write('epoch: {}, gen:{:.5f}, desc:{:.5f}'.format(epoch, epoch_loss_g, epoch_loss_d))
     
-#     if epoch % 10  == 0:
-
-#         net_g_model_out_path = "./checkpoints/{}/netG_model_epoch_{}.pth".format(args.model_name, epoch)
-#         net_d_model_out_path = "./checkpoints/{}/netD_model_epoch_{}.pth".format(args.model_name, epoch)        
-#         torch.save(net_g, net_g_model_out_path)
-#         torch.save(net_d, net_d_model_out_path)
+    if epoch % 10  == 0:
+        net_g_model_out_path = "./checkpoints/{}/netG_model_epoch_{}.pth".format(args.model_name, epoch)
+        net_d_model_out_path = "./checkpoints/{}/netD_model_epoch_{}.pth".format(args.model_name, epoch)        
+        torch.save(net_g, net_g_model_out_path)
+        torch.save(net_d, net_d_model_out_path)
         
-#         print("==> Checkpoint saved to {}".format(os.path.join("checkpoints", args.model_name)))
+        print("==> Checkpoint saved to {}".format(os.path.join("checkpoints", args.model_name)))
 
-#         avg_psnr = 0
-#         for batch in test_loader:
-#             input_img, target = batch[0].to(device), batch[1].to(device)
-#             prediction = net_g(input_img)
-#             mse = criterionMSE(prediction, target)
-#             psnr = 10 * math.log10(1 / mse.item())
-#             avg_psnr += psnr
-#         avg_psnr /= len(test_loader)
-#         print("> Avg. PSNR: {:.5} dB".format(avg_psnr))
+        avg_psnr = 0
+        for batch in test_loader:
+            input_img, target = batch[0].to(device), batch[1].to(device)
+            prediction = net_g(input_img)
+            mse = criterionMSE(prediction, target)
+            psnr = 10 * math.log10(1 / mse.item())
+            avg_psnr += psnr
+        avg_psnr /= len(test_loader)
+        print("> Avg. PSNR: {:.5} dB".format(avg_psnr))
 
 
-    
+if args.evaluate:
+    print('===> Evaluating model')
+    evaluator.snapshots(net_g, test_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
+    evaluator.individual_images_performance(net_g, test_loader)
+    evaluator.recusive_application_performance(net_g, dataset, split, samples=config['evaluation_recursive_samples'])
