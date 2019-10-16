@@ -20,10 +20,8 @@
 - save average MSE
 - plot MSE for the test examples
 
-** Quantitative - individual recursive
+** Quantitative - recursive 
 - get the datset and the split location
-
 - get image, apply the model
-
 - start in the train set, end in the test set
 

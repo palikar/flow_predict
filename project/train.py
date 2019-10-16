@@ -148,7 +148,8 @@ test_losses_path = "./checkpoints/{}/losses_test.txt".format(args.model_name)
 evaluator = Evaluator(args, "./checkpoints", device=device)
 
 # evaluator.snapshots(net_g, test_sampler, dataset, samples=1)
-evaluator.individual_images_performance(net_g, test_loader)
+# evaluator.individual_images_performance(net_g, test_loader)
+evaluator.recusive_application_performance(net_g, dataset, split, samples=10)
 
 # for epoch in range(num_epochs):
 #     epoch_loss_d = 0
