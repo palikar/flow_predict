@@ -11,6 +11,7 @@ from utils import mkdir
 from dataloader import SimulationDataSet
 from models import define_G, define_D, get_scheduler, update_learning_rate
 from models import GANLoss
+from evaluate import Evaluator
 
 import torch
 import torch.nn as nn
@@ -90,7 +91,6 @@ print('--worker threads:', threads)
 print('--cuda:', args.cuda)
 print('--device:', device)
 
-
 print('===> Loading datasets')
 
 dataconf_file = get_dataconf_file(args)
@@ -137,15 +137,20 @@ if args.print_summeries:
 
 print('===> Starting the training loop')
 
+mkdir("./checkpoints")
+mkdir(os.path.join("./checkpoints", args.model_name))
+mkdir(os.path.join("./checkpoints", 'snapshots'))
 
-# mkdir("./checkpoints")
-# mkdir(os.path.join("./checkpoints", args.model_name))
-# train_loader_len = len(train_loader)
-# losses_path = "./checkpoints/{}/losses.txt".format(args.model_name)
-# test_losses_path = "./checkpoints/{}/losses_test.txt".format(args.model_name)
+train_loader_len = len(train_loader)
+losses_path = "./checkpoints/{}/losses.txt".format(args.model_name)
+test_losses_path = "./checkpoints/{}/losses_test.txt".format(args.model_name)
+
+evaluator = Evaluator(args, "./checkpoints", device=device)
+
+# evaluator.snapshots(net_g, test_sampler, dataset, samples=1)
+evaluator.individual_images_performance(net_g, test_loader)
 
 # for epoch in range(num_epochs):
-
 #     epoch_loss_d = 0
 #     epoch_loss_g = 0
 
@@ -171,8 +176,6 @@ print('===> Starting the training loop')
 #         loss_d_real = criterionGAN(pred_real, True)
 
 #         loss_d = (loss_d_fake + loss_d_real) * 0.5
-
-        
 
 #         loss_d.backward()
 #         optimizer_d.step()
@@ -200,7 +203,6 @@ print('===> Starting the training loop')
 #     update_learning_rate(net_g_scheduler, optimizer_g)
 #     update_learning_rate(net_d_scheduler, optimizer_d)
 
-
 #     epoch_loss_d /= train_loader_len
 #     epoch_loss_g /= train_loader_len
 #     with open(losses_path, 'w+') as losses_hand:
@@ -212,56 +214,18 @@ print('===> Starting the training loop')
 #         net_d_model_out_path = "./checkpoints/{}/netD_model_epoch_{}.pth".format(args.model_name, epoch)        
 #         torch.save(net_g, net_g_model_out_path)
 #         torch.save(net_d, net_d_model_out_path)
-
+        
 #         print("==> Checkpoint saved to {}".format(os.path.join("checkpoints", args.model_name)))
 
-
-#     avg_psnr = 0
-#     for batch in test_loader:
-#         input_img, target = batch[0].to(device), batch[1].to(device)
-#         prediction = net_g(input_img)
-#         mse = criterionMSE(prediction, target)
-#         psnr = 10 * math.log10(1 / mse.item())
-#         avg_psnr += psnr
-#     avg_psnr /= len(test_loader)
-#     print("> Avg. PSNR: {:.5} dB".format(avg_psnr))
-
+#         avg_psnr = 0
+#         for batch in test_loader:
+#             input_img, target = batch[0].to(device), batch[1].to(device)
+#             prediction = net_g(input_img)
+#             mse = criterionMSE(prediction, target)
+#             psnr = 10 * math.log10(1 / mse.item())
+#             avg_psnr += psnr
+#         avg_psnr /= len(test_loader)
+#         print("> Avg. PSNR: {:.5} dB".format(avg_psnr))
 
 
-# take some snaphots
-
-# for i in test_sampler:
-#     pass
-
-
-# A = np.random.rand(1, 6, 512, 512)
-# B = net_g(torch.from_numpy(A).float().to(device)).detach().numpy()
-
-# x = (B[0][0:3]*255).T
-# y = (B[0][3:]*255).T
-
-
-# image_x = Image.fromarray(np.uint8(x), 'RGB')
-
-
-# image_y = Image.fromarray(np.uint8(y), 'RGB')
-
-# width_x, height_x = image_x.size
-# width_y, height_y = image_y.size
-
-
-# new_im = Image.new('RGB', (max(width_x, width_y), height_x + height_y))
-# new_im.paste(image_x, (0, 0))
-# new_im.paste(image_y, (0, height_x))
-# new_im.paste(image_y, (0, height_x))
-# draw = ImageDraw.Draw(new_im) 
-# draw.line((0,height_x,width_x,height_x), fill=0, width=2)
-# draw.text((10,10), "Sample Text", (0,0,0), font=None)
-# new_im.show()
-
-
-def merge_and_save(img1, img2, text1, text2, dest):
-    pass
-
-
-
+    

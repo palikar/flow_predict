@@ -9,6 +9,26 @@ from torch.utils.data import DataLoader
 
 from utils import load_img
 
+
+
+class UnNormalize(object):
+    def __init__(self, mean, std):
+        self.mean = mean
+        self.std = std
+
+    def __call__(self, tensor):
+        """
+        Args:
+            tensor (Tensor): Tensor image of size (C, H, W) to be normalized.
+        Returns:
+            Tensor: Normalized image.
+        """
+        for t, m, s in zip(tensor, self.mean, self.std):
+            t.mul_(s).add_(m)
+            # The normalize code -> t.sub_(m).div_(s)
+        return tensor
+
+
 class SimulationDataSet(data.Dataset):
 
     def __init__(self, root_dir, data_file, args):
@@ -56,8 +76,11 @@ class SimulationDataSet(data.Dataset):
                 
             self.read_rest(handle, first_line)
 
-        transform_list = [transforms.ToTensor(),
-                          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
+        transform_list = [transforms.ToTensor()]
+
+        transform_list.append(transforms.Normalize((0.5, 0.5, 0.5, 0.5, 0.5, 0.5),
+                                                   (0.5, 0.5, 0.5, 0.5, 0.5, 0.5)))
+        
         self.transform = transforms.Compose(transform_list)
 
 
@@ -101,28 +124,27 @@ class SimulationDataSet(data.Dataset):
 
 
     def __getitem__(self, index):
-
         a_path = self.paths_a[index]
         b_path = self.paths_b[index]
 
-        a_x = self.transform(load_img(os.path.join(self.root_dir, a_path[0])))
-        a_y = self.transform(load_img(os.path.join(self.root_dir, a_path[1])))
-
-        b_x = self.transform(load_img(os.path.join(self.root_dir, b_path[0])))
-        b_y = self.transform(load_img(os.path.join(self.root_dir, b_path[1])))
-
+        a_x = load_img(os.path.join(self.root_dir, a_path[0]))
+        a_y = load_img(os.path.join(self.root_dir, a_path[1]))
+        b_x = load_img(os.path.join(self.root_dir, b_path[0]))
+        b_y = load_img(os.path.join(self.root_dir, b_path[1]))
 
         if self.args.use_pressure:
-            b_p = self.transform(load_img(os.path.join(self.root_dir, b_path[2])))
-            a_p = self.transform(load_img(os.path.join(self.root_dir, a_path[2])))
-
+            b_p = load_img(os.path.join(self.root_dir, b_path[2]))
+            a_p = load_img(os.path.join(self.root_dir, a_path[2]))
         
         if self.args.use_pressure:
-            a = np.concatenate((a_x, a_y, a_p))
-            b = np.concatenate((b_x, b_y, b_p))
+            a = np.concatenate((a_x, a_y, a_p), axis=2)
+            b = np.concatenate((b_x, b_y, b_p), axis=2)
         else:
-            a = np.concatenate([a_x, a_y])
-            b = np.concatenate([b_x, b_y])
+            a = np.concatenate([a_x, a_y], axis=2)
+            b = np.concatenate([b_x, b_y], axis=2)
+
+        a = self.transform(a)
+        b = self.transform(b)
 
         return self.return_func(a, b, index)
 

@@ -44,7 +44,6 @@ def main():
 
             for sim_dir in dirs:
                 x_img_dir = os.path.join(sim_dir, 'images_x')
-                
 
                 params_file = os.path.join(sim_dir, 'params.txt')
 
@@ -53,29 +52,32 @@ def main():
 
                 imgs = os.listdir(x_img_dir)
                 imgs.sort(key=key_func)
+                
 
                 for a, b in zip(imgs[0:-1],imgs[1:]):
+
                     a_x = os.path.join(os.path.basename(sim_dir), 'images_x', a)
-                    b_x = os.path.join(os.path.basename(sim_dir), 'images_y', b)
-
-                    a_y = os.path.join(os.path.basename(sim_dir), 'images_x', a)
-                    b_y = os.path.join(os.path.basename(sim_dir), 'images_y', b)
-
+                    a_y = os.path.join(os.path.basename(sim_dir), 'images_y', a)
                     a_p = os.path.join(os.path.basename(sim_dir), 'images_p', a)
+                    
+                    b_x = os.path.join(os.path.basename(sim_dir), 'images_x', b)
+                    b_y = os.path.join(os.path.basename(sim_dir), 'images_y', b)
                     b_p = os.path.join(os.path.basename(sim_dir), 'images_p', b)
 
+                    
+
                     if pref == 'c':
-                        config_handle.write('{}, {}, {}, {}, {}, {}\n'.format(a_x, b_x, a_p,
-                                                                              a_y, b_y, b_p))
+                        config_handle.write('{}, {}, {}, {}, {}, {}\n'.format(a_x, a_y, a_p,
+                                                                              b_x, b_y, b_p))
 
                     if pref == 'vd':
-                        config_handle.write('{}, {}, {}, {}, {}, {}, {}, {}\n'.format(a_x, b_x, a_p,
-                                                                                      a_y, b_y, b_p,
+                        config_handle.write('{}, {}, {}, {}, {}, {}, {}, {}\n'.format(a_x, a_y, a_p,
+                                                                                      b_x, b_y, b_p,
                                                                                       params[0], params[1]))
 
                     if pref == 's':
-                        config_handle.write('{}, {}, {}, {}, {}, {}, {}\n'.format(a_x, b_x, a_p,
-                                                                                  a_y, b_y, b_p,
+                        config_handle.write('{}, {}, {}, {}, {}, {}, {}\n'.format(a_x, a_y, a_p,
+                                                                                  b_x, b_y, b_p,
                                                                                   params[2]))
 
 

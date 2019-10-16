@@ -223,9 +223,10 @@ As described in Section [[sec:mot]], the solutions of the simulation contain inf
 ** Evaluation
 
 Because our DNNs generate images as their output, we have to define a meaningful metric according to which we can compare a predicted image with a ground truth one. There are multiple ways of defining this metric and we are currently considering several possibilities:
-+ /Mean Squeres/ - sum of squared differences between intensity values.
++ /Mean Square Difference/ - sum of squared differences between intensity values.
 + /Normalized correlation/ -  Correlation between intensity values divided by the square rooted autocorrelation of both images.
-+ /L2 distance/ - The Euclidean distance between the corresponding pixels of the two images
++ /Peak signal-to-noise ratio/ (PSNR) - this metric has its basis in signal analysis. It is defined as the ratio between the maximum possible power of a signal and the power of corrupting noise that affects the fidelity of its representation. PSNR is given in decibels and in image processing it gives a quality measurement between the original and a compressed image. The higher the PSNR, the better the quality of the reconstructed image.
+
 We have yet not settled with one matric. We assume that the normalized correlation can be a reasonable choice because we think that the general structure of the fluid can be captured with different absolute values which have certain relative change.
 
 \\

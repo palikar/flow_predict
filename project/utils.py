@@ -2,17 +2,38 @@
 
 import os
 
-from PIL import Image
+import numpy as np
+from PIL import Image, ImageDraw, ImageFont
+
+
+
+
+VERDANA_FONT = ImageFont.truetype("verdana.ttf", 18)
+
+class RedirectStdStreams(object):
+    def __init__(self, stdout=None, stderr=None):
+        self._stdout = stdout or sys.stdout
+        self._stderr = stderr or sys.stderr
+
+    def __enter__(self):
+        self.old_stdout, self.old_stderr = sys.stdout, sys.stderr
+        self.old_stdout.flush(); self.old_stderr.flush()
+        sys.stdout, sys.stderr = self._stdout, self._stderr
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._stdout.flush(); self._stderr.flush()
+        sys.stdout = self.old_stdout
+        sys.stderr = self.old_stderr
 
 
 def is_image_file(filename):
     return any(filename.endswith(extension) for extension in [".png", ".jpg", ".jpeg"])
 
 
-def load_img(filepath, size=(512, 512)):
+def load_img(filepath, size=(1024, 256)):
     img = Image.open(filepath).convert('RGB')
     img = img.resize(size, Image.BICUBIC)
-    return img
+    return np.array(img)
 
 
 def save_img(image_tensor, filename):
@@ -23,7 +44,6 @@ def save_img(image_tensor, filename):
     image_pil = Image.fromarray(image_numpy)
     image_pil.save(filename)
     print("Image saved as {}".format(filename))
-
 
 
 def mkdir(path):
@@ -37,3 +57,27 @@ def mkdirs(paths):
             mkdir(path)
     else:
         mkdir(paths)
+
+
+def correlation(img1, img2):
+    c = np.corrcoef(img1.flat, img2.flat)[0,1]
+    return c
+
+#
+def merge_and_save(img1, img2, text1, text2, dest):
+    image_1 = Image.fromarray(np.uint8(img1), 'RGB')
+    image_2 = Image.fromarray(np.uint8(img2), 'RGB')
+
+    width_1, height_1 = image_1.size
+    width_2, height_2 = image_2.size
+
+    new_im = Image.new('RGB', (max(width_1, width_2), height_1 + height_2))
+    new_im.paste(image_1, (0, 0))
+    new_im.paste(image_2, (0, height_1))
+
+    draw = ImageDraw.Draw(new_im) 
+    draw.line((0,height_1,width_1,height_2), fill=0, width=2)
+    draw.text((10,10), text1, (0,0,0), font=None)
+    draw.text((10,10 + height_1), text2, (0,0,0), font=VERDANA_FONT)
+    
+    new_im.save(dest)
