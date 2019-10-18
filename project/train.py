@@ -235,34 +235,40 @@ for epoch in range(num_epochs if not args.no_train else 0):
 
         avg_psnr = 0
         avg_mse = 0
-        for batch in val_loader:
-            input_img, target = batch[0].to(device), batch[1].to(device)
-            prediction = net_g(input_img)
-            mse = criterionMSE(prediction, target)
-            psnr = 10 * math.log10(1 / mse.item())
-            avg_mse += mse
-            avg_psnr += psnr
-        avg_psnr /= len(val_loader)
-        avg_mse /= len(val_loader)
-        print("> Val Avg. PSNR: {:.5} dB".format(avg_psnr))
-        
-        with open(val_losses_path, 'w+') as losses_hand:
-            losses_hand.write('epoch:{}, psnr:{:.5f}, mse:{:.5f}'.format(epoch,avg_psnr,avg_mse))
+        with torch.no_grad():
+            for batch in val_loader:
+                input_img, target = batch[0].to(device), batch[1].to(device)
+                prediction = net_g(input_img)
+                mse = criterionMSE(prediction, target)
+                psnr = 10 * math.log10(1 / mse.item())
+                avg_mse += mse
+                avg_psnr += psnr
+            avg_psnr /= len(val_loader)
+            avg_mse /= len(val_loader)
+            print("> Val Avg. PSNR: {:.5} dB".format(avg_psnr))
+
+            with open(val_losses_path, 'w+') as losses_hand:
+                losses_hand.write('epoch:{}, psnr:{:.5f}, mse:{:.5f}'.format(epoch,avg_psnr,avg_mse))
             
             
 
 
 if args.evaluate:
+
     print('===> Evaluating model')
 
-    print('--Evaluating with test set:')
-    evaluator.set_output_name('test')
-    evaluator.snapshots(net_g, test_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
-    evaluator.individual_images_performance(net_g, test_loader)
-    evaluator.recusive_application_performance(net_g, dataset, split, samples=config['evaluation_recursive_samples'])
+    net_g.eval()
+    with torch.no_grad():
+        
+        print('--Evaluating with test set:')
+        evaluator.set_output_name('test')
+        evaluator.snapshots(net_g, test_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
+        evaluator.individual_images_performance(net_g, test_loader)
+        evaluator.recusive_application_performance(net_g, dataset, len(train_indices) + len(val_indices) , samples=config['evaluation_recursive_samples'])
 
-    print('--Evaluating with train set:')
-    evaluator.set_output_name('train')
-    evaluator.snapshots(net_g, train_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
-    evaluator.individual_images_performance(net_g, train_loader)
-    evaluator.recusive_application_performance(net_g, dataset, 1, samples=config['evaluation_recursive_samples'])
+        print('--Evaluating with train set:')
+        evaluator.set_output_name('train')
+        evaluator.snapshots(net_g, train_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
+        evaluator.individual_images_performance(net_g, train_loader)
+        evaluator.recusive_application_performance(net_g, dataset, 1, samples=config['evaluation_recursive_samples'])
+        

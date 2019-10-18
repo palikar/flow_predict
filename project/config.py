@@ -17,7 +17,7 @@ config['d_layers'] = 3
 config['output_dir'] = './checkpoints'
 
 config['evaluation_snapshots_cnt'] = 5
-config['evaluation_recursive_samples'] = 20
+config['evaluation_recursive_samples'] = 3
 
 config['lambda_L1'] = 75
 
