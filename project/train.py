@@ -6,6 +6,8 @@ import sys
 import math
 import argparse
 import random
+import signal
+
 
 from utils import mkdir
 from dataloader import SimulationDataSet
@@ -20,9 +22,20 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
+
 from torchsummary import summary
 
 
+training_started = False
+STOP_TRAINING = False
+
+def signal_handler(sig, frame):
+    if not training_started:
+        sys.exit(0)
+
+    print('Stoping the training...')
+    global STOP_TRAINING
+    STOP_TRAINING = True
 
 
 def create_directories():
@@ -50,6 +63,13 @@ def test_validation_test_split(dataset, test_train_split=0.8, val_train_split=0.
     return train_indices, val_indices, test_indices
 
 
+def save_models(net_g, net_d, args, epoch):
+    net_g_model_out_path = "./checkpoints/{}/netG_model_epoch_{}.pth".format(args.model_name, epoch)
+    net_d_model_out_path = "./checkpoints/{}/netD_model_epoch_{}.pth".format(args.model_name, epoch)        
+    torch.save(net_g, net_g_model_out_path)
+    torch.save(net_d, net_d_model_out_path)    
+
+
 parser = argparse.ArgumentParser(description='The training script of the flowPredict pytorch implementation')
 parser.add_argument('--data', dest='data_dir', required=True, help='Root directory of the generated data.')
 parser.add_argument('--model-name', dest='model_name', default='s_res_8', required=False, help='Name of the current model being trained')
@@ -73,7 +93,6 @@ parser.add_argument('--no-train', default=False, action='store_true', dest='no_t
 parser.add_argument('--model-path', default=None, action='store', dest='model_path' , help='Optional path to the model\'s weights.')
 
 print('===> Setting up basic structures ')
-
 args = parser.parse_args()
 
 print('--Model name:', args.model_name)
@@ -109,6 +128,8 @@ print('--random seed:', random_seed)
 print('--worker threads:', threads)
 print('--cuda:', args.cuda)
 print('--device:', device)
+
+if not args.no_train: signal.signal(signal.SIGINT, signal_handler)
 
 print('===> Loading datasets')
 
@@ -164,7 +185,7 @@ losses_path = os.path.join(config['output_dir'], args.model_name, 'losses.txt')
 val_losses_path = os.path.join(config['output_dir'], args.model_name, 'val_losses_test.txt')
 test_losses_path = os.path.join(config['output_dir'], args.model_name, 'losses_test.txt')
 
-
+training_started = True
 for epoch in range(num_epochs if not args.no_train else 0):
     epoch_loss_d = 0
     epoch_loss_g = 0
@@ -216,6 +237,12 @@ for epoch in range(num_epochs if not args.no_train else 0):
         print("> Epoch[{}]({}/{}): Loss_D: {:.5f} Loss_G: {:.5f}".format(
             epoch, iteration, train_loader_len, loss_d.item(), loss_g.item()))
 
+        if STOP_TRAINING:
+            print('Saving the model now...')
+            save_models(net_g, net_d, args, epoch)
+            print('Model saved.')
+            sys.exit(0)
+
     update_learning_rate(net_g_scheduler, optimizer_g)
     update_learning_rate(net_d_scheduler, optimizer_d)
 
@@ -226,11 +253,7 @@ for epoch in range(num_epochs if not args.no_train else 0):
         losses_hand.write('epoch: {}, gen:{:.5f}, desc:{:.5f}'.format(epoch, epoch_loss_g, epoch_loss_d))
     
     if epoch % 10  == 0:
-        net_g_model_out_path = "./checkpoints/{}/netG_model_epoch_{}.pth".format(args.model_name, epoch)
-        net_d_model_out_path = "./checkpoints/{}/netD_model_epoch_{}.pth".format(args.model_name, epoch)        
-        torch.save(net_g, net_g_model_out_path)
-        torch.save(net_d, net_d_model_out_path)
-        
+        save_models(net_g, net_d, args, epoch)        
         print("==> Checkpoint saved to {}".format(os.path.join("checkpoints", args.model_name)))
 
         avg_psnr = 0
@@ -249,7 +272,8 @@ for epoch in range(num_epochs if not args.no_train else 0):
 
             with open(val_losses_path, 'w+') as losses_hand:
                 losses_hand.write('epoch:{}, psnr:{:.5f}, mse:{:.5f}'.format(epoch,avg_psnr,avg_mse))
-            
+
+training_started = False            
             
 
 
