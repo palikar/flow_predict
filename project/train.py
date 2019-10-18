@@ -5,6 +5,7 @@ import json
 import sys
 import math
 import argparse
+import random
 
 from utils import mkdir
 from dataloader import SimulationDataSet
@@ -23,13 +24,30 @@ from torchsummary import summary
 
 
 
+
 def create_directories():
     mkdir(config['output_dir'])
     mkdir(os.path.join(config['output_dir'], args.model_name))
-    mkdir(os.path.join(config['output_dir'], 'snapshots'))
+    mkdir(os.path.join(config['output_dir'], 'test', 'snapshots'))
+    mkdir(os.path.join(config['output_dir'], 'train', 'snapshots'))
     
+
 def get_dataconf_file(args):
     return args.model_type + '_dataconf.txt'
+
+
+def test_validation_test_split(dataset, test_train_split=0.8, val_train_split=0.1, shuffle=False):
+    dataset_size = len(dataset)
+    indices = list(range(dataset_size))
+    test_split = int(np.floor(test_train_split * dataset_size))
+    if shuffle:
+        np.random.shuffle(indices)
+    train_indices, test_indices = indices[:test_split], indices[test_split:]
+    train_size = len(train_indices)
+    validation_split = int(np.floor((1 - val_train_split) * train_size))
+    train_indices, val_indices = train_indices[ : validation_split], train_indices[validation_split:]
+    
+    return train_indices, val_indices, test_indices
 
 
 parser = argparse.ArgumentParser(description='The training script of the flowPredict pytorch implementation')
@@ -42,6 +60,7 @@ parser.add_argument('--cuda', dest='cuda', action='store_true', default=False, h
 parser.add_argument('--threads', dest='threads', type=int, default=4, help='Number of threads for data loader to use')
 parser.add_argument('--batch-size', dest='batch_size', type=int, default=4, help='Training batch size.')
 parser.add_argument('--test-train-split', dest='test_train_split', type=float, default=0.8, help='The percentage of the data to be used in the training set.')
+parser.add_argument('--val-train-split', dest='val_train_split', type=float, default=0.1, help='The percentage of the train data to be used as validation set')
 parser.add_argument('--shuffle', dest='shuffle', default=False, action='store_true', help='Should the training and testing data be shufffled.')
 parser.add_argument('--epochs', dest='epochs', type=int, default=5, help='Number of epochs for which the model will be trained')
 parser.add_argument('--seed', dest='seed', type=int, default=123, help='Random seed to use. Default=123')
@@ -52,6 +71,7 @@ parser.add_argument('--print-summeries', dest='print_summeries', default=False, 
 parser.add_argument('--evaluate', default=False, action='store_true', dest='evaluate' , help='Evaluate the trained model at the end')
 parser.add_argument('--no-train', default=False, action='store_true', dest='no_train' , help='Do not train the model with the trianing data')
 parser.add_argument('--model-path', default=None, action='store', dest='model_path' , help='Optional path to the model\'s weights.')
+
 print('===> Setting up basic structures ')
 
 args = parser.parse_args()
@@ -62,11 +82,11 @@ if args.cuda and not torch.cuda.is_available():
     raise Exception("No GPU found, please run without --cuda")
 
 random_seed = args.seed
-
 np.random.seed(random_seed)
-torch.manual_seed(args.seed)
+torch.manual_seed(random_seed)
+random.seed(random_seed) 
 if args.cuda:
-    torch.cuda.manual_seed(args.seed)
+    torch.cuda.manual_seed(random_seed)
 
 device = torch.device("cuda:0" if args.cuda else "cpu")
 
@@ -94,21 +114,22 @@ print('===> Loading datasets')
 
 dataconf_file = get_dataconf_file(args)
 dataset = SimulationDataSet(args.data_dir, dataconf_file, args)
-dataset_size = len(dataset)
-indices = list(range(dataset_size))
-split = int(np.floor(test_train_split * dataset_size))
-if shuffle_dataset:
-    np.random.shuffle(indices)
-train_indices, test_indices = indices[:split], indices[split:]
-
-print('--training samples count:', len(train_indices))
-print('--test samples count:', len(test_indices))
+train_indices, val_indices, test_indices = test_validation_test_split(dataset, shuffle=shuffle_dataset,
+                                                                      test_train_split=args.test_train_split,
+                                                                      val_train_split=args.val_train_split)
 
 train_sampler = SubsetRandomSampler(train_indices)
+val_sampler = SubsetRandomSampler(val_indices)
 test_sampler = SubsetRandomSampler(test_indices)
 
 train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, sampler=train_sampler, shuffle=False, num_workers=threads)
+val_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, sampler=val_sampler, shuffle=False, num_workers=threads)
 test_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, sampler=test_sampler, shuffle=False, num_workers=threads)
+
+print('--training samples count:', len(train_indices))
+print('--validation samples count:', len(val_indices))
+print('--test samples count:', len(test_indices))
+
 
 print('===> Loading model')
 
@@ -140,7 +161,9 @@ evaluator = Evaluator(args, config['output_dir'], device=device)
 
 train_loader_len = len(train_loader)
 losses_path = os.path.join(config['output_dir'], args.model_name, 'losses.txt')
+val_losses_path = os.path.join(config['output_dir'], args.model_name, 'val_losses_test.txt')
 test_losses_path = os.path.join(config['output_dir'], args.model_name, 'losses_test.txt')
+
 
 for epoch in range(num_epochs if not args.no_train else 0):
     epoch_loss_d = 0
@@ -164,7 +187,7 @@ for epoch in range(num_epochs if not args.no_train else 0):
         loss_d_fake = criterionGAN(pred_fake, False)
 
         real_ab = torch.cat((real_a, real_b), 1)
-        pred_real = net_d(real_ab)
+        pred_real = net_d(real_ab) 
         loss_d_real = criterionGAN(pred_real, True)
 
         loss_d = (loss_d_fake + loss_d_real) * 0.5
@@ -198,6 +221,7 @@ for epoch in range(num_epochs if not args.no_train else 0):
 
     epoch_loss_d /= train_loader_len
     epoch_loss_g /= train_loader_len
+
     with open(losses_path, 'w+') as losses_hand:
         losses_hand.write('epoch: {}, gen:{:.5f}, desc:{:.5f}'.format(epoch, epoch_loss_g, epoch_loss_d))
     
@@ -210,18 +234,35 @@ for epoch in range(num_epochs if not args.no_train else 0):
         print("==> Checkpoint saved to {}".format(os.path.join("checkpoints", args.model_name)))
 
         avg_psnr = 0
-        for batch in test_loader:
+        avg_mse = 0
+        for batch in val_loader:
             input_img, target = batch[0].to(device), batch[1].to(device)
             prediction = net_g(input_img)
             mse = criterionMSE(prediction, target)
             psnr = 10 * math.log10(1 / mse.item())
+            avg_mse += mse
             avg_psnr += psnr
-        avg_psnr /= len(test_loader)
-        print("> Avg. PSNR: {:.5} dB".format(avg_psnr))
+        avg_psnr /= len(val_loader)
+        avg_mse /= len(val_loader)
+        print("> Val Avg. PSNR: {:.5} dB".format(avg_psnr))
+        
+        with open(val_losses_path, 'w+') as losses_hand:
+            losses_hand.write('epoch:{}, psnr:{:.5f}, mse:{:.5f}'.format(epoch,avg_psnr,avg_mse))
+            
+            
 
 
 if args.evaluate:
     print('===> Evaluating model')
+
+    print('--Evaluating with test set:')
+    evaluator.set_output_name('test')
     evaluator.snapshots(net_g, test_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
     evaluator.individual_images_performance(net_g, test_loader)
     evaluator.recusive_application_performance(net_g, dataset, split, samples=config['evaluation_recursive_samples'])
+
+    print('--Evaluating with train set:')
+    evaluator.set_output_name('train')
+    evaluator.snapshots(net_g, train_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
+    evaluator.individual_images_performance(net_g, train_loader)
+    evaluator.recusive_application_performance(net_g, dataset, 1, samples=config['evaluation_recursive_samples'])
