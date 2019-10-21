@@ -5,7 +5,7 @@ set +e
 BASEDIR=$(dirname $0)
 
 SOLUTION_LIST=""
-PVPYTHON_EXE=${PVPYTHON_EXE:-"/home/arnaud/Downloads/ParaView-5.2.0-Qt4-OpenGL2-MPI-Linux-64bit/bin/pvpython"}
+PVPYTHON_EXE=${PVPYTHON_EXE:-"/home/arnaud/temp/Snap/ParaView-5.2.0-Qt4-OpenGL2-MPI-Linux-64bit/bin/pvpython"}
 
 CROPPER_SCRIPT="${BASEDIR}/cropper.py"
 

@@ -9,7 +9,7 @@ import random
 import signal
 
 
-from utils import mkdir
+from utils import mkdir, Logger
 from dataloader import SimulationDataSet
 from models import define_G, define_D, get_scheduler, update_learning_rate, GANLoss
 from evaluate import Evaluator
@@ -43,7 +43,7 @@ def create_directories():
     mkdir(os.path.join(config['output_dir'], args.model_name))
     mkdir(os.path.join(config['output_dir'], 'test', 'snapshots'))
     mkdir(os.path.join(config['output_dir'], 'train', 'snapshots'))
-    
+
 
 def get_dataconf_file(args):
     return args.model_type + '_dataconf.txt'
@@ -59,15 +59,15 @@ def test_validation_test_split(dataset, test_train_split=0.8, val_train_split=0.
     train_size = len(train_indices)
     validation_split = int(np.floor((1 - val_train_split) * train_size))
     train_indices, val_indices = train_indices[ : validation_split], train_indices[validation_split:]
-    
+
     return train_indices, val_indices, test_indices
 
 
 def save_models(net_g, net_d, args, epoch):
-    net_g_model_out_path = "./checkpoints/{}/netG_model_epoch_{}.pth".format(args.model_name, epoch)
-    net_d_model_out_path = "./checkpoints/{}/netD_model_epoch_{}.pth".format(args.model_name, epoch)        
+    net_g_model_out_path = "./{0}/{1}/netG_{1}_model_epoch_{2}.pth".format(config['output_dir'], args.model_name, epoch)
+    net_d_model_out_path = "./{0}/{1}/netD_{1}_model_epoch_{2}.pth".format(config['output_dir'], args.model_name, epoch)
     torch.save(net_g, net_g_model_out_path)
-    torch.save(net_d, net_d_model_out_path)    
+    torch.save(net_d, net_d_model_out_path)
 
 
 parser = argparse.ArgumentParser(description='The training script of the flowPredict pytorch implementation')
@@ -91,11 +91,32 @@ parser.add_argument('--print-summeries', dest='print_summeries', default=False, 
 parser.add_argument('--evaluate', default=False, action='store_true', dest='evaluate' , help='Evaluate the trained model at the end')
 parser.add_argument('--no-train', default=False, action='store_true', dest='no_train' , help='Do not train the model with the trianing data')
 parser.add_argument('--model-path', default=None, action='store', dest='model_path' , help='Optional path to the model\'s weights.')
+parser.add_argument('--g_nfg', type=int, dest='g_nfg', default=-1, help='Number of feature maps in the first layers of ResNet')
+parser.add_argument('--g_layers', type=int, dest='g_layers', default=-1, help='ResNet blocks in the middle of the network')
+parser.add_argument('--g_output_nc', type=int, dest='g_output_nc', default=-1, help='Number of output channels of the genrator network')
+parser.add_argument('--g_input_nc', type=int, dest='g_input_nc', default=-1, help='Number of input channels of the genrator network')
+parser.add_argument('--output_dir', dest='output_dir', default=None, help='The output directory for the model files')
 
-print('===> Setting up basic structures ')
+
 args = parser.parse_args()
 
-print('--Model name:', args.model_name)
+if args.g_layers != -1: config['g_layers'] = args.g_layers
+if args.g_nfg != -1: config['g_nfg'] = args.g_nfg
+if args.g_input_nc != -1: config['g_input_nc'] = args.g_input_nc
+if args.g_output_nc != -1: config['g_output_nc'] = args.g_output_nc
+if args.output_dir is not None: config['output_dir'] = args.output_dir
+
+
+args.model_name = '{}_{}_l{}_ngf{}'.format(args.model_type, args.model_name, config['g_layers'], config['g_nfg'])
+if args.use_pressure:
+    args.model_name = '{}_p'.format(args.model_name)
+
+create_directories()
+
+sys.stdout = Logger(os.path.join(config['output_dir'], 'log.txt'))
+
+print('===> Setting up basic structures ')
+
 
 if args.cuda and not torch.cuda.is_available():
     raise Exception("No GPU found, please run without --cuda")
@@ -103,23 +124,29 @@ if args.cuda and not torch.cuda.is_available():
 random_seed = args.seed
 np.random.seed(random_seed)
 torch.manual_seed(random_seed)
-random.seed(random_seed) 
+random.seed(random_seed)
 if args.cuda:
     torch.cuda.manual_seed(random_seed)
 
 device = torch.device("cuda:0" if args.cuda else "cpu")
 
+if not args.no_train: signal.signal(signal.SIGINT, signal_handler)
+
 model_type = args.model_type
 test_train_split = args.test_train_split
+val_train_split = args.val_train_split
 batch_size = args.batch_size
 shuffle_dataset = args.shuffle
 num_epochs = args.epochs
 threads = args.threads
 model_name = args.model_name
 
+
+print('--Model name:', args.model_name)
 print('--model type:', model_type)
 print('--use pressure:', args.use_pressure)
 print('--test-train split:', test_train_split)
+print('--val-train split:', val_train_split)
 print('--batch size:', batch_size)
 print('--shuffle dataset:', shuffle_dataset)
 print('--num epochs:', num_epochs)
@@ -129,7 +156,6 @@ print('--worker threads:', threads)
 print('--cuda:', args.cuda)
 print('--device:', device)
 
-if not args.no_train: signal.signal(signal.SIGINT, signal_handler)
 
 print('===> Loading datasets')
 
@@ -143,14 +169,13 @@ train_sampler = SubsetRandomSampler(train_indices)
 val_sampler = SubsetRandomSampler(val_indices)
 test_sampler = SubsetRandomSampler(test_indices)
 
-train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, sampler=train_sampler, shuffle=False, num_workers=threads)
-val_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, sampler=val_sampler, shuffle=False, num_workers=threads)
-test_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, sampler=test_sampler, shuffle=False, num_workers=threads)
+train_loader = DataLoader(dataset, batch_size=batch_size, sampler=train_sampler, shuffle=False, num_workers=threads)
+val_loader = DataLoader(dataset, batch_size=batch_size, sampler=val_sampler, shuffle=False, num_workers=threads)
+test_loader = DataLoader(dataset, batch_size=batch_size, sampler=test_sampler, shuffle=False, num_workers=threads)
 
 print('--training samples count:', len(train_indices))
 print('--validation samples count:', len(val_indices))
 print('--test samples count:', len(test_indices))
-
 
 print('===> Loading model')
 
@@ -168,15 +193,10 @@ criterionL1 = nn.L1Loss().to(device)
 criterionMSE = nn.MSELoss().to(device)
 
 if args.print_summeries:
-    print('Generator network:')
+    print('===> Generator network:')
     summary(net_g, input_size=(config['g_input_nc'], config['input_width'], config['input_height']))
-    print('Detector network:')
+    print('===> Detector network:')
     summary(net_d,input_size=(config['d_input_nc'], config['input_width'], config['input_height']))
-
-if not args.no_train:
-    print('===> Starting the training loop')
-
-create_directories()
 
 evaluator = Evaluator(args, config['output_dir'], device=device)
 
@@ -185,16 +205,18 @@ losses_path = os.path.join(config['output_dir'], args.model_name, 'losses.txt')
 val_losses_path = os.path.join(config['output_dir'], args.model_name, 'val_losses_test.txt')
 test_losses_path = os.path.join(config['output_dir'], args.model_name, 'losses_test.txt')
 
+if not args.no_train:
+    print('===> Starting the training loop')
+
 training_started = True
 for epoch in range(num_epochs if not args.no_train else 0):
     epoch_loss_d = 0
     epoch_loss_g = 0
 
     for iteration, batch in enumerate(train_loader, 1):
-
         net_g.train()
         net_d.train()
-        
+
         real_a, real_b = batch[0].to(device), batch[1].to(device)
         fake_b = net_g(real_a)
 
@@ -202,13 +224,13 @@ for epoch in range(num_epochs if not args.no_train else 0):
         # Training the descriminator #
         ##############################
         optimizer_d.zero_grad()
-        
+
         fake_ab = torch.cat((real_a, fake_b), 1)
         pred_fake = net_d(fake_ab.detach())
         loss_d_fake = criterionGAN(pred_fake, False)
 
         real_ab = torch.cat((real_a, real_b), 1)
-        pred_real = net_d(real_ab) 
+        pred_real = net_d(real_ab)
         loss_d_real = criterionGAN(pred_real, True)
 
         loss_d = (loss_d_fake + loss_d_real) * 0.5
@@ -238,9 +260,9 @@ for epoch in range(num_epochs if not args.no_train else 0):
             epoch, iteration, train_loader_len, loss_d.item(), loss_g.item()))
 
         if STOP_TRAINING:
-            print('Saving the model now...')
+            print('> Saving the model now...')
             save_models(net_g, net_d, args, epoch)
-            print('Model saved.')
+            print('> Model saved.')
             sys.exit(0)
 
     update_learning_rate(net_g_scheduler, optimizer_g)
@@ -251,10 +273,10 @@ for epoch in range(num_epochs if not args.no_train else 0):
 
     with open(losses_path, 'w+') as losses_hand:
         losses_hand.write('epoch: {}, gen:{:.5f}, desc:{:.5f}'.format(epoch, epoch_loss_g, epoch_loss_d))
-    
+
     if epoch % 10  == 0:
-        save_models(net_g, net_d, args, epoch)        
-        print("==> Checkpoint saved to {}".format(os.path.join("checkpoints", args.model_name)))
+        save_models(net_g, net_d, args, epoch)
+        print("> Checkpoint saved to {}".format(os.path.join("checkpoints", args.model_name)))
 
         avg_psnr = 0
         avg_mse = 0
@@ -271,28 +293,25 @@ for epoch in range(num_epochs if not args.no_train else 0):
             print("> Val Avg. PSNR: {:.5} dB".format(avg_psnr))
 
             with open(val_losses_path, 'w+') as losses_hand:
-                losses_hand.write('epoch:{}, psnr:{:.5f}, mse:{:.5f}'.format(epoch,avg_psnr,avg_mse))
+                losses_hand.write('epoch:{}, psnr:{:.5f}, mse:{:.5f}'.format(epoch, avg_psnr, avg_mse))
 
-training_started = False            
-            
+training_started = False
 
 
 if args.evaluate:
-
     print('===> Evaluating model')
 
     net_g.eval()
     with torch.no_grad():
-        
-        print('--Evaluating with test set:')
+
+        print('===> Evaluating with test set:')
         evaluator.set_output_name('test')
         evaluator.snapshots(net_g, test_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
         evaluator.individual_images_performance(net_g, test_loader)
         evaluator.recusive_application_performance(net_g, dataset, len(train_indices) + len(val_indices) , samples=config['evaluation_recursive_samples'])
 
-        print('--Evaluating with train set:')
+        print('===> Evaluating with train set:')
         evaluator.set_output_name('train')
         evaluator.snapshots(net_g, train_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
         evaluator.individual_images_performance(net_g, train_loader)
         evaluator.recusive_application_performance(net_g, dataset, 1, samples=config['evaluation_recursive_samples'])
-        

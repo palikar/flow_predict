@@ -17,11 +17,11 @@ from utils import mkdir
 from config import config
 from dataloader import UnNormalize
 
-# from skimage.metrics import structural_similarity as ssim_metr
-
-
-def ssim_metr(*args, **kargs):
-    return 0.3
+try:
+    from skimage.metrics import structural_similarity as ssim_metr
+except ImportError:
+    def ssim_metr(*args, **kargs):
+        return 0.3
 
 
 
@@ -50,7 +50,7 @@ class Evaluator:
 
 
     def recusive_application_performance(self, net, dataset, split_point, samples=20):
-        
+
         print('-- Evaluating performance of recursive application')
 
         if split_point - samples/2 < 0:
@@ -71,7 +71,7 @@ class Evaluator:
         prev_img = None
         input_img = dataset[start_index][0].expand(1,-1,-1,-1)
 
-        
+
 
         for index in range(start_index, end_index):
             predicted = net(input_img)
@@ -104,7 +104,7 @@ class Evaluator:
 
 
     def individual_images_performance(self, net, test_dataloader):
-        
+
 
         print('-- Evaluating performance on individual images')
 
@@ -113,7 +113,7 @@ class Evaluator:
         psnr = []
         ssim = []
 
-        
+
         for iteration, batch in enumerate(test_dataloader, 1):
             real_a, real_b = batch[0].to(self.device), batch[1].to(self.device)
             predicted = net(real_a)
@@ -208,10 +208,10 @@ class Evaluator:
                 merge_and_save(input_img_p, predicted_p,
                                'Time step t (x)', 'Time step t+1 (p)',
                                os.path.join(config['output_dir'], self.output_name, 'snapshots', 'p_timestep_{}_{}.png'.format(index, random.randint(0, 10000))))
-                
-        
 
-        
+
+
+
     def run_full_simulation(self, net, dataset, save_images=True):
 
         print('--Running simulation with the generator network')
@@ -219,5 +219,3 @@ class Evaluator:
         for data in dataset:
             input_img, target = dataset[index]
             predicted = net(input_img.expand(1,-1,-1,-1))
-
-        

@@ -1,25 +1,21 @@
-i
-
-
-
 
 
 * Simple train 
 
 #+BEGIN_SRC sh
-python train.py --data ./data/generated_data/ --model-type 'c' --test-train-split 0.8 --evaluate --cuda --model-name 'c_res_l3_nfg64' --use-pressure --threads --batch-size 20 --shuffle --epochs 100 --lr_policy step --print-summeries --val-train-split 0.1
+python train.py --data ./data/generated_data/ --model-type 'c' --cuda --model-name 'res' --threads 4 --batch-size 32 --shuffle --epochs 100 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1
 #+END_SRC
 
 * Load model end evaluate
 
 #+BEGIN_SRC sh
-python train.py --data ./data/generated_data/ --model-type 'c' --test-train-split 0.8 --evaluate --cuda --model-name 'c_res_l3_nfg64' --use-pressure --threads --batch-size 20 --shuffle --epochs 100 --lr_policy step --print-summeries --model-path ./checkpoints/s_res_8/netG_model_epoch_0.pth --evaluate --no-train
+python train.py --data ./data/generated_data/ --model-type 'c' --cuda --model-name 'res' --threads 4 --batch-size 32 --epochs 100 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --no-train --evaluate --model-path ""
 #+END_SRC
 
 * Train and evaluate
 
 #+BEGIN_SRC sh
-python train.py --data ./data/generated_data/ --model-type 'c' --test-train-split 0.8 --evaluate --cuda --model-name 'c_res_l3_nfg64' --use-pressure --threads --batch-size 20 --shuffle --epochs 100 --lr_policy step --evaluate --val-train-split 0.1
+python train.py --data ./data/generated_data/ --model-type 'c' --cuda --model-name 'res' --threads 4 --batch-size 32 --shuffle --epochs 100 --lr_policy step --seed ${RANDOM} -test-train-split 0.8 --val-train-split 0.1 --evaluate
 #+END_SRC
 
 

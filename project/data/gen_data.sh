@@ -10,8 +10,7 @@ GEOMETRY_DATA="$(realpath $3)/"
 ROOT_DATA_DIR=$(realpath $4)
 
 # FLOW_EXEC="/home/arnaud/code_sys/Hiflow3_2.0/build/examples/flow/flow_tutorial"
-FLOW_EXEC=${FLOW_EXEC:-"/home/arnaud/code_sys/Hiflow3_2.0/build/examples/flow/flow_tutorial"}
-FLOW_EXEC=${FLOW_EXEC:-"/home/arnaud/code_sys/Hiflow3_2.0/build/examples/flow/flow_tutorial"}
+FLOW_EXEC=${FLOW_EXEC:-"/home/arnaud/temp/Snap/flow_tutorial"}
 
 RENDER_SCRIPT=$(realpath "${BASEDIR}/render_images.sh")
 

@@ -16,7 +16,7 @@ def get_scheduler(optimizer, args):
             return lr_l
         scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda_rule)
     elif args.lr_policy == 'step':
-        scheduler = lr_scheduler.StepLR(optimizer, step_size=args.lr_decay_iters, gamma=0.1)
+        scheduler = lr_scheduler.StepLR(optimizer, step_size=args.niter_decay, gamma=0.1)
     elif args.lr_policy == 'plateau':
         scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.2, threshold=0.01, patience=5)
     elif args.lr_policy == 'cosine':
@@ -30,7 +30,6 @@ def get_scheduler(optimizer, args):
 def update_learning_rate(scheduler, optimizer):
     scheduler.step()
     lr = optimizer.param_groups[0]['lr']
-    print('--learning rate = %.7f' % lr)
 
 
 def get_norm_layer(norm_type='instance'):
