@@ -71,7 +71,7 @@ def define_G(input_nc, output_nc, ngf, norm='batch', use_dropout=True, init_gain
         return net
     else:
         norm_layer = get_norm_layer(norm_type=norm)
-        net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=9)
+        net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=n_blocks)
         return init_net(net, init_gain, gpu_id)
 
 

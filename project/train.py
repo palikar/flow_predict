@@ -130,7 +130,7 @@ if args.cuda:
 
 device = torch.device("cuda:0" if args.cuda else "cpu")
 
-if not args.no_train: signal.signal(signal.SIGINT, signal_handler)
+# if not args.no_train: signal.signal(signal.SIGINT, signal_handler)
 
 model_type = args.model_type
 test_train_split = args.test_train_split
@@ -264,6 +264,18 @@ for epoch in range(num_epochs if not args.no_train else 0):
             save_models(net_g, net_d, args, epoch)
             print('> Model saved.')
             sys.exit(0)
+
+        del real_a
+        del real_b
+        del pred_fake
+        del loss_d_fake
+        del loss_d_real
+        del loss_d
+        del loss_g
+        del loss_g_l1
+        del loss_g_gan
+        del fake_ab
+        del real_ab
 
     update_learning_rate(net_g_scheduler, optimizer_g)
     update_learning_rate(net_d_scheduler, optimizer_d)
