@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 
 
-VERDANA_FONT = ImageFont.truetype("verdana.ttf", 18)
+VERDANA_FONT = ImageFont.truetype("verdana.ttf", 16)
 
 class RedirectStdStreams(object):
     def __init__(self, stdout=None, stderr=None):
@@ -78,7 +78,7 @@ def correlation(img1, img2):
     c = np.corrcoef(img1.flat, img2.flat)[0,1]
     return c
 
-#
+
 def merge_and_save(img1, img2, text1, text2, dest):
     image_1 = Image.fromarray(np.uint8(img1), 'RGB')
     image_2 = Image.fromarray(np.uint8(img2), 'RGB')

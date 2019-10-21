@@ -50,8 +50,7 @@ class Evaluator:
 
 
     def recusive_application_performance(self, net, dataset, split_point, samples=20):
-
-        print('-- Evaluating performance of recursive application')
+        print('===> Evaluating performance of recursive application')
 
         if split_point - samples/2 < 0:
             start_index = 0
@@ -60,8 +59,8 @@ class Evaluator:
             start_index = int(split_point - samples/2)
             end_index = int(split_point + samples/2)
 
-        print('--start index:', start_index)
-        print('--end index:', end_index)
+        print('-- Start index:', start_index)
+        print('-- End index:', end_index)
 
         mse =  []
         cor =  []
@@ -92,7 +91,7 @@ class Evaluator:
 
             del predicted, target
 
-            print('Recursive application {} completed'.format(index))
+            print('> Recursive application {} completed'.format(index - start_index))
 
 
         with open(os.path.join(self.root_dir, self.output_name, 'recursive_application.txt'), 'w') as list_hand:
@@ -104,9 +103,7 @@ class Evaluator:
 
 
     def individual_images_performance(self, net, test_dataloader):
-
-
-        print('-- Evaluating performance on individual images')
+        print('===> Evaluating performance on individual images')
 
         mse = []
         cor = []
@@ -165,14 +162,14 @@ class Evaluator:
 
 
     def snapshots(self, net, sampler, dataset, samples=5):
-        print('--Saving {} snapshots'.format(samples))
+        print('===> Saving {} snapshots'.format(samples))
 
         for index, i in zip(sampler, range(samples)):
 
             input_img, target = dataset[index]
             predicted = net(input_img.expand(1,-1,-1,-1))
 
-            print('> Snapshot {} ;  output shape: {}'.format(i, str(predicted.shape)))
+            print('> Snapshot {}'.format(str(predicted.shape)))
 
             if not self.args.use_pressure:
                 predicted_x, predicted_y = self._prepare_tensor_img(predicted[0])
@@ -214,7 +211,7 @@ class Evaluator:
 
     def run_full_simulation(self, net, dataset, save_images=True):
 
-        print('--Running simulation with the generator network')
+        print('===> Running simulation with the generator network')
 
         for data in dataset:
             input_img, target = dataset[index]
