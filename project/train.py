@@ -271,7 +271,7 @@ for epoch in range(num_epochs if not args.no_train else 0):
     epoch_loss_d /= train_loader_len
     epoch_loss_g /= train_loader_len
 
-    with open(losses_path, 'w+') as losses_hand:
+    with open(losses_path, 'a') as losses_hand:
         losses_hand.write('epoch: {}, gen:{:.5f}, desc:{:.5f}'.format(epoch, epoch_loss_g, epoch_loss_d))
 
     if epoch % 10  == 0:
@@ -292,9 +292,11 @@ for epoch in range(num_epochs if not args.no_train else 0):
             avg_mse /= len(val_loader)
             print("> Val Avg. PSNR: {:.5} dB".format(avg_psnr))
 
-            with open(val_losses_path, 'w+') as losses_hand:
+            with open(val_losses_path, 'a') as losses_hand:
                 losses_hand.write('epoch:{}, psnr:{:.5f}, mse:{:.5f}'.format(epoch, avg_psnr, avg_mse))
 
+save_models(net_g, net_d, args, 100)
+print("> Checkpoint saved to {}".format(os.path.join("checkpoints", args.model_name)))
 training_started = False
 
 

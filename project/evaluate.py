@@ -169,7 +169,7 @@ class Evaluator:
             input_img, target = dataset[index]
             predicted = net(input_img.expand(1,-1,-1,-1))
 
-            print('> Snapshot {}'.format(str(predicted.shape)))
+            print('> Snapshot {}'.format(str(i)))
 
             if not self.args.use_pressure:
                 predicted_x, predicted_y = self._prepare_tensor_img(predicted[0])
