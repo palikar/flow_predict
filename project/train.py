@@ -25,6 +25,10 @@ from torch.utils.data.sampler import SubsetRandomSampler
 
 from torchsummary import summary
 
+if not sys.warnoptions:
+    import warnings
+    warnings.simplefilter("ignore")
+
 
 training_started = False
 STOP_TRAINING = False
@@ -41,8 +45,6 @@ def signal_handler(sig, frame):
 def create_directories():
     mkdir(config['output_dir'])
     mkdir(os.path.join(config['output_dir'], args.model_name))
-    mkdir(os.path.join(config['output_dir'], 'test', 'snapshots'))
-    mkdir(os.path.join(config['output_dir'], 'train', 'snapshots'))
 
 
 def get_dataconf_file(args):
@@ -72,7 +74,7 @@ def save_models(net_g, net_d, args, epoch):
 
 parser = argparse.ArgumentParser(description='The training script of the flowPredict pytorch implementation')
 parser.add_argument('--data', dest='data_dir', required=True, help='Root directory of the generated data.')
-parser.add_argument('--model-name', dest='model_name', default='s_res_8', required=False, help='Name of the current model being trained')
+parser.add_argument('--model-name', dest='model_name', default='s_res_8', required=False, help='Name of the current model being trained. res or unet')
 parser.add_argument('--use-pressure', dest='use_pressure', required=False, action='store_true', default=False, help='Should the pressure field images to considered by the models')
 parser.add_argument('--model-type', dest='model_type', action='store', default='c', choices=['c', 'vd', 's', 'o'], required=False,
                     help='Type of model to be build. \'c\' - baseline, \'vd\' - fluid viscosity and density, \'s\' - inflow speed, \'o\' - object')
@@ -95,7 +97,7 @@ parser.add_argument('--g_nfg', type=int, dest='g_nfg', default=-1, help='Number 
 parser.add_argument('--g_layers', type=int, dest='g_layers', default=-1, help='ResNet blocks in the middle of the network')
 parser.add_argument('--g_output_nc', type=int, dest='g_output_nc', default=-1, help='Number of output channels of the genrator network')
 parser.add_argument('--g_input_nc', type=int, dest='g_input_nc', default=-1, help='Number of input channels of the genrator network')
-parser.add_argument('--output_dir', dest='output_dir', default=None, help='The output directory for the model files')
+parser.add_argument('--output-dir', dest='output_dir', default=None, help='The output directory for the model files')
 
 
 args = parser.parse_args()
@@ -125,12 +127,15 @@ random_seed = args.seed
 np.random.seed(random_seed)
 torch.manual_seed(random_seed)
 random.seed(random_seed)
+
 if args.cuda:
     torch.cuda.manual_seed(random_seed)
 
 device = torch.device("cuda:0" if args.cuda else "cpu")
+# if torch.cuda.device_count() > 1:
+#     device = torch.device("cuda:0")
 
-# if not args.no_train: signal.signal(signal.SIGINT, signal_handler)
+if not args.no_train: signal.signal(signal.SIGINT, signal_handler)
 
 model_type = args.model_type
 test_train_split = args.test_train_split
@@ -182,6 +187,14 @@ print('===> Loading model')
 net_g = define_G(config['g_input_nc'], config['g_output_nc'], config['g_nfg'], n_blocks=config['g_layers'], gpu_id=device, args=args).float()
 net_d = define_D(config['d_input_nc'], config['d_nfg'], n_layers_D=config['d_layers'], gpu_id=device).float()
 
+# if torch.cuda.device_count() > 1:
+#   print("--using", torch.cuda.device_count(), "GPUs")
+#   net_g = nn.DataParallel(net_g)
+#   net_d = nn.DataParallel(net_d)
+# net_d.to(device)
+# net_g.to(device)
+
+
 optimizer_g = optim.Adam(net_g.parameters(), lr=config['adam_lr'], betas=(config['adam_b1'], config['adam_b2']))
 optimizer_d = optim.Adam(net_d.parameters(), lr=config['adam_lr'], betas=(config['adam_b1'], config['adam_b2']))
 
@@ -198,12 +211,11 @@ if args.print_summeries:
     print('===> Detector network:')
     summary(net_d,input_size=(config['d_input_nc'], config['input_width'], config['input_height']))
 
-evaluator = Evaluator(args, config['output_dir'], device=device)
+
 
 train_loader_len = len(train_loader)
-losses_path = os.path.join(config['output_dir'], args.model_name, 'losses.txt')
-val_losses_path = os.path.join(config['output_dir'], args.model_name, 'val_losses_test.txt')
-test_losses_path = os.path.join(config['output_dir'], args.model_name, 'losses_test.txt')
+losses_path = os.path.join(config['output_dir'], 'losses.txt')
+val_losses_path = os.path.join(config['output_dir'], 'val_losses_test.txt')
 
 if not args.no_train:
     print('===> Starting the training loop')
@@ -213,7 +225,8 @@ for epoch in range(num_epochs if not args.no_train else 0):
     epoch_loss_d = 0
     epoch_loss_g = 0
 
-    for iteration, batch in enumerate(train_loader, 1):
+    iteration = 1
+    for batch in train_loader:
         net_g.train()
         net_d.train()
 
@@ -258,6 +271,7 @@ for epoch in range(num_epochs if not args.no_train else 0):
 
         print("> Epoch[{}]({}/{}): Loss_D: {:.5f} Loss_G: {:.5f}".format(
             epoch, iteration, train_loader_len, loss_d.item(), loss_g.item()))
+        iteration += 1
 
         if STOP_TRAINING:
             print('> Saving the model now...')
@@ -284,12 +298,13 @@ for epoch in range(num_epochs if not args.no_train else 0):
     epoch_loss_g /= train_loader_len
 
     with open(losses_path, 'a') as losses_hand:
-        losses_hand.write('epoch: {}, gen:{:.5f}, desc:{:.5f}'.format(epoch, epoch_loss_g, epoch_loss_d))
+        losses_hand.write('epoch: {}, gen:{:.5f}, desc:{:.5f}\n'.format(epoch, epoch_loss_g, epoch_loss_d))
 
     if epoch % 10  == 0:
         save_models(net_g, net_d, args, epoch)
         print("> Checkpoint saved to {}".format(os.path.join("checkpoints", args.model_name)))
 
+    if epoch % 5  == 0:
         avg_psnr = 0
         avg_mse = 0
         with torch.no_grad():
@@ -302,16 +317,17 @@ for epoch in range(num_epochs if not args.no_train else 0):
                 avg_psnr += psnr
             avg_psnr /= len(val_loader)
             avg_mse /= len(val_loader)
+
             print("> Val Avg. PSNR: {:.5} dB".format(avg_psnr))
-
             with open(val_losses_path, 'a') as losses_hand:
-                losses_hand.write('epoch:{}, psnr:{:.5f}, mse:{:.5f}'.format(epoch, avg_psnr, avg_mse))
+                losses_hand.write('epoch:{}, psnr:{:.5f}, mse:{:.5f}\n'.format(epoch, avg_psnr, avg_mse))
 
-save_models(net_g, net_d, args, 100)
+
+save_models(net_g, net_d, args, num_epochs)
 print("> Checkpoint saved to {}".format(os.path.join("checkpoints", args.model_name)))
 training_started = False
 
-
+evaluator = Evaluator(args, config['output_dir'], device=device)
 if args.evaluate:
     print('===> Evaluating model')
 
@@ -323,9 +339,11 @@ if args.evaluate:
         evaluator.snapshots(net_g, test_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
         evaluator.individual_images_performance(net_g, test_loader)
         evaluator.recusive_application_performance(net_g, dataset, len(train_indices) + len(val_indices) , samples=config['evaluation_recursive_samples'])
+        evaluator.run_full_simulation(net_g, dataset, len(train_indices) + len(val_indices), config['full_simulaiton_samples'], sim_name = 'test_data_simulation')
 
         print('===> Evaluating with train set:')
         evaluator.set_output_name('train')
         evaluator.snapshots(net_g, train_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
         evaluator.individual_images_performance(net_g, train_loader)
         evaluator.recusive_application_performance(net_g, dataset, 1, samples=config['evaluation_recursive_samples'])
+        evaluator.run_full_simulation(net_g, dataset, 0, config['full_simulaiton_samples'], sim_name = 'train_data_simulation')

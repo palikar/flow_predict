@@ -9,7 +9,7 @@ from torch.optim import lr_scheduler
 
 
 def get_scheduler(optimizer, args):
-    
+
     if args.lr_policy == 'lambda':
         def lambda_rule(epoch):
             lr_l = 1.0 - max(0, epoch + args.epochs - args.niter) / float(args.niter_decay + 1)
@@ -71,14 +71,19 @@ def define_G(input_nc, output_nc, ngf, norm='batch', use_dropout=True, init_gain
         return net
     else:
         norm_layer = get_norm_layer(norm_type=norm)
-        net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=n_blocks)
-        return init_net(net, init_gain, gpu_id)
+
+        if args.model_name == 'res':
+            net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=n_blocks)
+        else:
+            net = UnetGenerator(input_nc, output_nc, ngf, num_downs=n_blocks, norm_layer=norm_layer, use_dropout=use_dropout)
+            
+        return init_net(net, init_gain, gpu_id=gpu_id)
 
 
 def define_D(input_nc, ndf, n_layers_D=3, norm='batch', use_sigmoid=False, init_gain=0.02, gpu_id='cuda:0'):
     norm_layer = get_norm_layer(norm_type=norm)
     net = NLayerDiscriminator(input_nc, ndf=ndf, n_layers=n_layers_D, norm_layer=norm_layer, use_sigmoid=use_sigmoid)
-    return init_net(net, init_gain, gpu_id)
+    return init_net(net, init_gain, gpu_id=gpu_id)
 
 
 
@@ -86,10 +91,10 @@ def define_D(input_nc, ndf, n_layers_D=3, norm='batch', use_sigmoid=False, init_
 
 
 class ResnetGenerator(nn.Module):
-    
+
     def __init__(self, input_nc, output_nc, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=True, n_blocks=4, padding_type='reflect'):
         super(ResnetGenerator, self).__init__()
-        
+
         self.input_nc = input_nc
         self.output_nc = output_nc
         self.ngf = ngf
@@ -126,7 +131,7 @@ class ResnetGenerator(nn.Module):
 
 
 class Inconv(nn.Module):
-    
+
     def __init__(self, in_ch, out_ch, norm_layer, use_bias):
         super(Inconv, self).__init__()
 
@@ -144,7 +149,7 @@ class Inconv(nn.Module):
 
 
 class Outconv(nn.Module):
-    
+
     def __init__(self, in_ch, out_ch):
         super(Outconv, self).__init__()
         self.outconv = nn.Sequential(
@@ -177,7 +182,7 @@ class Up(nn.Module):
 
 
 class Down(nn.Module):
-    
+
     def __init__(self, in_ch, out_ch, norm_layer, use_bias):
         super(Down, self).__init__()
         self.down = nn.Sequential(
@@ -193,7 +198,7 @@ class Down(nn.Module):
 
 
 class ResBlock(nn.Module):
-    
+
     def __init__(self, dim, padding_type, norm_layer, use_dropout, use_bias):
         super(ResBlock, self).__init__()
         self.conv_block = self.build_conv_block(dim, padding_type, norm_layer, use_dropout, use_bias)
@@ -201,7 +206,7 @@ class ResBlock(nn.Module):
     def build_conv_block(self, dim, padding_type, norm_layer, use_dropout, use_bias):
         conv_block = []
         p = 0
-        
+
         if padding_type == 'reflect':
             conv_block += [nn.ReflectionPad2d(1)]
         elif padding_type == 'replicate':
@@ -240,10 +245,10 @@ class ResBlock(nn.Module):
 
 
 class NLayerDiscriminator(nn.Module):
-    
+
     def __init__(self, input_nc, ndf=64, n_layers=3, norm_layer=nn.BatchNorm2d, use_sigmoid=False):
         super(NLayerDiscriminator, self).__init__()
-        
+
         if type(norm_layer) == functools.partial:
             use_bias = norm_layer.func == nn.InstanceNorm2d
         else:
@@ -286,6 +291,79 @@ class NLayerDiscriminator(nn.Module):
 
     def forward(self, input):
         return self.model(input)
+
+
+class UnetGenerator(nn.Module):
+
+    def __init__(self, input_nc, output_nc, num_downs, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=True):
+        super(UnetGenerator, self).__init__()
+        # construct unet structure
+        unet_block = UnetSkipConnectionBlock(ngf * 8, ngf * 8, input_nc=None, submodule=None, norm_layer=norm_layer, innermost=True)  # add the innermost layer
+        for i in range(num_downs - 5):          # add intermediate layers with ngf * 8 filters
+            unet_block = UnetSkipConnectionBlock(ngf * 8, ngf * 8, input_nc=None, submodule=unet_block, norm_layer=norm_layer, use_dropout=use_dropout)
+        # gradually reduce the number of filters from ngf * 8 to ngf
+        unet_block = UnetSkipConnectionBlock(ngf * 4, ngf * 8, input_nc=None, submodule=unet_block, norm_layer=norm_layer)
+        unet_block = UnetSkipConnectionBlock(ngf * 2, ngf * 4, input_nc=None, submodule=unet_block, norm_layer=norm_layer)
+        unet_block = UnetSkipConnectionBlock(ngf, ngf * 2, input_nc=None, submodule=unet_block, norm_layer=norm_layer)
+        self.model = UnetSkipConnectionBlock(output_nc, ngf, input_nc=input_nc, submodule=unet_block, outermost=True, norm_layer=norm_layer)  # add the outermost layer
+
+
+    def forward(self, input):
+        return self.model(input)
+
+
+class UnetSkipConnectionBlock(nn.Module):
+
+    def __init__(self, outer_nc, inner_nc, input_nc=None, submodule=None, outermost=False, innermost=False, norm_layer=nn.BatchNorm2d, use_dropout=True):
+        super(UnetSkipConnectionBlock, self).__init__()
+        self.outermost = outermost
+        if type(norm_layer) == functools.partial:
+            use_bias = norm_layer.func == nn.InstanceNorm2d
+        else:
+            use_bias = norm_layer == nn.InstanceNorm2d
+        if input_nc is None:
+            input_nc = outer_nc
+        downconv = nn.Conv2d(input_nc, inner_nc, kernel_size=4,
+                             stride=2, padding=1, bias=use_bias)
+        downrelu = nn.LeakyReLU(0.2, True)
+        downnorm = norm_layer(inner_nc)
+        uprelu = nn.ReLU(True)
+        upnorm = norm_layer(outer_nc)
+
+        if outermost:
+            upconv = nn.ConvTranspose2d(inner_nc * 2, outer_nc,
+                                        kernel_size=4, stride=2,
+                                        padding=1)
+            down = [downconv]
+            up = [uprelu, upconv, nn.Tanh()]
+            model = down + [submodule] + up
+        elif innermost:
+            upconv = nn.ConvTranspose2d(inner_nc, outer_nc,
+                                        kernel_size=4, stride=2,
+                                        padding=1, bias=use_bias)
+            down = [downrelu, downconv]
+            up = [uprelu, upconv, upnorm]
+            model = down + up
+        else:
+            upconv = nn.ConvTranspose2d(inner_nc * 2, outer_nc,
+                                        kernel_size=4, stride=2,
+                                        padding=1, bias=use_bias)
+            down = [downrelu, downconv, downnorm]
+            up = [uprelu, upconv, upnorm]
+
+            if use_dropout:
+                model = down + [submodule] + up + [nn.Dropout(0.5)]
+            else:
+                model = down + [submodule] + up
+
+        self.model = nn.Sequential(*model)
+
+
+    def forward(self, x):
+        if self.outermost:
+            return self.model(x)
+        else:  
+            return torch.cat([x, self.model(x)], 1)
 
 
 class GANLoss(nn.Module):

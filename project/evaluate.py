@@ -34,7 +34,7 @@ class Evaluator:
         self.device = device
 
         self.output_name = 'test'
-        mkdir(os.path.join(config['output_dir'], self.output_name))
+        self.gen_dirs()
 
         if args.use_pressure:
             self.denormalize = UnNormalize([0.5]*9,
@@ -46,7 +46,18 @@ class Evaluator:
 
     def set_output_name(self, name):
         self.output_name = name
-        mkdir(os.path.join(config['output_dir'], name))
+        self.gen_dirs()
+
+    def gen_dirs(self):
+        mkdir(os.path.join(config['output_dir'], self.output_name))
+        mkdir(os.path.join(config['output_dir'], self.output_name, 'snapshots'))
+        mkdir(os.path.join(config['output_dir'], self.output_name, 'full_simulation'))
+
+        self.path = os.path.join(config['output_dir'], self.output_name)
+        self.path_snaps = os.path.join(config['output_dir'], self.output_name, 'snapshots')
+        self.path_full_sim = os.path.join(config['output_dir'], self.output_name, 'full_simulation')
+        
+         
 
 
     def recusive_application_performance(self, net, dataset, split_point, samples=20):
@@ -68,14 +79,12 @@ class Evaluator:
         ssim = []
 
         prev_img = None
-        input_img = dataset[start_index][0].expand(1,-1,-1,-1)
-
-
+        input_img = dataset[start_index][0].expand(1,-1,-1,-1).to(self.device)
 
         for index in range(start_index, end_index):
             predicted = net(input_img)
             del input_img
-            target = dataset[index][1].expand(1,-1,-1,-1)
+            target = dataset[index][1].expand(1,-1,-1,-1).to(self.device)
 
             cur_mse = self.criterionMSE(predicted, target).item()
 
@@ -128,7 +137,7 @@ class Evaluator:
             del real_a, real_b
 
             if iteration % 10 == 0:
-                print('> Evaluation {} completed')
+                print('> Evaluation {} completed'.format(iteration))
 
         mse  = np.array(mse)
         cor  = np.array(cor)
@@ -165,9 +174,9 @@ class Evaluator:
         print('===> Saving {} snapshots'.format(samples))
 
         for index, i in zip(sampler, range(samples)):
-
+            
             input_img, target = dataset[index]
-            predicted = net(input_img.expand(1,-1,-1,-1))
+            predicted = net(input_img.expand(1,-1,-1,-1).to(self.device))
 
             print('> Snapshot {}'.format(str(i)))
 
@@ -207,12 +216,30 @@ class Evaluator:
                                os.path.join(config['output_dir'], self.output_name, 'snapshots', 'p_timestep_{}_{}.png'.format(index, random.randint(0, 10000))))
 
 
-
-
-    def run_full_simulation(self, net, dataset, save_images=True):
+    def run_full_simulation(self, net, dataset, start_index, cnt, sim_name='simulation'):
 
         print('===> Running simulation with the generator network')
 
-        for data in dataset:
-            input_img, target = dataset[index]
-            predicted = net(input_img.expand(1,-1,-1,-1))
+        path = os.path.join(config['output_dir'], self.output_name, 'full_simulation', sim_name)
+        mkdir(path)
+
+        input_img = dataset[start_index][0].expand(1,-1,-1,-1).to(self.device)
+        for i, index in enumerate(range(start_index, cnt), 1):
+            predicted = net(input_img)
+
+            if not self.args.use_pressure:
+                predicted_x, predicted_y = self._prepare_tensor_img(predicted[0])
+            else:
+                predicted_x, predicted_y, predicted_p = self._prepare_tensor_img(predicted[0])
+
+            path = os.path.join(config['output_dir'], self.output_name, 'full_simulation', sim_name)
+
+            save_img(predicted_x, 'x_step_{}.png'.format(i), '{}/x_step_{}'.format(i, path))
+            save_img(predicted_y, 'y_step_{}.png'.format(i), '{}/y_step_{}'.format(i, path))
+
+            if self.args.use_pressure:
+                save_img(predicted_p, 'p_step_{}'.format(i), '{}/p_step_{}.png'.format(i, path))
+
+            
+            input_img = predicted
+            

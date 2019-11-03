@@ -96,3 +96,17 @@ def merge_and_save(img1, img2, text1, text2, dest):
     draw.text((10,10 + height_1), text2, (0,0,0), font=VERDANA_FONT)
     
     new_im.save(dest)
+
+def save_img(img, text, dest):
+    image = Image.fromarray(np.uint8(img), 'RGB')
+
+    width, height = image.size
+
+    draw = ImageDraw.Draw(image) 
+    draw.text((10,10), text, (0,0,0), font=VERDANA_FONT)
+
+    image.save(dest)
+
+
+    
+    

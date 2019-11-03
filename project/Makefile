@@ -1,7 +1,7 @@
 
 
-SERVER=arnaud@89.244.184.136
-LOCATION=~/core.d/flow_pred/
+SERVER=arnaudov@i82pc25.itec.kit.edu
+LOCATION=~/code/flow_pred/
 
 
 trian:
@@ -20,11 +20,17 @@ pressure_run:
 	python train.py --config config.json --data ./data/generated_data/
 
 
-deploy:
-	@echo "Deploying project files to server"
+# deploy:
+# 	@echo "Deploying project files to server"
+# 	@ssh -t $(SERVER) 'mkdir -p $(LOCATION)/data'
+# 	scp  ./requirements.txt ./config.py ./dataloader.py ./evaluate.py ./models.py ./train.py ./utils.py ./verdana.ttf "$(SERVER):$(LOCATION)/"
+# 	scp -r  ./data/Makefile ./data/anim.py ./data/config.xml ./data/cropper.py ./data/gen_data.sh ./data/gen_dataconf_files.py ./data/gen_param_file.py ./data/render_images.sh ./data/geometry_data "$(SERVER):$(LOCATION)/data/"
+
+
+deploy_training:
+	@echo "Deploying the files for the training of models"
 	@ssh -t $(SERVER) 'mkdir -p $(LOCATION)/data'
 	scp  ./requirements.txt ./config.py ./dataloader.py ./evaluate.py ./models.py ./train.py ./utils.py ./verdana.ttf "$(SERVER):$(LOCATION)/"
-	scp -r  ./data/Makefile ./data/anim.py ./data/config.xml ./data/cropper.py ./data/gen* ./data/render_images.sh ./data/geometry_data "$(SERVER):$(LOCATION)/data/"
 
 
 server-train:
