@@ -6,18 +6,19 @@ config['input_height'] = 256
 config['g_input_nc'] = 3*2
 config['g_output_nc'] = 3*2
 
-config['g_nfg'] = 12
-config['g_layers'] = 6
+config['g_nfg'] = 6
+config['g_layers'] = 3
 
 config['d_input_nc'] = 12
-config['d_nfg'] = 25
-config['d_layers'] = 4
 
-config['output_dir'] = './model_output_2'
+config['d_nfg'] = 6
+config['d_layers'] = 3
 
-config['evaluation_snapshots_cnt'] = 7
-config['evaluation_recursive_samples'] = 20
-config['full_simulaiton_samples'] = 20
+config['output_dir'] = './model_output'
+
+config['evaluation_snapshots_cnt'] = 5
+config['evaluation_recursive_samples'] = 5
+config['full_simulaiton_samples'] = 5
 
 config['lambda_L1'] = 100
 

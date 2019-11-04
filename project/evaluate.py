@@ -14,6 +14,7 @@ from utils import correlation
 from utils import merge_and_save
 from utils import RedirectStdStreams
 from utils import mkdir
+from utils import save_img
 from config import config
 from dataloader import UnNormalize
 
@@ -234,11 +235,11 @@ class Evaluator:
 
             path = os.path.join(config['output_dir'], self.output_name, 'full_simulation', sim_name)
 
-            save_img(predicted_x, 'x_step_{}.png'.format(i), '{}/x_step_{}'.format(i, path))
-            save_img(predicted_y, 'y_step_{}.png'.format(i), '{}/y_step_{}'.format(i, path))
+            save_img(predicted_x, 'x_step_{}'.format(i), '{}/x_step_{}.png'.format(path, i))
+            save_img(predicted_y, 'y_step_{}'.format(i), '{}/y_step_{}.png'.format(path, i))
 
             if self.args.use_pressure:
-                save_img(predicted_p, 'p_step_{}'.format(i), '{}/p_step_{}.png'.format(i, path))
+                save_img(predicted_p, 'p_step_{}'.format(i), '{}/p_step_{}.png'.format(path, i))
 
             
             input_img = predicted

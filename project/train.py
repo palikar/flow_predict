@@ -84,9 +84,9 @@ parser.add_argument('--batch-size', dest='batch_size', type=int, default=4, help
 parser.add_argument('--test-train-split', dest='test_train_split', type=float, default=0.8, help='The percentage of the data to be used in the training set.')
 parser.add_argument('--val-train-split', dest='val_train_split', type=float, default=0.1, help='The percentage of the train data to be used as validation set')
 parser.add_argument('--shuffle', dest='shuffle', default=False, action='store_true', help='Should the training and testing data be shufffled.')
-parser.add_argument('--epochs', dest='epochs', type=int, default=5, help='Number of epochs for which the model will be trained')
 parser.add_argument('--seed', dest='seed', type=int, default=123, help='Random seed to use. Default=123')
 parser.add_argument('--niter', type=int, dest='niter', default=100, help='Number of iterations at starting learning rate')
+parser.add_argument('--epochs', dest='epochs', type=int, default=5, help='Number of epochs for which the model will be trained')
 parser.add_argument('--niter_decay', type=int, dest='niter_decay', default=100, help='Number of iterations to linearly decay learning rate to zero')
 parser.add_argument('--lr_policy', type=str, default='lambda', help='learning rate policy: lambda|step|plateau|cosine')
 parser.add_argument('--print-summeries', dest='print_summeries', default=False, action='store_true', help='Print summeries of the genereated networks')
@@ -278,19 +278,7 @@ for epoch in range(num_epochs if not args.no_train else 0):
             save_models(net_g, net_d, args, epoch)
             print('> Model saved.')
             sys.exit(0)
-
-        del real_a
-        del real_b
-        del pred_fake
-        del loss_d_fake
-        del loss_d_real
-        del loss_d
-        del loss_g
-        del loss_g_l1
-        del loss_g_gan
-        del fake_ab
-        del real_ab
-
+            
     update_learning_rate(net_g_scheduler, optimizer_g)
     update_learning_rate(net_d_scheduler, optimizer_d)
 
@@ -336,14 +324,18 @@ if args.evaluate:
 
         print('===> Evaluating with test set:')
         evaluator.set_output_name('test')
-        evaluator.snapshots(net_g, test_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
-        evaluator.individual_images_performance(net_g, test_loader)
-        evaluator.recusive_application_performance(net_g, dataset, len(train_indices) + len(val_indices) , samples=config['evaluation_recursive_samples'])
+
+        # evaluator.snapshots(net_g, test_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
+        # evaluator.individual_images_performance(net_g, test_loader)
+        # evaluator.recusive_application_performance(net_g, dataset, len(train_indices) + len(val_indices) , samples=config['evaluation_recursive_samples'])
+        
         evaluator.run_full_simulation(net_g, dataset, len(train_indices) + len(val_indices), config['full_simulaiton_samples'], sim_name = 'test_data_simulation')
 
         print('===> Evaluating with train set:')
         evaluator.set_output_name('train')
-        evaluator.snapshots(net_g, train_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
-        evaluator.individual_images_performance(net_g, train_loader)
-        evaluator.recusive_application_performance(net_g, dataset, 1, samples=config['evaluation_recursive_samples'])
+
+        # evaluator.snapshots(net_g, train_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
+        # evaluator.individual_images_performance(net_g, train_loader)
+        # evaluator.recusive_application_performance(net_g, dataset, 1, samples=config['evaluation_recursive_samples'])
+
         evaluator.run_full_simulation(net_g, dataset, 0, config['full_simulaiton_samples'], sim_name = 'train_data_simulation')
