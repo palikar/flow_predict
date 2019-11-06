@@ -391,6 +391,16 @@ class GANLoss(nn.Module):
         return self.loss(input, target_tensor)
 
 
+
+class View(nn.Module):
+
+    def __init__(self, shape):
+        super(View, self).__init__()
+        self.shape = shape
+    def forward(self, input):
+        out = input.view(*self.shape)
+        return out
+    
 class BlowBlock(nn.Module):
     
     def __init__(self, input_nums, size):
