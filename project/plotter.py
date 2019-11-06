@@ -36,7 +36,6 @@ from torchsummary import summary
 
 def plot_train_losses(losses_txt):
 
-
     desc = []
     gen = []
     
@@ -50,24 +49,81 @@ def plot_train_losses(losses_txt):
             gen.append(gen_loss)
             line = fp.readline()
 
-    plt.subplot(2,1,1)
-    plt.figure(figsize=(15,13), dpi=100)
-    plt.plot(np.arange(len(desc)), desc, '-b', linewidth=1.0, label='Discriminator')
+    plt.figure(figsize=(10,11), dpi=100)
+
+    plt.suptitle('Model: c_res_l4_nf32_p', fontsize=16)
     
+    plt.subplot(2,1,1)
+    plt.plot(np.arange(len(desc)), desc, '-b', linewidth=0.9, label='Discriminator')    
     plt.grid(True)
     plt.legend()
-    plt.title("Losses over the epochs")
-    plt.xlabel("epoch")
-    plt.ylabel('Loss')
-    plt.show()
+    plt.title("Loss over the epochs")
+    plt.xlabel("Epoch")
+    plt.ylabel('Loss_D')
 
-    # plt.savefig(self.directory + "/mdn_data_plot.png", bbox_inches='tight')
+    plt.subplot(2,1,2)
+    plt.plot(np.arange(len(gen)), gen, '-r', linewidth=0.9, label='Generator')    
+    plt.grid(True)
+    plt.legend()
+    plt.title("Loss over the epochs")
+    plt.xlabel("Epoch")
+    plt.ylabel('Loss_G')
+
+    
+    # plt.show()
+    plt.savefig("losses_data_plot.png", bbox_inches='tight')
+    return 0
+
+def plot_val_res(losses_txt):
+
+    epoch = []
+    psnr = []
+    mse = []
+    
+    with open(losses_txt) as fp:
+        line = fp.readline()
+        while line:
+            match = re.search('epoch:\s*(\d*\.?\d+),\s*psnr:\s*(\d*\.\d+)\s*,\s*mse:\s*(\d*\.\d+)', line.strip())
+
+            epoch_cur = float(match.group(1))
+            psnr_cur = float(match.group(2))
+            mse_cur = float(match.group(3))
+
+            epoch.append(epoch_cur)
+            psnr.append(psnr_cur)
+            mse.append(mse_cur)
+            
+            line = fp.readline()
+
+    plt.figure(figsize=(7, 10), dpi=100)
+
+    plt.suptitle('Model: c_res_l4_nf32_p\nValidation set metrics', fontsize=16)
+    
+    plt.subplot(2,1,1)
+    plt.plot(epoch, psnr, '-r', linewidth=0.9, label='PNSR')
+    plt.grid(True)
+    # plt.legend()
+    plt.title("PSNR")
+    plt.xlabel("Epoch")
+    plt.ylabel('PSNR')
+    plt.subplot(2,1,2)
+
+    plt.plot(epoch, mse, '-r', linewidth=0.9, label='MSE')
+    plt.grid(True)
+    # plt.legend()
+    plt.title("MSE")
+    plt.xlabel("Epoch")
+    plt.ylabel('MSE')
+
+    
+    plt.show()
+    # plt.savefig("losses_data_plot.png", bbox_inches='tight')
     return 0
 
 
 
 def main():
-    plot_train_losses(sys.argv[1])
+    plot_val_res(sys.argv[1])
 
 
 
