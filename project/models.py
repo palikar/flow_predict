@@ -72,11 +72,11 @@ def define_G(input_nc, output_nc, ngf, norm='batch', use_dropout=True, init_gain
     else:
         norm_layer = get_norm_layer(norm_type=norm)
 
-        print(args.model_name)
+        params = args.model_type == 'vd' or args.model_type == 's'
         if 'res' in args.model_name:
-            net = ResnetGenerator(input_nc, output_nc, ngf = ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=n_blocks)
+            net = ResnetGenerator(input_nc, output_nc, ngf = ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=n_blocks, params = params)
         elif 'unet' in args.model_name:
-            net = UnetGenerator(input_nc, output_nc, num_downs=n_blocks, ngf = ngf, norm_layer=norm_layer, use_dropout=use_dropout)
+            net = UnetGenerator(input_nc, output_nc, num_downs=n_blocks, ngf = ngf, norm_layer=norm_layer, use_dropout=use_dropout, params = params)
         else:
             raise Exception("Unknowns model: {}:".format(args.model_name))
             
@@ -95,9 +95,10 @@ def define_D(input_nc, ndf, n_layers_D=3, norm='batch', use_sigmoid=False, init_
 
 class ResnetGenerator(nn.Module):
 
-    def __init__(self, input_nc, output_nc, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=True, n_blocks=4, padding_type='reflect'):
+    def __init__(self, input_nc, output_nc, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=True, n_blocks=4, padding_type='reflect', params=False):
         super(ResnetGenerator, self).__init__()
 
+        self.params = params
         self.input_nc = input_nc
         self.output_nc = output_nc
         self.ngf = ngf
@@ -122,7 +123,25 @@ class ResnetGenerator(nn.Module):
 
         self.outc = Outconv(ngf, output_nc)
 
-    def forward(self, input):
+
+    def forward(self, input, params_=None):
+        if self.params:
+            
+            if params_ is None:
+                input, params = input
+            else:
+                params = params_
+
+            print(input.shape)
+            print(params.shape)
+                
+            tens = []
+            for i in range(input.size(0)):
+                for j in range(params.size(3)):
+                    tens.append(torch.ones(1, 1, input.shape[2], input.shape[3]) * params[i][0][0][j])
+
+            input = torch.cat((torch.torch.cat(tens), input), 1)
+
         out = {}
         out['in'] = self.inc(input)
         out['d1'] = self.down1(out['in'])
@@ -298,8 +317,11 @@ class NLayerDiscriminator(nn.Module):
 
 class UnetGenerator(nn.Module):
 
-    def __init__(self, input_nc, output_nc, num_downs, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=True):
+    def __init__(self, input_nc, output_nc, num_downs, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=True, params = False):
         super(UnetGenerator, self).__init__()
+
+        self.params = params
+        
         unet_block = UnetSkipConnectionBlock(ngf * 8, ngf * 8, input_nc=None, submodule=None, norm_layer=norm_layer, innermost=True)  # add the innermost layer
 
         for i in range(num_downs - 5):
@@ -401,6 +423,7 @@ class View(nn.Module):
         out = input.view(*self.shape)
         return out
     
+
 class BlowBlock(nn.Module):
     
     def __init__(self, input_nums, size):

@@ -82,9 +82,10 @@ def correlation(img1, img2):
     return c
 
 
-def merge_and_save(img1, img2, text1, text2, dest):
-    image_1 = Image.fromarray(np.uint8(img1), 'RGB')
-    image_2 = Image.fromarray(np.uint8(img2), 'RGB')
+def merge_and_save(img1, img2, text1, text2, dest, mode='L'):
+    print(img1.shape)
+    image_1 = Image.fromarray(np.uint8(img1))
+    image_2 = Image.fromarray(np.uint8(img2))
 
     width_1, height_1 = image_1.size
     width_2, height_2 = image_2.size
@@ -100,8 +101,9 @@ def merge_and_save(img1, img2, text1, text2, dest):
     
     new_im.save(dest)
 
-def save_img(img, text, dest):
-    image = Image.fromarray(np.uint8(img), 'RGB')
+
+def save_img(img, text, dest, mode='L'):
+    image = Image.fromarray(np.uint8(img)).convert('L')
 
     width, height = image.size
 

@@ -28,11 +28,12 @@ except ImportError:
 
 class Evaluator:
 
-    def __init__(self, args, root_dir, device='cpu'):
+    def __init__(self, args, root_dir, device='cpu', parameterized = False):
         self.args = args
         self.root_dir = root_dir
         self.criterionMSE = nn.MSELoss().to(device)
         self.device = device
+        self.parameterized = parameterized
 
         self.output_name = 'test'
         self.gen_dirs()
@@ -53,6 +54,7 @@ class Evaluator:
         self.output_name = name
         self.gen_dirs()
 
+
     def gen_dirs(self):
         mkdir(os.path.join(config['output_dir'], self.output_name))
         mkdir(os.path.join(config['output_dir'], self.output_name, 'snapshots'))
@@ -62,8 +64,6 @@ class Evaluator:
         self.path_snaps = os.path.join(config['output_dir'], self.output_name, 'snapshots')
         self.path_full_sim = os.path.join(config['output_dir'], self.output_name, 'full_simulation')
         
-         
-
 
     def recusive_application_performance(self, net, dataset, split_point, samples=20):
         print('===> Evaluating performance of recursive application')
@@ -85,9 +85,16 @@ class Evaluator:
 
         prev_img = None
         input_img = dataset[start_index][0].expand(1,-1,-1,-1).to(self.device)
-
+        if self.parameterized:
+            params = dataset[start_index][2].expand(1,-1,-1,-1).to(self.device)
+        
         for index in range(start_index, end_index):
-            predicted = net(input_img)
+
+            if self.parameterized:
+                predicted = net((input_img, params))
+            else:
+                predicted = net(input_img)
+
             del input_img
             target = dataset[index][1].expand(1,-1,-1,-1).to(self.device)
 
@@ -127,8 +134,13 @@ class Evaluator:
 
         for iteration, batch in enumerate(test_dataloader, 1):
             real_a, real_b = batch[0].to(self.device), batch[1].to(self.device)
-            predicted = net(real_a)
-
+            
+            if self.parameterized:
+                params = batch[2].to(device)
+                predicted = net((real_a, params))
+            else:
+                predicted = net(real_a)
+                    
             cur_mse = self.criterionMSE(predicted, real_b).item()
 
             predicted = predicted.detach().cpu().numpy()
@@ -164,14 +176,15 @@ class Evaluator:
 
     def _prepare_tensor_img(self, tens_img):
         d = self.denormalize(tens_img).detach().cpu().numpy()
-        x = np.transpose(d[:3], (1,2,0))*255
+
+        x = np.transpose(d[:1], (1,2,0))*255
 
         if self.args.use_pressure:
-            y = np.transpose(d[3:6], (1,2,0))*255
-            p = np.transpose(d[6:], (1,2,0))*255
+            y = np.transpose(d[1:2], (1,2,0))*255
+            p = np.transpose(d[2:], (1,2,0))*255
             return x, y, p
         else:
-            y = np.transpose(d[3:], (1,2,0))*255
+            y = np.transpose(d[1:], (1,2,0))*255
             return x, y
 
 
@@ -180,8 +193,14 @@ class Evaluator:
 
         for index, i in zip(sampler, range(samples)):
             
-            input_img, target = dataset[index]
-            predicted = net(input_img.expand(1,-1,-1,-1).to(self.device))
+            if self.parameterized:
+                input_img, target, params = dataset[index]
+                predicted = net((input_img.expand(1,-1,-1,-1).to(self.device),
+                                  params.expand(1,-1,-1,-1).to(self.device)))
+            else:
+                input_img, target = dataset[index]
+                predicted = net(input_img.expand(1,-1,-1,-1).to(self.device))
+
 
             print('> Snapshot {}'.format(str(i)))
 
@@ -198,7 +217,7 @@ class Evaluator:
             merge_and_save(target_x, predicted_x,
                            'Real image_x', 'Predicted image (x)',
                            os.path.join(config['output_dir'], self.output_name, 'snapshots', 'x_prediction_{}_{}.png'.format(index, random.randint(0, 10000))))
-
+            
             merge_and_save(target_y, predicted_y,
                            'Real image_y', 'Predicted image (y)',
                            os.path.join(config['output_dir'], self.output_name, 'snapshots', 'y_prediction_{}_{}.png'.format(index, random.randint(0, 10000))))
@@ -229,8 +248,13 @@ class Evaluator:
         mkdir(path)
 
         input_img = dataset[start_index][0].expand(1,-1,-1,-1).to(self.device)
+        if self.parameterized:
+            params = dataset[start_index][2].expand(1,-1,-1,-1).to(self.device)
         for i, index in enumerate(range(start_index, cnt), 1):
-            predicted = net(input_img)
+            if self.parameterized:
+                predicted = net((input_img, params))
+            else:
+                predicted = net(input_img)
 
             if not self.args.use_pressure:
                 predicted_x, predicted_y = self._prepare_tensor_img(predicted[0])

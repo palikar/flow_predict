@@ -3,13 +3,13 @@ config = {}
 config['input_width'] = 1024
 config['input_height'] = 256
 
-config['g_input_nc'] = 3*2
-config['g_output_nc'] = 3*2
+config['g_input_nc'] = 2
+config['g_output_nc'] = 2
 
 config['g_nfg'] = 6
 config['g_layers'] = 3
 
-config['d_input_nc'] = 12
+config['d_input_nc'] = 4
 
 config['d_nfg'] = 6
 config['d_layers'] = 3
