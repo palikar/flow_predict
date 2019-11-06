@@ -37,12 +37,16 @@ class Evaluator:
         self.output_name = 'test'
         self.gen_dirs()
 
-        if args.use_pressure:
-            self.denormalize = UnNormalize([0.5]*9,
-                                           [0.5]*9)
+        if args.rgb:
+            if args.use_pressure:
+                self.denormalize = UnNormalize([0.5]*9,[0.5]*9)
+            else:
+                self.denormalize = UnNormalize([0.5]*6,[0.5]*6)
         else:
-            self.denormalize = UnNormalize([0.5]*6,
-                                           [0.5]*6)
+            if args.use_pressure:
+                self.denormalize = UnNormalize([0.5]*3, [0.5]*3)
+            else:
+                self.denormalize = UnNormalize([0.5]*2, [0.5]*2)
 
 
     def set_output_name(self, name):

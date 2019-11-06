@@ -13,6 +13,7 @@ from config import config
 
 
 class UnNormalize(object):
+
     def __init__(self, mean, std):
         self.mean = mean
         self.std = std
@@ -80,13 +81,20 @@ class SimulationDataSet(data.Dataset):
             self.read_rest(handle, first_line)
 
         transform_list = [transforms.ToTensor()]
-
-        if args.use_pressure:
-            transform_list.append(transforms.Normalize((0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5),
-                                                       (0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)))
+        
+        if args.rgb:
+            if args.use_pressure:
+                transform_list.append(transforms.Normalize((0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5),(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)))
+            else:
+                transform_list.append(transforms.Normalize((0.5, 0.5, 0.5, 0.5, 0.5, 0.5),(0.5, 0.5, 0.5, 0.5, 0.5, 0.5)))
         else:
-            transform_list.append(transforms.Normalize((0.5, 0.5, 0.5, 0.5, 0.5, 0.5),
-                                                       (0.5, 0.5, 0.5, 0.5, 0.5, 0.5)))
+            if args.use_pressure:
+                transform_list.append(transforms.Normalize((0.5, 0.5, 0.5),(0.5, 0.5, 0.5)))
+            else:
+                transform_list.append(transforms.Normalize((0.5, 0.5),(0.5, 0.5)))
+        
+
+            
             
         self.transform = transforms.Compose(transform_list)
 
@@ -95,11 +103,10 @@ class SimulationDataSet(data.Dataset):
         return a, b
 
     def _return_fluid(self, a, b, index):
-        return a, b, self.densities[index], self.viscosities[index]
+        return a, b, torch.tensor(self.densities[index], self.viscosities[index]).view(2, 1, 1)
 
     def _return_speed(self, a, b, index):
-        return a, b, self.speeds[index]
-
+        return a, b, torch.tensor([self.speeds[index]]).view(1, 1, 1)
 
     def read_rest(self, handle, first_line):
         line = handle.readline().rstrip('\n').replace(" ", "")
@@ -122,12 +129,12 @@ class SimulationDataSet(data.Dataset):
 
 
     def _handle_fluid_parts(self, parts):
-        self.densities.append(parts[7])
-        self.viscosities.append(parts[8])
+        self.densities.append(float(parts[6]))
+        self.viscosities.append(float(parts[7]))
 
 
     def _handle_speed_parts(self, parts):
-        self.speeds.append(parts[7])
+        self.speeds.append(float(parts[6]))
 
 
     def __getitem__(self, index):
@@ -155,6 +162,7 @@ class SimulationDataSet(data.Dataset):
         b = self.transform(b)
 
         return self.return_func(a, b, index)
+
 
     def __len__(self):
         return len(self.paths_a)

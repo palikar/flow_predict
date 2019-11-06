@@ -196,10 +196,7 @@ uPWF.AllowDuplicateScalars = 1
 uPWF.ScalarRangeInitialized = 1
 
 # Apply a preset using its name. Note this may not work as expected when presets have duplicate names.
-uLUT.ApplyPreset('jet', True)
-
-# Apply a preset using its name. Note this may not work as expected when presets have duplicate names.
-uLUT.ApplyPreset('jet', True)
+uLUT.ApplyPreset('Grayscale', True)
 
 # hide color bar/color legend
 c_1_solution0Display.SetScalarBarVisibility(renderView1, False)
@@ -207,22 +204,8 @@ c_1_solution0Display.SetScalarBarVisibility(renderView1, False)
 # reset view to fit data
 renderView1.ResetCamera()
 
-# reset view to fit data
-renderView1.ResetCamera()
-
 # reset view to fit data bounds
 renderView1.ResetCamera(0.0, 2.2, 0.0, 0.41, 0.0, 0.0)
-
-# reset view to fit data
-renderView1.ResetCamera()
-
-# reset view to fit data bounds
-renderView1.ResetCamera(0.0, 2.2, 0.0, 0.41, 0.0, 0.0)
-
-# current camera placement for renderView1
-renderView1.CameraPosition = [1.1, 0.205, 2.016827658506227]
-renderView1.CameraFocalPoint = [1.1, 0.205, 0.0]
-renderView1.CameraParallelScale = 1.1189392298065164
 
 # current camera placement for renderView1
 renderView1.CameraPosition = [1.1, 0.205, 2.016827658506227]

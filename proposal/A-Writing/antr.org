@@ -124,7 +124,7 @@ There has been a long-standing interest whether or not neural networks can be us
 
 \\
 
-*Artificial Neural Networks for Solving Ordinary and Partial Differential Equations* \cite{lagaris1998} has demonstrated for a first time how neural networks can be applied in order to solve initial and boundary problems of ordinary and partial differential equations. There, a neural network is used to derive a trial solution of a differential equation. The loss function then can be used to model a particular equation. The end result is a function, defined partially by a neural network, over the whole input space. Our approach is similar to this in the sense that it does not aim to solve particular task but rather to study how and to what extent DNNs can be applied in the context of PDEs and draw some general conclusions. We, however, do not plan to derive a trial solution of our problem (incompressible Navier-Stoke equation) and write it in terms of a DNN. We want to use the already present solution data in order to train model that can generate new solutions. Further more, we do not use the considered space as a feature. The input to the model, in our case, is the solution from the previous time-step.
+*Artificial Neural Networks for Solving Ordinary and Partial Differential Equations* \cite{lagaris1998} has demonstrated for a first time how neural networks can be applied in order to solve initial and boundary problems of ordinary and partial differential equations. There, a neural network is used to derive a trial solution of a differential equation. The loss function can then be used to model a particular equation. The end result is a function, defined partially by a neural network, over the whole input space. Our approach is similar to this in the sense that it does not aim to solve particular task but rather to study how and to what extent DNNs can be applied in the context of PDEs and draw some general conclusions. We, however, do not plan to derive a trial solution of our problem (incompressible Navier-Stoke equation) and write it in terms of a DNN. We want to use the already present solution data in order to train model that can generate new solutions. Further more, we do not use the considered space as a feature. The input to the model, in our case, is the solution from the previous time-step.
 
 \\
 
@@ -227,7 +227,7 @@ Because our DNNs generate images as their output, we have to define a meaningful
 + /Mean Square Difference/ - sum of squared differences between intensity values. This is an absolute measure for difference an it is zero then and only then when the two images are identical
 + /Normalized correlation/ -  Correlation between intensity values divided by the square rooted autocorrelation of both images.
 + /Peak signal-to-noise ratio/ (PSNR) - this metric has its basis in signal analysis. It is defined as the ratio between the maximum possible power of a signal and the power of corrupting noise that affects the fidelity of its representation. PSNR is given in decibels and in image processing it gives a quality measurement between the original and a compressed image. The higher the PSNR, the better the quality of the reconstructed image.
-+ _Structural similarity index_ (SSIM) - the metric again measures the similarity between two images. What sets is apart from the other ones is that SSIM is a perception-based model. This means that it respects how a human observer will perceive the differences between the two images.
++ _Structural similarity index_ (SSIM) - the metric again measures the similarity between two images. What sets it apart from the other ones is that SSIM is a perception-based model. This means that it respects how a human observer will perceive the differences between the two images.
 
 We have yet not settled with one metric. We assume that the normalized correlation can be a reasonable choice because we think that the general structure of the fluid can be captured with different absolute values which have certain relative change.
 
@@ -241,7 +241,7 @@ The other aspect that we have to consider when evaluating the networks is the ex
 * Work plan
 <<sec:work>>
 
-In this section, we give a concrete and detailed plan for the tasks that will undertake in our research. We have divided the task into several phases and we discuss them in each of the subsections. Here we like to make a couple of general remarks.
+In this section, we give a concrete and detailed plan for the tasks that we will undertake in our research. We have divided the tasks into several phases and we discuss them in each of the subsections. Here we like to make a couple of general remarks.
 
 - The nature of the project suggests frequent modifications to the implemented models. For this reason, we have opted-out for an iterative approach. We do not plan to have a separate big implementation phase after which we proceed to the training and evaluating. Rather, our idea is to have multiple phases where implementation, training, evaluation, and modifications to the model are all happening iteratively in short time frames.
 - We believe that the data generation can be done in parallel at the beginning of the project as the simulations can be run by the numerical solver without our involvement. More on this point in Section [[sec:time]].

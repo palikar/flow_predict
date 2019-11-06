@@ -300,11 +300,11 @@ class UnetGenerator(nn.Module):
 
     def __init__(self, input_nc, output_nc, num_downs, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=True):
         super(UnetGenerator, self).__init__()
-        # construct unet structure
         unet_block = UnetSkipConnectionBlock(ngf * 8, ngf * 8, input_nc=None, submodule=None, norm_layer=norm_layer, innermost=True)  # add the innermost layer
-        for i in range(num_downs - 5):          # add intermediate layers with ngf * 8 filters
+
+        for i in range(num_downs - 5):
             unet_block = UnetSkipConnectionBlock(ngf * 8, ngf * 8, input_nc=None, submodule=unet_block, norm_layer=norm_layer, use_dropout=use_dropout)
-        # gradually reduce the number of filters from ngf * 8 to ngf
+            
         unet_block = UnetSkipConnectionBlock(ngf * 4, ngf * 8, input_nc=None, submodule=unet_block, norm_layer=norm_layer)
         unet_block = UnetSkipConnectionBlock(ngf * 2, ngf * 4, input_nc=None, submodule=unet_block, norm_layer=norm_layer)
         unet_block = UnetSkipConnectionBlock(ngf, ngf * 2, input_nc=None, submodule=unet_block, norm_layer=norm_layer)
@@ -389,3 +389,19 @@ class GANLoss(nn.Module):
     def __call__(self, input, target_is_real):
         target_tensor = self.get_target_tensor(input, target_is_real)
         return self.loss(input, target_tensor)
+
+
+class BlowBlock(nn.Module):
+    
+    def __init__(self, input_nums, size):
+        super(BlowBlock, self).__init__()
+        blocks= [nn.ConvTranspose2d(input_nums, size[0]*size[1], 1),
+                   View((-1,1,size[0],size[1])),
+                   nn.BatchNorm2d(1),
+                   nn.ReLU(),
+                   nn.Dropout(0.5)]
+
+        self.model =  nn.Sequential(*blocks)
+
+    def forward(self, input):
+        return self.model(input)

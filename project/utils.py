@@ -46,9 +46,12 @@ def is_image_file(filename):
 
 
 def load_img(filepath, size=(1024, 256)):
-    img = Image.open(filepath).convert('RGB')
+    img = Image.open(filepath).convert("L")
     img = img.resize(size, Image.BICUBIC)
-    return np.array(img)
+
+    arr = np.expand_dims(np.array(img), 2)
+    
+    return arr
 
 
 def save_img(image_tensor, filename):
