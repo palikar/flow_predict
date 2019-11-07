@@ -136,7 +136,7 @@ class Evaluator:
             real_a, real_b = batch[0].to(self.device), batch[1].to(self.device)
             
             if self.parameterized:
-                params = batch[2].to(device)
+                params = batch[2].to(self.device)
                 predicted = net((real_a, params))
             else:
                 predicted = net(real_a)

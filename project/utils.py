@@ -59,6 +59,7 @@ def save_img(image_tensor, filename):
     image_numpy = (np.transpose(image_numpy, (1, 2, 0)) + 1) / 2.0 * 255.0
     image_numpy = image_numpy.clip(0, 255)
     image_numpy = image_numpy.astype(np.uint8)
+    image_numpy = np.squeeze(image_numpy)
     image_pil = Image.fromarray(image_numpy)
     image_pil.save(filename)
     print("Image saved as {}".format(filename))
@@ -83,9 +84,8 @@ def correlation(img1, img2):
 
 
 def merge_and_save(img1, img2, text1, text2, dest, mode='L'):
-    print(img1.shape)
-    image_1 = Image.fromarray(np.uint8(img1))
-    image_2 = Image.fromarray(np.uint8(img2))
+    image_1 = Image.fromarray(np.uint8(np.squeeze(img1)))
+    image_2 = Image.fromarray(np.uint8(np.squeeze(img2)))
 
     width_1, height_1 = image_1.size
     width_2, height_2 = image_2.size
@@ -103,12 +103,12 @@ def merge_and_save(img1, img2, text1, text2, dest, mode='L'):
 
 
 def save_img(img, text, dest, mode='L'):
-    image = Image.fromarray(np.uint8(img)).convert('L')
+    image = Image.fromarray(np.uint8(np.squeeze(img))).convert('L')
 
     width, height = image.size
 
     draw = ImageDraw.Draw(image) 
-    draw.text((10,10), text, (0,0,0), font=VERDANA_FONT)
+    draw.text((10,10), text, (0), font=VERDANA_FONT)
 
     image.save(dest)
 

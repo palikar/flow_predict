@@ -103,7 +103,7 @@ class SimulationDataSet(data.Dataset):
         return a, b
 
     def _return_fluid(self, a, b, index):
-        return a, b, torch.tensor(self.densities[index], self.viscosities[index]).view(2, 1, 1)
+        return a, b, torch.tensor([self.densities[index], self.viscosities[index]]).view(1, 1, 2)
 
     def _return_speed(self, a, b, index):
         return a, b, torch.tensor([self.speeds[index]]).view(1, 1, 1)

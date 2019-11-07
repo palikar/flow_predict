@@ -79,7 +79,7 @@ def define_G(input_nc, output_nc, ngf, norm='batch', use_dropout=True, init_gain
             net = UnetGenerator(input_nc, output_nc, num_downs=n_blocks, ngf = ngf, norm_layer=norm_layer, use_dropout=use_dropout, params = params)
         else:
             raise Exception("Unknowns model: {}:".format(args.model_name))
-            
+
         return init_net(net, init_gain, gpu_id=gpu_id)
 
 
@@ -93,7 +93,7 @@ def define_D(input_nc, ndf, n_layers_D=3, norm='batch', use_sigmoid=False, init_
 
 
 
-class ResnetGenerator(nn.Module):
+class ResnetGenerator(nn.Module):#
 
     def __init__(self, input_nc, output_nc, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=True, n_blocks=4, padding_type='reflect', params=False):
         super(ResnetGenerator, self).__init__()
@@ -126,22 +126,18 @@ class ResnetGenerator(nn.Module):
 
     def forward(self, input, params_=None):
         if self.params:
-            
             if params_ is None:
                 input, params = input
             else:
                 params = params_
-
-            print(input.shape)
-            print(params.shape)
-                
             tens = []
             for i in range(input.size(0)):
+                t = []
                 for j in range(params.size(3)):
-                    tens.append(torch.ones(1, 1, input.shape[2], input.shape[3]) * params[i][0][0][j])
-
-            input = torch.cat((torch.torch.cat(tens), input), 1)
-
+                    t.append(torch.ones(1, 1, input.shape[2], input.shape[3]) * params[i][0][0][j])                    
+                tens.append(torch.torch.cat(t, 1))
+            input = torch.cat((torch.torch.cat(tens, 0), input), 1)
+            
         out = {}
         out['in'] = self.inc(input)
         out['d1'] = self.down1(out['in'])
@@ -321,19 +317,33 @@ class UnetGenerator(nn.Module):
         super(UnetGenerator, self).__init__()
 
         self.params = params
-        
+
         unet_block = UnetSkipConnectionBlock(ngf * 8, ngf * 8, input_nc=None, submodule=None, norm_layer=norm_layer, innermost=True)  # add the innermost layer
 
         for i in range(num_downs - 5):
             unet_block = UnetSkipConnectionBlock(ngf * 8, ngf * 8, input_nc=None, submodule=unet_block, norm_layer=norm_layer, use_dropout=use_dropout)
-            
+
         unet_block = UnetSkipConnectionBlock(ngf * 4, ngf * 8, input_nc=None, submodule=unet_block, norm_layer=norm_layer)
         unet_block = UnetSkipConnectionBlock(ngf * 2, ngf * 4, input_nc=None, submodule=unet_block, norm_layer=norm_layer)
         unet_block = UnetSkipConnectionBlock(ngf, ngf * 2, input_nc=None, submodule=unet_block, norm_layer=norm_layer)
         self.model = UnetSkipConnectionBlock(output_nc, ngf, input_nc=input_nc, submodule=unet_block, outermost=True, norm_layer=norm_layer)  # add the outermost layer
 
 
-    def forward(self, input):
+    def forward(self, input, params_=None):
+        if self.params:
+            if params_ is None:
+                input, params = input
+            else:
+                params = params_
+            tens = []
+            for i in range(input.size(0)):
+                t = []
+                for j in range(params.size(3)):
+                    t.append(torch.ones(1, 1, input.shape[2], input.shape[3]) * params[i][0][0][j])                    
+                tens.append(torch.torch.cat(t, 1))
+            input = torch.cat((torch.torch.cat(tens, 0), input), 1)
+
+
         return self.model(input)
 
 
@@ -387,7 +397,7 @@ class UnetSkipConnectionBlock(nn.Module):
     def forward(self, x):
         if self.outermost:
             return self.model(x)
-        else:  
+        else:
             return torch.cat([x, self.model(x)], 1)
 
 
@@ -422,10 +432,10 @@ class View(nn.Module):
     def forward(self, input):
         out = input.view(*self.shape)
         return out
-    
+
 
 class BlowBlock(nn.Module):
-    
+
     def __init__(self, input_nums, size):
         super(BlowBlock, self).__init__()
         blocks= [nn.ConvTranspose2d(input_nums, size[0]*size[1], 1),
