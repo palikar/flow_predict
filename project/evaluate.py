@@ -116,7 +116,7 @@ class Evaluator:
 
 
         with open(os.path.join(self.root_dir, self.output_name, 'recursive_application.txt'), 'w') as list_hand:
-            list_hand.write('Split index: {}'.format(str(samples/2)))
+            list_hand.write('Split index: {}\n'.format(str(samples/2)))
             list_hand.write('{} {}\n'.format('mse: ' ,  ','.join(str(i) for i in mse)))
             list_hand.write('{} {}\n'.format('cor: ' ,  ','.join(str(i) for i in cor)))
             list_hand.write('{} {}\n'.format('psnr: ',  ','.join(str(i) for i in psnr)))
