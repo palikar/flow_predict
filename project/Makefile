@@ -30,7 +30,12 @@ pressure_run:
 deploy_training:
 	@echo "Deploying the files for the training of models"
 	@ssh -t $(SERVER) 'mkdir -p $(LOCATION)/data'
-	scp  ./requirements.txt ./config.py ./dataloader.py ./evaluate.py ./models.py ./train.py ./utils.py ./verdana.ttf "$(SERVER):$(LOCATION)/"
+	scp  ./requirements.txt ./dataloader.py ./evaluate.py ./models.py ./train.py ./utils.py ./verdana.ttf "$(SERVER):$(LOCATION)/"
+
+deploy_config:
+	@echo "Deploying the config file for the networks"
+	@ssh -t $(SERVER) 'mkdir -p $(LOCATION)/data'
+	scp  ./config.py
 
 
 server-train:
