@@ -8,6 +8,9 @@ import argparse
 import random
 import signal
 import re
+import glob
+
+from contextlib import suppress
 
 from utils import mkdir, Logger
 from dataloader import SimulationDataSet
@@ -34,11 +37,10 @@ from torchsummary import summary
 
 
 
-def plot_train_losses(losses_txt):
-
+def plot_train_losses(losses_txt, model_name, file_loc):
     desc = []
     gen = []
-    
+
     with open(losses_txt) as fp:
         line = fp.readline()
         while line:
@@ -49,37 +51,37 @@ def plot_train_losses(losses_txt):
             gen.append(gen_loss)
             line = fp.readline()
 
-    plt.figure(figsize=(10,11), dpi=100)
+    plt.figure(figsize=(10,5), dpi=100)
 
-    plt.suptitle('Model: c_res_l4_nf32_p', fontsize=16)
-    
-    plt.subplot(2,1,1)
-    plt.plot(np.arange(len(desc)), desc, '-b', linewidth=0.9, label='Discriminator')    
+    plt.suptitle('Loss curves\nModel: {}'.format(model_name), fontsize=16)
+
+    plt.subplot(1,2,1)
+    plt.plot(np.arange(len(desc)), desc, '-b', linewidth=0.9, label='Discriminator')
     plt.grid(True)
     plt.legend()
-    plt.title("Loss over the epochs")
+    plt.title("")
     plt.xlabel("Epoch")
     plt.ylabel('Loss_D')
 
-    plt.subplot(2,1,2)
-    plt.plot(np.arange(len(gen)), gen, '-r', linewidth=0.9, label='Generator')    
+    plt.subplot(1,2,2)
+    plt.plot(np.arange(len(gen)), gen, '-r', linewidth=0.9, label='Generator')
     plt.grid(True)
     plt.legend()
-    plt.title("Loss over the epochs")
+    plt.title("")
     plt.xlabel("Epoch")
     plt.ylabel('Loss_G')
 
-    
-    # plt.show()
-    plt.savefig("losses_data_plot.png", bbox_inches='tight')
+    plt.savefig(file_loc, bbox_inches='tight')
     return 0
 
-def plot_val_res(losses_txt):
+
+
+def plot_val_res(losses_txt, model_name, file_loc):
 
     epoch = []
     psnr = []
     mse = []
-    
+
     with open(losses_txt) as fp:
         line = fp.readline()
         while line:
@@ -92,40 +94,111 @@ def plot_val_res(losses_txt):
             epoch.append(epoch_cur)
             psnr.append(psnr_cur)
             mse.append(mse_cur)
-            
+
             line = fp.readline()
 
-    plt.figure(figsize=(7, 10), dpi=100)
+    plt.figure(figsize=(10, 5), dpi=100)
 
-    plt.suptitle('Model: c_res_l4_nf32_p\nValidation set metrics', fontsize=16)
-    
-    plt.subplot(2,1,1)
+    plt.suptitle('Validation set metrics\nModel: {}'.format(model_name), fontsize=16)
+
+    plt.subplot(1,2,1)
     plt.plot(epoch, psnr, '-r', linewidth=0.9, label='PNSR')
     plt.grid(True)
-    # plt.legend()
+    plt.legend()
     plt.title("PSNR")
     plt.xlabel("Epoch")
     plt.ylabel('PSNR')
-    plt.subplot(2,1,2)
+    plt.subplot(1,2,2)
 
     plt.plot(epoch, mse, '-r', linewidth=0.9, label='MSE')
     plt.grid(True)
-    # plt.legend()
+    plt.legend()
     plt.title("MSE")
     plt.xlabel("Epoch")
     plt.ylabel('MSE')
 
-    
-    plt.show()
-    # plt.savefig("losses_data_plot.png", bbox_inches='tight')
+
+    # plt.show()
+    plt.savefig(file_loc, bbox_inches='tight')
     return 0
 
 
 
+class PlotProcessor():
+
+
+    def __init__(self, args):
+        "docstring"
+
+        self.root_dir = args.root
+
+        for mod in self.get_model_dirs():
+            with suppress(FileExistsError):
+                os.mkdir(os.path.join(mod, 'vis'))
+
+    def get_model_dirs(self):
+        return [os.path.join(self.root_dir, model_dir) for model_dir in os.listdir(self.root_dir)]
+
+    def get_vis_dir(self, mod):
+        return os.path.join(mod, 'vis')
+
+    def get_model_name(self, mod):
+
+        l = glob.glob(mod + '/c_*')
+        if len(l) != 0:
+            return os.path.basename(l[0])
+
+        l = glob.glob(mod + '/s_*')
+        if len(l) != 0:
+            return os.path.basename(l[0])
+
+        l = glob.glob(mod + '/vd_*')
+        if len(l) != 0:
+            return os.path.basename(l[0])
+
+
+    def val_losses(self):
+        for mod in self.get_model_dirs():
+            model_name = self.get_model_name(mod)
+            print('Generating plot for {}'.format(model_name))
+            if os.path.isfile(os.path.join(mod, 'val_losses_test.txt')):
+                plot_val_res(os.path.join(mod, 'val_losses_test.txt'),
+                             model_name,
+                             os.path.join(self.get_vis_dir(mod), 'val_losses_plot.png'))
+            else:
+                print('No val_losses_test.txt file for model {}'.format(mod))
+
+    def train_losses(self):
+        for mod in self.get_model_dirs():
+            model_name = self.get_model_name(mod)
+            print('Generating plot for {}'.format(model_name))
+            if os.path.isfile(os.path.join(mod, 'losses.txt')):
+                plot_train_losses(os.path.join(mod, 'losses.txt'),
+                             model_name,
+                             os.path.join(self.get_vis_dir(mod), 'train_losses_plot.png'))
+            else:
+                print('No losses.txt file for model {}'.format(mod))
+
+
+
+
+
+
+
+
+
+
+
 def main():
-    plot_val_res(sys.argv[1])
 
+    parser = argparse.ArgumentParser(description='Create some plots with metrics from the evaluation and training')
+    parser.add_argument('root', help='Root directory of the models data.')
+    args = parser.parse_args()
 
+    plotter = PlotProcessor(args)
+
+    plotter.val_losses()
+    plotter.train_losses()
 
 
 if __name__ == '__main__':
