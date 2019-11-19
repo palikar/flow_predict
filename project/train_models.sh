@@ -2,15 +2,13 @@
 
 
 NGF=32
-LAYERS=${LAYERS}
+LAYERS=5
 
 NETS=()
 
 while [ "$1" != "" ]; do
     
-    PARAM=`echo $1 | awk -F= '{print $1}'`
-
-    case $PARAM in
+    case $1 in
         
         --pressure | -p)
             PRESSURE=1
@@ -32,23 +30,24 @@ while [ "$1" != "" ]; do
             ;;
 
         --layers | -l)
-            LAYERS=`echo $1 | awk -F= '{print $2}'`
+            LAYERS=`echo $2`
+            shift
             ;;
 
         --ngf | -n)
-            NGF=`echo $1 | awk -F= '{print $2}'`
+            NGF=`echo $2`
+            shift
             ;;
         
         *)
-            echo "ERROR: unknown parameter \"$PARAM\""
+            echo "ERROR: unknown parameter \"$1\""
             exit 1
             ;;
     esac
+    shift 1
     
-    shift
     
 done
-
 
 for net in ${NETS[@]}
 do
@@ -74,17 +73,23 @@ do
             python train.py --data ./data/generated_data/ --model-type 'c' --cuda --model-name '${net}' --threads 4 --batch-size 3  --shuffle --epochs 50 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir './results_c/plain_results_3/' --evaluate --g_nfg ${NGF} --g_layers ${LAYERS} --use-pressure
 
             python train.py --data ./data/generated_data/ --model-type 'c' --cuda --model-name '${net}' --threads 4 --batch-size 3  --shuffle --epochs 50 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir './results_c/plain_results_4/' --evaluate --g_nfg ${NGF} --g_layers ${LAYERS} --use-pressure
+
+            python train.py --data ./data/generated_data/ --model-type 'c' --cuda --model-name '${net}' --threads 4 --batch-size 3  --shuffle --epochs 50 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir './results_c/plain_results_5/' --evaluate --g_nfg ${NGF} --g_layers ${LAYERS} --use-pressure
             
         fi
 
         
-        python train.py --data ./data/generated_data/ --model-type 'c' --cuda --model-name '${net}' --threads 4 --batch-size 3 --shuffle --epochs 50 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir './results_c/plain_results_5/' --evaluate --g_nfg ${NGF} --g_layers ${LAYERS}
-
-        python train.py --data ./data/generated_data/ --model-type 'c' --cuda --model-name '${net}' --threads 4 --batch-size 3  --shuffle --epochs 50 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir './results_c/plain_results_6/' --evaluate --g_nfg ${NGF} --g_layers ${LAYERS}
+        python train.py --data ./data/generated_data/ --model-type 'c' --cuda --model-name '${net}' --threads 4 --batch-size 3 --shuffle --epochs 50 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir './results_c/plain_results_6/' --evaluate --g_nfg ${NGF} --g_layers ${LAYERS}
 
         python train.py --data ./data/generated_data/ --model-type 'c' --cuda --model-name '${net}' --threads 4 --batch-size 3  --shuffle --epochs 50 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir './results_c/plain_results_7/' --evaluate --g_nfg ${NGF} --g_layers ${LAYERS}
 
         python train.py --data ./data/generated_data/ --model-type 'c' --cuda --model-name '${net}' --threads 4 --batch-size 3  --shuffle --epochs 50 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir './results_c/plain_results_8/' --evaluate --g_nfg ${NGF} --g_layers ${LAYERS}
+
+        python train.py --data ./data/generated_data/ --model-type 'c' --cuda --model-name '${net}' --threads 4 --batch-size 3  --shuffle --epochs 50 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir './results_c/plain_results_9/' --evaluate --g_nfg ${NGF} --g_layers ${LAYERS}
+
+        python train.py --data ./data/generated_data/ --model-type 'c' --cuda --model-name '${net}' --threads 4 --batch-size 3  --shuffle --epochs 50 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir './results_c/plain_results_10/' --evaluate --g_nfg ${NGF} --g_layers ${LAYERS}
+
+        
 
     fi
 

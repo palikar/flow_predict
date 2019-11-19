@@ -63,7 +63,7 @@ class Evaluator:
         self.path = os.path.join(config['output_dir'], self.output_name)
         self.path_snaps = os.path.join(config['output_dir'], self.output_name, 'snapshots')
         self.path_full_sim = os.path.join(config['output_dir'], self.output_name, 'full_simulation')
-        
+
 
     def recusive_application_performance(self, net, dataset, split_point, samples=20):
         print('===> Evaluating performance of recursive application')
@@ -90,16 +90,16 @@ class Evaluator:
 
         if self.parameterized:
             params = dataset[start_index][2].expand(1,-1,-1,-1).to(self.device)
-        
+
         for index in range(start_index, end_index):
-            
+
             if self.parameterized:
                 predicted = net((input_img, params))
             else:
                 predicted = net(input_img)
 
             input_img = predicted
-            
+
 
             target = dataset[index][1].expand(1,-1,-1,-1).to(self.device)
 
@@ -113,9 +113,9 @@ class Evaluator:
             cor += [np.average(np.array([correlation(predicted_img[i], target_img[i]) for i in range(predicted_img.shape[0])]))]
             ssim += [np.average(np.array([ssim_metr(predicted_img[i].T, target_img[i].T, multichannel=True) for i in range(predicted_img.shape[0])]))]
 
-            
 
-            
+
+
             print('> Recursive application {} completed'.format(index - start_index))
 
 
@@ -138,13 +138,13 @@ class Evaluator:
 
         for iteration, batch in enumerate(test_dataloader, 1):
             real_a, real_b = batch[0].to(self.device), batch[1].to(self.device)
-            
+
             if self.parameterized:
                 params = batch[2].to(self.device)
                 predicted = net((real_a, params))
             else:
                 predicted = net(real_a)
-                    
+
             cur_mse = self.criterionMSE(predicted, real_b).item()
 
             predicted = predicted.detach().cpu().numpy()
@@ -200,7 +200,7 @@ class Evaluator:
         print('===> Saving {} snapshots'.format(samples))
 
         for index, i in zip(sampler, range(samples)):
-            
+
             if self.parameterized:
                 input_img, target, params = dataset[index]
                 predicted = net((input_img.expand(1,-1,-1,-1).to(self.device),
@@ -225,7 +225,7 @@ class Evaluator:
             merge_and_save(target_x, predicted_x,
                            'Real image_x', 'Predicted image (x)',
                            os.path.join(config['output_dir'], self.output_name, 'snapshots', 'x_prediction_{}_{}.png'.format(index, random.randint(0, 10000))))
-            
+
             merge_and_save(target_y, predicted_y,
                            'Real image_y', 'Predicted image (y)',
                            os.path.join(config['output_dir'], self.output_name, 'snapshots', 'y_prediction_{}_{}.png'.format(index, random.randint(0, 10000))))
@@ -255,16 +255,25 @@ class Evaluator:
         path = os.path.join(config['output_dir'], self.output_name, 'full_simulation', sim_name)
         mkdir(path)
 
+        times = []
         
         input_img = dataset[start_index][0].expand(1,-1,-1,-1).to(self.device)
         if self.parameterized:
             params = dataset[start_index][2].expand(1,-1,-1,-1).to(self.device)
         for i, index in enumerate(range(start_index, start_index + cnt), 1):
-            
+
+            # time here
             if self.parameterized:
+                t0 = time.time()
                 predicted = net((input_img, params))
+                t1 = time.time()
             else:
+                t0 = time.time()
                 predicted = net(input_img)
+                t1 = time.time()
+
+            elapsed = int(round(t1*1000 - t0*1000))
+            times.append(elapsed)
 
             input_img = predicted
 
@@ -273,8 +282,6 @@ class Evaluator:
             else:
                 predicted_x, predicted_y, predicted_p = self._prepare_tensor_img(predicted[0])
 
-            path = os.path.join(config['output_dir'], self.output_name, 'full_simulation', sim_name)
-
             save_img(predicted_x, 'x_step_{}'.format(i), '{}/x_step_{}.png'.format(path, i))
             save_img(predicted_y, 'y_step_{}'.format(i), '{}/y_step_{}.png'.format(path, i))
 
@@ -282,5 +289,15 @@ class Evaluator:
                 save_img(predicted_p, 'p_step_{}'.format(i), '{}/p_step_{}.png'.format(path, i))
 
             
+
             input_img = predicted
+
+        times = np.array(times)
+        
+        with open(config['output_dir'], self.output_name, 'full_simulation', 'timing_{}.txt'.format(sim_name)) as time_hand:
+            time_hand.write('{} {}\n'.format('Avrg : ',  np.average(times)))
+            time_hand.write('{} {}\n'.format('Var : ',  np.var(times)))
+            list_hand.write('{} {}\n'.format('List : ' ,  ','.join(str(i) for i in times)))
+
             
+

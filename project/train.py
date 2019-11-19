@@ -106,8 +106,12 @@ args = parser.parse_args()
 parameterized = args.model_type == 'vd' or args.model_type == 's'
 
 config['g_input_nc'] = 6 if args.rgb else 2
+config['g_output_nc'] = 6 if args.rgb else 2
+
 if args.use_pressure:
+    config['g_output_nc'] += 3 if args.rgb else 1
     config['g_input_nc'] += 3 if args.rgb else 1
+
 config['d_input_nc'] = 2*config['g_input_nc']
 if parameterized:
     config['g_input_nc'] += 1 if args.model_type == 's' else 2 if args.model_type == 'vd' else 0
