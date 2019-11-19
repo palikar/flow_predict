@@ -1,4 +1,4 @@
-##!/usr/bin/env python
+#!/usr/bin/env python
 
 import os
 import json
@@ -119,7 +119,7 @@ if args.g_output_nc != -1: config['g_output_nc'] = args.g_output_nc
 if args.output_dir is not None: config['output_dir'] = args.output_dir
 
 
-    
+
 
 
 args.model_name = '{}_{}_l{}_ngf{}'.format(args.model_type, args.model_name, config['g_layers'], config['g_nfg'])
@@ -225,13 +225,15 @@ criterionMSE = nn.MSELoss().to(device)
 
 if args.print_summeries:
     print('===> Generator network:')
+
     if args.model_type == 's':
-        summary(net_g, [(config['g_input_nc'] - 1, config['input_width'], config['input_height']), (1, 1, 1)])
+        summary(net_g, [(config['g_input_nc'] - 1, config['input_width'], config['input_height']), (1, 1, 1)], batch_size=2, device='cuda')
     elif args.model_type == 'vd':
         summary(net_g, [(config['g_input_nc'] - 2, config['input_width'], config['input_height']), (1, 1, 2)])
     else:
         summary(net_g, (config['g_input_nc'], config['input_width'], config['input_height']))
-        
+    # net_g.to(device)
+
     print('===> Detector network:')
     summary(net_d, (config['d_input_nc'], config['input_width'], config['input_height']))
 
@@ -261,7 +263,7 @@ for epoch in range(num_epochs if not args.no_train else 0):
             fake_b = net_g((real_a, params))
         else:
             fake_b = net_g(real_a)
-            
+
 
         ##############################
         # Training the descriminator #
@@ -308,7 +310,7 @@ for epoch in range(num_epochs if not args.no_train else 0):
             save_models(net_g, net_d, args, epoch)
             print('> Model saved.')
             sys.exit(0)
-            
+
     update_learning_rate(net_g_scheduler, optimizer_g)
     update_learning_rate(net_d_scheduler, optimizer_d)
 
@@ -333,7 +335,7 @@ for epoch in range(num_epochs if not args.no_train else 0):
                     prediction = net_g((input_img, params))
                 else:
                     prediction = net_g(input_img)
-                    
+
                 mse = criterionMSE(prediction, target)
                 psnr = 10 * math.log10(1 / mse.item())
                 avg_mse += mse
@@ -359,19 +361,26 @@ if args.evaluate:
 
         print('===> Evaluating with test set:')
         evaluator.set_output_name('test')
-
         evaluator.snapshots(net_g, test_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
         evaluator.individual_images_performance(net_g, test_loader)
         evaluator.recusive_application_performance(net_g, dataset, len(train_indices) + len(val_indices) , samples=config['evaluation_recursive_samples'])
-        
-        evaluator.run_full_simulation(net_g, dataset, len(train_indices) + len(val_indices), config['full_simulaiton_samples'], sim_name = 'test_data_simulation')
 
         print('===> Evaluating with train set:')
         evaluator.set_output_name('train')
-        
         evaluator.snapshots(net_g, train_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
         evaluator.individual_images_performance(net_g, train_loader)
-        evaluator.recusive_application_performance(net_g, dataset, 1, samples=config['evaluation_recursive_samples'])
+        evaluator.recusive_application_performance(net_g, dataset, 2, samples=config['evaluation_recursive_samples'])
 
+        print('===> Running simulations:')
+        evaluator.set_output_name('simulations')
+        evaluator.run_full_simulation(net_g, dataset, 2, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(2))
+        evaluator.run_full_simulation(net_g, dataset, 100, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(100))
+        evaluator.run_full_simulation(net_g, dataset, 200, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(200))
+        evaluator.run_full_simulation(net_g, dataset, len(train_indices) + len(val_indices), config['full_simulaiton_samples'], sim_name ='simulation_i{}'.format(len(train_indices) + len(val_indices)))
 
-        evaluator.run_full_simulation(net_g, dataset, 0, config['full_simulaiton_samples'], sim_name = 'train_data_simulation')
+        print('===> Evaluating recursively:')
+        evaluator.set_output_name('recursive_i100')
+        evaluator.recusive_application_performance(net_g, dataset, 100, samples=config['evaluation_recursive_samples'])
+
+        evaluator.set_output_name('recursive_i200')
+        evaluator.recusive_application_performance(net_g, dataset, 200, samples=config['evaluation_recursive_samples'])
