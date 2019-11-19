@@ -341,7 +341,7 @@ class UnetGenerator(nn.Module):
                 for j in range(params.size(3)):
                     t.append(torch.ones(1, 1, input.shape[2], input.shape[3]) * params[i][0][0][j])                    
                 tens.append(torch.torch.cat(t, 1))
-            input = torch.cat((torch.torch.cat(tens, 0), input), 1)
+            input = torch.cat((torch.torch.cat(tens, 0).to('cuda'), input), 1).to('cuda')
 
 
         return self.model(input)
