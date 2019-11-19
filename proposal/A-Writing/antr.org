@@ -25,7 +25,7 @@
 #+LATEX_HEADER: \usepackage[english]{babel}
 #+LATEX_HEADER: \usepackage{cite}
 #+LATEX_HEADER: \usepackage{parskip}
-#+LATEX_HEADER: \usepackage[margin=1.4in, tmargin=0.5in]{geometry}
+# #+LATEX_HEADER: \usepackage[margin=1.4in, tmargin=0.1in]{geometry}
 #+LATEX_HEADER: \usepackage{pgfgantt}
 #+LATEX_HEADER: \usepackage{svg}
 #+LATEX_HEADER: \usepackage{color}

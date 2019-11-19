@@ -7,7 +7,6 @@ LOCATION=~/code/flow_pred/
 trian:
 	@echo "Running the training script"
 
-
 evaluate:
 	@echo "Running the evaluation script"
 
@@ -20,17 +19,10 @@ pressure_run:
 	python train.py --config config.json --data ./data/generated_data/
 
 
-# deploy:
-# 	@echo "Deploying project files to server"
-# 	@ssh -t $(SERVER) 'mkdir -p $(LOCATION)/data'
-# 	scp  ./requirements.txt ./config.py ./dataloader.py ./evaluate.py ./models.py ./train.py ./utils.py ./verdana.ttf "$(SERVER):$(LOCATION)/"
-# 	scp -r  ./data/Makefile ./data/anim.py ./data/config.xml ./data/cropper.py ./data/gen_data.sh ./data/gen_dataconf_files.py ./data/gen_param_file.py ./data/render_images.sh ./data/geometry_data "$(SERVER):$(LOCATION)/data/"
-
-
 deploy_training:
 	@echo "Deploying the files for the training of models"
 	@ssh -t $(SERVER) 'mkdir -p $(LOCATION)/data'
-	scp  ./requirements.txt ./dataloader.py ./evaluate.py ./models.py ./train.py ./utils.py ./verdana.ttf "$(SERVER):$(LOCATION)/"
+	scp  ./plotter.py ./requirements.txt ./dataloader.py ./evaluate.py ./models.py ./train.py ./utils.py ./verdana.ttf "$(SERVER):$(LOCATION)/"
 
 deploy_config:
 	@echo "Deploying the config file for the networks"

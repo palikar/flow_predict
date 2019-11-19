@@ -91,10 +91,7 @@ class SimulationDataSet(data.Dataset):
             if args.use_pressure:
                 transform_list.append(transforms.Normalize((0.5, 0.5, 0.5),(0.5, 0.5, 0.5)))
             else:
-                transform_list.append(transforms.Normalize((0.5, 0.5),(0.5, 0.5)))
-        
-
-            
+                transform_list.append(transforms.Normalize((0.5, 0.5),(0.5, 0.5)))            
             
         self.transform = transforms.Compose(transform_list)
 

@@ -32,7 +32,7 @@ from matplotlib import pyplot as plt
 from torchsummary import summary
 
 plt.style.use('ggplot')
-
+plt.rcParams.update({'figure.max_open_warning': 0})
 
 def rchop(thestring, ending):
   if thestring.endswith(ending):
@@ -73,7 +73,7 @@ def plot_train_losses(losses_txt, model_name, file_loc):
     plt.xlabel("Epoch")
     plt.ylabel('Loss_G')
 
-    plt.savefig(file_loc, bbox_inches='tight')
+    plt.savefig(file_loc)
     return 0
 
 
@@ -120,8 +120,9 @@ def plot_val_res(losses_txt, model_name, file_loc):
     plt.ylabel('MSE')
 
 
-    # plt.show()
-    plt.savefig(file_loc, bbox_inches='tight')
+
+    plt.savefig(file_loc)
+    plt.clf()
     return 0
 
 
@@ -170,7 +171,7 @@ def plot_recursive(model_name, mse_test, mse_train, ssim_test, ssim_train, test_
     plt.ylabel('SSIM')
 
     plt.savefig(train_file)
-
+    plt.clf()
         
     
 
@@ -235,6 +236,7 @@ class PlotProcessor():
                 plot_val_res(os.path.join(mod, 'val_losses_test.txt'),
                              model_name,
                              os.path.join(self.get_vis_dir(mod), 'val_losses_plot.png'))
+                plt.cla()
             else:
                 print('No val_losses_test.txt file for model {}'.format(mod))
 
@@ -255,13 +257,20 @@ class PlotProcessor():
         x = []
         metr = []
         metr_p = []
+        hel_d = {}
+
         for mod in self.get_model_dirs():
-            model_name = self.get_model_name(mod)
-            if rchop(model_name, '_p') in x:
-                metr_p.append(self.get_model_metric(mod, metric=metric))
-            else:
-                x.append(model_name)
-                metr.append(self.get_model_metric(mod, metric=metric))
+          model_name = self.get_model_name(mod)
+          met = hel_d.setdefault(rchop(model_name, '_p'), {})
+          if model_name.endswith('_p'):
+            met['with_p'] = self.get_model_metric(mod, metric=metric)
+          else:
+            met['without_p'] = self.get_model_metric(mod, metric=metric)
+        for mod, m_d in hel_d.items():
+          metr.append(m_d['without_p'])
+          metr_p.append(m_d['with_p'])
+          x.append(mod)
+          
 
         barWidth = 0.2
         spacing = 0.05
@@ -270,6 +279,12 @@ class PlotProcessor():
 
         plt.figure(figsize=(11, 10), dpi=100)
         plt.suptitle("Models comparison")
+
+        # print(r1)
+        # print(metr)
+        # print('------')
+        # print(r2)
+        # print(metr_p)
 
         plt.subplot(2,1,1)
         plt.title("Test")
@@ -281,20 +296,26 @@ class PlotProcessor():
 
         plt.ylabel('Model', fontweight='bold')
         plt.yticks([r + barWidth - spacing/2 for r in range(len(metr))], x)
-        plt.legend()
-
+        plt.legend(loc='upper left', bbox_to_anchor=(0.7, 1.1), ncol=3, fancybox=True, shadow=True)
 
         x = []
         metr = []
         metr_p = []
+        hel_d = {}
+        
         for mod in self.get_model_dirs():
-            model_name = self.get_model_name(mod)
-            if rchop(model_name, '_p') in x:
-                metr_p.append(self.get_model_metric(mod, metric=metric, test=False))
-            else:
-                x.append(model_name)
-                metr.append(self.get_model_metric(mod, metric=metric , test=False))
+          model_name = self.get_model_name(mod)
+          met = hel_d.setdefault(rchop(model_name, '_p'), {})
+          if model_name.endswith('_p'):
+            met['with_p'] = self.get_model_metric(mod, metric=metric, test=False)
+          else:
+            met['without_p'] = self.get_model_metric(mod, metric=metric, test=False)
+        for mod, m_d in hel_d.items():
+          metr.append(m_d['without_p'])
+          metr_p.append(m_d['with_p'])
+          x.append(mod)
 
+          
         barWidth = 0.2
         spacing = 0.05
         r1 = np.arange(len(metr))
@@ -311,9 +332,10 @@ class PlotProcessor():
         plt.xlabel(metric.upper(), fontweight='bold')
         plt.ylabel('Model', fontweight='bold')
         plt.yticks([r + barWidth - spacing/2 for r in range(len(metr))], x)
-        plt.legend()
+        
 
         plt.savefig(file_loc, bbox_inches='tight')
+        plt.clf()
 
 
     def matrics_comp(self):
@@ -353,7 +375,7 @@ def main():
 
     plotter.val_losses()
     plotter.train_losses()
-    plotter.matrics_comp()    
+    plotter.matrics_comp()
     plotter.recursive_plot()
     
 
