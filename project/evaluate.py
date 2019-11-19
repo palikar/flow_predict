@@ -70,7 +70,7 @@ class Evaluator:
 
         if split_point - samples/2 < 0:
             start_index = 0
-            end_index = split_point + samples
+            end_index = int(split_point + samples)
         else:
             start_index = int(split_point - samples/2)
             end_index = int(split_point + samples/2)
@@ -85,17 +85,22 @@ class Evaluator:
 
         prev_img = None
         input_img = dataset[start_index][0].expand(1,-1,-1,-1).to(self.device)
+
+        print(input_img.shape)
+
         if self.parameterized:
             params = dataset[start_index][2].expand(1,-1,-1,-1).to(self.device)
         
         for index in range(start_index, end_index):
-
+            
             if self.parameterized:
                 predicted = net((input_img, params))
             else:
                 predicted = net(input_img)
 
-            del input_img
+            input_img = predicted
+            
+
             target = dataset[index][1].expand(1,-1,-1,-1).to(self.device)
 
             cur_mse = self.criterionMSE(predicted, target).item()
@@ -108,10 +113,9 @@ class Evaluator:
             cor += [np.average(np.array([correlation(predicted_img[i], target_img[i]) for i in range(predicted_img.shape[0])]))]
             ssim += [np.average(np.array([ssim_metr(predicted_img[i].T, target_img[i].T, multichannel=True) for i in range(predicted_img.shape[0])]))]
 
-            input_img = predicted
+            
 
-            del predicted, target
-
+            
             print('> Recursive application {} completed'.format(index - start_index))
 
 
@@ -166,6 +170,10 @@ class Evaluator:
             avrg_hand.write('{} {}\n'.format('Avrg cor: ',  np.average(cor)))
             avrg_hand.write('{} {}\n'.format('Avrg psnr: ', np.average(psnr)))
             avrg_hand.write('{} {}\n'.format('Avrg ssim: ', np.average(ssim)))
+            avrg_hand.write('{} {}\n'.format('Var mse: ',  np.var(mse)))
+            avrg_hand.write('{} {}\n'.format('Var cor: ',  np.var(cor)))
+            avrg_hand.write('{} {}\n'.format('Var psnr: ', np.var(psnr)))
+            avrg_hand.write('{} {}\n'.format('Var ssim: ', np.var(ssim)))
 
         with open(os.path.join(self.root_dir, self.output_name, 'metrics_list.txt'), 'w') as list_hand:
             list_hand.write('{} {}\n'.format('mse: ' ,  ','.join(str(i) for i in mse)))
@@ -247,14 +255,18 @@ class Evaluator:
         path = os.path.join(config['output_dir'], self.output_name, 'full_simulation', sim_name)
         mkdir(path)
 
+        
         input_img = dataset[start_index][0].expand(1,-1,-1,-1).to(self.device)
         if self.parameterized:
             params = dataset[start_index][2].expand(1,-1,-1,-1).to(self.device)
-        for i, index in enumerate(range(start_index, cnt), 1):
+        for i, index in enumerate(range(start_index, start_index + cnt), 1):
+            
             if self.parameterized:
                 predicted = net((input_img, params))
             else:
                 predicted = net(input_img)
+
+            input_img = predicted
 
             if not self.args.use_pressure:
                 predicted_x, predicted_y = self._prepare_tensor_img(predicted[0])
