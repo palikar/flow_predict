@@ -4,6 +4,7 @@ import sys
 import math
 import argparse
 import random
+import time
 
 import torch
 import torch.nn as nn
@@ -15,6 +16,7 @@ from utils import merge_and_save
 from utils import RedirectStdStreams
 from utils import mkdir
 from utils import save_img
+from utils import imgs_perc_diff
 from config import config
 from dataloader import UnNormalize
 
@@ -56,17 +58,17 @@ class Evaluator:
 
 
     def gen_dirs(self):
-        mkdir(os.path.join(config['output_dir'], self.output_name))
-        mkdir(os.path.join(config['output_dir'], self.output_name, 'snapshots'))
-        mkdir(os.path.join(config['output_dir'], self.output_name, 'full_simulation'))
-
         self.path = os.path.join(config['output_dir'], self.output_name)
         self.path_snaps = os.path.join(config['output_dir'], self.output_name, 'snapshots')
         self.path_full_sim = os.path.join(config['output_dir'], self.output_name, 'full_simulation')
+        mkdir(self.path)
 
 
     def recusive_application_performance(self, net, dataset, split_point, samples=20):
         print('===> Evaluating performance of recursive application')
+
+        path = os.path.join(config['output_dir'], self.output_name, 'recursive')
+        mkdir(path)
 
         if split_point - samples/2 < 0:
             start_index = 0
@@ -82,17 +84,17 @@ class Evaluator:
         cor =  []
         psnr = []
         ssim = []
+        diff_avrg = []
+        diff_max = []
+        diff_x = []
+        diff_y = []
 
-        prev_img = None
         input_img = dataset[start_index][0].expand(1,-1,-1,-1).to(self.device)
-
-        print(input_img.shape)
 
         if self.parameterized:
             params = dataset[start_index][2].expand(1,-1,-1,-1).to(self.device)
 
         for index in range(start_index, end_index):
-
             if self.parameterized:
                 predicted = net((input_img, params))
             else:
@@ -113,8 +115,29 @@ class Evaluator:
             cor += [np.average(np.array([correlation(predicted_img[i], target_img[i]) for i in range(predicted_img.shape[0])]))]
             ssim += [np.average(np.array([ssim_metr(predicted_img[i].T, target_img[i].T, multichannel=True) for i in range(predicted_img.shape[0])]))]
 
+            diff_avrg_, _, diff_max_ = imgs_perc_diff(target_img, predicted_img)
+            diff_avrg.append(diff_avrg_)
+            diff_max.append(diff_max_)
+
+            diff_x.append(imgs_perc_diff(target_img[0][0], predicted_img[0][0])[0])
+            diff_y.append(imgs_perc_diff(target_img[0][1], predicted_img[0][1])[0])
 
 
+            if not self.args.use_pressure:
+                predicted_x, predicted_y = self._prepare_tensor_img(predicted_img[0])
+                target_x, target_y = self._prepare_tensor_img(dataset[index][1])
+            else:
+                predicted_x, predicted_y, predicted_p = self._prepare_tensor_img(predicted[0])
+                target_x, target_y, target_p  = self._prepare_tensor_img(dataset[index][1])
+
+
+            merge_and_save(target_x, predicted_x,
+                           'Real', 'Predicted',
+                           os.path.join(path, 'x_recursive_{}.png'.format(index - start_index)))
+
+            merge_and_save(target_y, predicted_y,
+                           'Real', 'Predicted',
+                           os.path.join(path, 'y_recursive_{}.png'.format(index - start_index)))
 
             print('> Recursive application {} completed'.format(index - start_index))
 
@@ -125,6 +148,10 @@ class Evaluator:
             list_hand.write('{} {}\n'.format('cor: ' ,  ','.join(str(i) for i in cor)))
             list_hand.write('{} {}\n'.format('psnr: ',  ','.join(str(i) for i in psnr)))
             list_hand.write('{} {}\n'.format('ssim: ',  ','.join(str(i) for i in ssim)))
+            list_hand.write('{} {}\n'.format('diff_avrg: ',  ','.join(str(i) for i in diff_avrg)))
+            list_hand.write('{} {}\n'.format('diff_max: ',  ','.join(str(i) for i in diff_max)))
+            list_hand.write('{} {}\n'.format('x_diff_avrg: ',  ','.join(str(i) for i in diff_x)))
+            list_hand.write('{} {}\n'.format('y_diff_max: ',  ','.join(str(i) for i in diff_y)))
 
 
     def individual_images_performance(self, net, test_dataloader):
@@ -134,6 +161,10 @@ class Evaluator:
         cor = []
         psnr = []
         ssim = []
+        diff_avrg = []
+        diff_max = []
+        diff_x = []
+        diff_y = []
 
 
         for iteration, batch in enumerate(test_dataloader, 1):
@@ -155,7 +186,12 @@ class Evaluator:
             cor += [np.average(np.array([correlation(predicted[i], real_b[i]) for i in range(predicted.shape[0])]))]
             ssim += [np.average(np.array([ssim_metr(predicted[i].T, real_b[i].T, multichannel=True) for i in range(predicted.shape[0])]))]
 
-            del real_a, real_b
+            diff_avrg_, _, diff_max_ = imgs_perc_diff(real_b, predicted)
+            diff_avrg.append(diff_avrg_)
+            diff_max.append(diff_max_)
+
+            diff_x.append(imgs_perc_diff(real_b[0], predicted[0])[0])
+            diff_y.append(imgs_perc_diff(real_b[1], predicted[1])[0])
 
             if iteration % 10 == 0:
                 print('> Evaluation {} completed'.format(iteration))
@@ -164,22 +200,35 @@ class Evaluator:
         cor  = np.array(cor)
         psnr = np.array(psnr)
         ssim = np.array(ssim)
+        diff_avrg = np.array(diff_avrg)
+        diff_max = np.array(diff_max)
 
         with open(os.path.join(self.root_dir, self.output_name, 'metrics_avrg.txt'), 'w') as avrg_hand:
             avrg_hand.write('{} {}\n'.format('Avrg mse: ',  np.average(mse)))
             avrg_hand.write('{} {}\n'.format('Avrg cor: ',  np.average(cor)))
             avrg_hand.write('{} {}\n'.format('Avrg psnr: ', np.average(psnr)))
             avrg_hand.write('{} {}\n'.format('Avrg ssim: ', np.average(ssim)))
+            avrg_hand.write('{} {}\n'.format('Avrg avrg_diff_perc: ', np.average(diff_avrg)))
+            avrg_hand.write('{} {}\n'.format('Avrg max_diff_perc: ', np.average(diff_max)))
+            avrg_hand.write('{} {}\n'.format('Avrg avrt_diff_x: ', np.average(diff_x)))
+            avrg_hand.write('{} {}\n'.format('Avrg avrt_diff_y: ', np.average(diff_y)))
+
             avrg_hand.write('{} {}\n'.format('Var mse: ',  np.var(mse)))
             avrg_hand.write('{} {}\n'.format('Var cor: ',  np.var(cor)))
             avrg_hand.write('{} {}\n'.format('Var psnr: ', np.var(psnr)))
             avrg_hand.write('{} {}\n'.format('Var ssim: ', np.var(ssim)))
+            avrg_hand.write('{} {}\n'.format('Var avrg_diff_perc: ', np.var(diff_avrg)))
+            avrg_hand.write('{} {}\n'.format('Var max_diff_perc: ', np.var(diff_max)))
+            avrg_hand.write('{} {}\n'.format('Var avrt_diff_x: ', np.var(diff_x)))
+            avrg_hand.write('{} {}\n'.format('Var avrt_diff_y: ', np.var(diff_y)))
 
         with open(os.path.join(self.root_dir, self.output_name, 'metrics_list.txt'), 'w') as list_hand:
             list_hand.write('{} {}\n'.format('mse: ' ,  ','.join(str(i) for i in mse)))
             list_hand.write('{} {}\n'.format('cor: ' ,  ','.join(str(i) for i in cor)))
             list_hand.write('{} {}\n'.format('psnr: ',  ','.join(str(i) for i in psnr)))
             list_hand.write('{} {}\n'.format('ssim: ',  ','.join(str(i) for i in ssim)))
+            list_hand.write('{} {}\n'.format('diff_avrg: ',  ','.join(str(i) for i in diff_avrg)))
+            list_hand.write('{} {}\n'.format('diff_max: ',  ','.join(str(i) for i in diff_max)))
 
 
     def _prepare_tensor_img(self, tens_img):
@@ -197,6 +246,8 @@ class Evaluator:
 
 
     def snapshots(self, net, sampler, dataset, samples=5):
+        mkdir(self.path_snaps)
+
         print('===> Saving {} snapshots'.format(samples))
 
         for index, i in zip(sampler, range(samples)):
@@ -249,20 +300,19 @@ class Evaluator:
 
 
     def run_full_simulation(self, net, dataset, start_index, cnt, sim_name='simulation'):
-
         print('===> Running simulation with the generator network')
 
-        path = os.path.join(config['output_dir'], self.output_name, 'full_simulation', sim_name)
+        path = os.path.join(self.path_full_sim, sim_name)
         mkdir(path)
 
         times = []
-        
+
         input_img = dataset[start_index][0].expand(1,-1,-1,-1).to(self.device)
+
         if self.parameterized:
             params = dataset[start_index][2].expand(1,-1,-1,-1).to(self.device)
-        for i, index in enumerate(range(start_index, start_index + cnt), 1):
 
-            # time here
+        for i, index in enumerate(range(start_index, start_index + cnt), 1):
             if self.parameterized:
                 t0 = time.time()
                 predicted = net((input_img, params))
@@ -288,16 +338,9 @@ class Evaluator:
             if self.args.use_pressure:
                 save_img(predicted_p, 'p_step_{}'.format(i), '{}/p_step_{}.png'.format(path, i))
 
-            
-
-            input_img = predicted
-
         times = np.array(times)
-        
-        with open(config['output_dir'], self.output_name, 'full_simulation', 'timing_{}.txt'.format(sim_name)) as time_hand:
+
+        with open(os.path.join(config['output_dir'], self.output_name, 'full_simulation', 'timing_{}.txt'.format(sim_name)), 'w') as time_hand:
             time_hand.write('{} {}\n'.format('Avrg : ',  np.average(times)))
             time_hand.write('{} {}\n'.format('Var : ',  np.var(times)))
-            list_hand.write('{} {}\n'.format('List : ' ,  ','.join(str(i) for i in times)))
-
-            
-
+            time_hand.write('{} {}\n'.format('List : ' ,  ','.join(str(i) for i in times)))

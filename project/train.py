@@ -204,7 +204,8 @@ print('--training samples count:', len(train_indices))
 print('--validation samples count:', len(val_indices))
 print('--test samples count:', len(test_indices))
 
-date = datetime.date.today().strftime('%H:%M:%S;%d-%m-%Y')
+now = datetime.datetime.now()
+date = now.strftime("%d-%m-%Y:%H:%M:%S")
 print('--date:', date)
 
 with open(os.path.join(config['output_dir'], 'date_{}'.format(date)), 'w') as dh:
@@ -381,16 +382,17 @@ if args.evaluate:
         evaluator.individual_images_performance(net_g, train_loader)
         evaluator.recusive_application_performance(net_g, dataset, 2, samples=config['evaluation_recursive_samples'])
 
-        print('===> Running simulations:')
-        evaluator.set_output_name('simulations')
-        evaluator.run_full_simulation(net_g, dataset, 2, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(2))
-        evaluator.run_full_simulation(net_g, dataset, 100, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(100))
-        evaluator.run_full_simulation(net_g, dataset, 200, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(200))
-        evaluator.run_full_simulation(net_g, dataset, len(train_indices) + len(val_indices), config['full_simulaiton_samples'], sim_name ='simulation_i{}'.format(len(train_indices) + len(val_indices)))
+        if args.model_type == 'c':
+            print('===> Running simulations:')
+            evaluator.set_output_name('simulations')
+            evaluator.run_full_simulation(net_g, dataset, 2, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(2))
+            evaluator.run_full_simulation(net_g, dataset, 100, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(100))
+            # evaluator.run_full_simulation(net_g, dataset, 200, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(200))
+            # evaluator.run_full_simulation(net_g, dataset, len(train_indices) + len(val_indices), config['full_simulaiton_samples'], sim_name ='simulation_i{}'.format(len(train_indices) + len(val_indices)))
 
-        print('===> Evaluating recursively:')
-        evaluator.set_output_name('recursive_i100')
-        evaluator.recusive_application_performance(net_g, dataset, 100, samples=config['evaluation_recursive_samples'])
+            print('===> Evaluating recursively:')
+            evaluator.set_output_name('recursive_i100')
+            evaluator.recusive_application_performance(net_g, dataset, 20, samples=config['evaluation_recursive_samples'])
 
-        evaluator.set_output_name('recursive_i200')
-        evaluator.recusive_application_performance(net_g, dataset, 200, samples=config['evaluation_recursive_samples'])
+            # evaluator.set_output_name('recursive_i200')
+            # evaluator.recusive_application_performance(net_g, dataset, 200, samples=config['evaluation_recursive_samples'])
