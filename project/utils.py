@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+<#!/usr/bin/env python
 
 import os
 import sys
@@ -113,5 +113,25 @@ def save_img(img, text, dest, mode='L'):
     image.save(dest)
 
 
+def imgs_perc(img1, img2):
+
+    diff = np.abs(img1 - img2)
+    diff_flat = diff.flatten()
+
+    diff_mean = np.mean(diff_flat)
+    diff_mean *= 100
+    diff_mean = round(diff_perc, 3)
+
+    diff_max = np.max(diff_flat)
+    diff_max *= 100
+    diff_max = round(diff_perc, 3)
     
+    diff_min = np.min(diff_flat)
+    diff_min *= 100
+    diff_min = round(diff_perc, 3)
     
+    return diff_mean, diff_min, diff_max
+
+def imgs_diff(img1, img2):
+    diff = np.abs(img1 - img2)
+    return diff

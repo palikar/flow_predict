@@ -40,6 +40,7 @@ def rchop(thestring, ending):
   return thestring
 
 
+
 def plot_train_losses(losses_txt, model_name, file_loc):
     desc = []
     gen = []
@@ -174,7 +175,43 @@ def plot_recursive(model_name, mse_test, mse_train, ssim_test, ssim_train, test_
     plt.clf()
         
     
+def plot_model_comparision(self, labels, test_metr, test_metr_p, train_metr, train_metr_p, filename):
 
+  barWidth = 0.2
+  spacing = 0.05
+  r1 = np.arange(len(test_metr[0]))
+  r2 = [x + barWidth + spacing for x in r1]
+  
+  plt.figure(figsize=(11, 10), dpi=100)
+  plt.suptitle("Models comparison")
+
+  plt.subplot(2,1,1)
+  plt.title("Test")
+  plt.barh(r1, test__metr[0], barWidth, edgecolor='black', label='Without pressure', alpha=0.5, xerr=test_metr[1])
+  plt.barh(r2, test_metr_p[1], barWidth, edgecolor='black', label='With pressure' , alpha=0.5, xerr=test_metr_p[1])        
+  plt.grid(b=True, which='major', color='#999999', linestyle='-', alpha=0.2)
+  plt.minorticks_on()
+  plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
+  plt.ylabel('Model', fontweight='bold')
+  plt.yticks([r + barWidth - spacing/2 for r in range(len(metr))], x)
+  plt.legend(loc='upper left', bbox_to_anchor=(0.7, 1.1), ncol=3, fancybox=True, shadow=True)
+
+
+  plt.subplot(2,1,2)
+  plt.title("Train")
+  plt.barh(r1, train_metr[0], barWidth, edgecolor='black', label='Without pressure', alpha=0.5, xerr=train_metr[1])
+  plt.barh(r2, train_metr_p[0], barWidth, edgecolor='black', label='With pressure', alpha=0.5, xerr=train_metr_p[1])
+  plt.grid(b=True, which='major', color='#999999', linestyle='-', alpha=0.2)
+  plt.minorticks_on()
+  plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
+  plt.xlabel(metric.upper(), fontweight='bold')
+  plt.ylabel('Model', fontweight='bold')
+  plt.yticks([r + barWidth - spacing/2 for r in range(len(metr))], x)
+  plt.savefig(filename, bbox_inches='tight')
+  plt.clf()
+
+    
+    
 class PlotProcessor():
 
 
@@ -254,88 +291,54 @@ class PlotProcessor():
 
 
     def _metrics_comp(self, file_loc, metric='psnr'):
-        x = []
-        metr = []
-        metr_p = []
-        hel_d = {}
 
+        hel_d = {}
         for mod in self.get_model_dirs():
           model_name = self.get_model_name(mod)
           met = hel_d.setdefault(rchop(model_name, '_p'), {})
-          if model_name.endswith('_p'):
-            met['with_p'] = self.get_model_metric(mod, metric=metric)
-          else:
-            met['without_p'] = self.get_model_metric(mod, metric=metric)
-        for mod, m_d in hel_d.items():
-          metr.append(m_d['without_p'])
-          metr_p.append(m_d['with_p'])
-          x.append(mod)
+          met.setdefault('with_p', [])
+          met.setdefault('without_p', [])
           
-
-        barWidth = 0.2
-        spacing = 0.05
-        r1 = np.arange(len(metr))
-        r2 = [x + barWidth + spacing for x in r1]
-
-        plt.figure(figsize=(11, 10), dpi=100)
-        plt.suptitle("Models comparison")
-
-        # print(r1)
-        # print(metr)
-        # print('------')
-        # print(r2)
-        # print(metr_p)
-
-        plt.subplot(2,1,1)
-        plt.title("Test")
-        plt.barh(r1, metr, barWidth, edgecolor='black', label='Without pressure')
-        plt.barh(r2, metr_p, barWidth, edgecolor='black', label='With pressure')
-        plt.grid(b=True, which='major', color='#999999', linestyle='-', alpha=0.2)
-        plt.minorticks_on()
-        plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
-
-        plt.ylabel('Model', fontweight='bold')
-        plt.yticks([r + barWidth - spacing/2 for r in range(len(metr))], x)
-        plt.legend(loc='upper left', bbox_to_anchor=(0.7, 1.1), ncol=3, fancybox=True, shadow=True)
-
-        x = []
-        metr = []
-        metr_p = []
-        hel_d = {}
-        
-        for mod in self.get_model_dirs():
-          model_name = self.get_model_name(mod)
-          met = hel_d.setdefault(rchop(model_name, '_p'), {})
           if model_name.endswith('_p'):
-            met['with_p'] = self.get_model_metric(mod, metric=metric, test=False)
+            met['test_with_p'].append(self.get_model_metric(mod, metric=metric, test=True))
+            met['train_with_p'].append(self.get_model_metric(mod, metric=metric, test=False))
           else:
-            met['without_p'] = self.get_model_metric(mod, metric=metric, test=False)
+            met['test_without_p'].append(self.get_model_metric(mod, metric=metric, test=True))
+            met['train_without_p'].append(self.get_model_metric(mod, metric=metric, test=False))
+
+        labels = []
+            
+        test_metr = []
+        test_metr_p = []
+        test_metr_err = []
+        test_metr_p_err = []
+
+        train_metr = []
+        train_metr_p = []
+        train_metr_err = []
+        train_metr_p_err = []
+        
         for mod, m_d in hel_d.items():
-          metr.append(m_d['without_p'])
-          metr_p.append(m_d['with_p'])
-          x.append(mod)
+
+          test_metr.append(np.mean(m_d['test_without_p']))
+          test_metr_err.append(np.std(m_d['test_without_p']))
+          test_metr_p.append(np.mean(m_d['test_with_p']))
+          test_metr_p_err.append(np.std(m_d['test_with_p']))
 
           
-        barWidth = 0.2
-        spacing = 0.05
-        r1 = np.arange(len(metr))
-        r2 = [x + barWidth + spacing for x in r1]
+          train_metr.append(np.mean(m_d['train_without_p']))
+          train_metr_err.append(np.std(m_d['train_without_p']))
+          train_metr_p.append(np.mean(m_d['train_with_p']))
+          train_metr_p_err.append(np.std(m_d['train_with_p']))
 
-
-        plt.subplot(2,1,2)
-        plt.title("Train")
-        plt.barh(r1, metr, barWidth, edgecolor='black', label='Without pressure')
-        plt.barh(r2, metr_p, barWidth, edgecolor='black', label='With pressure')
-        plt.grid(b=True, which='major', color='#999999', linestyle='-', alpha=0.2)
-        plt.minorticks_on()
-        plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
-        plt.xlabel(metric.upper(), fontweight='bold')
-        plt.ylabel('Model', fontweight='bold')
-        plt.yticks([r + barWidth - spacing/2 for r in range(len(metr))], x)
         
+          labels.append(mod)
 
-        plt.savefig(file_loc, bbox_inches='tight')
-        plt.clf()
+
+          plot_model_comparision(labels,
+                                 (test_metr, test_metr_err), (test_metr_p, test_metr_p_err),
+                                 (train_metr, train_metr_err), (train_metr_p, train_metr_p_err),
+                                 os.path.join(self.root_dir, 'Models_comparision.png'))
 
 
     def matrics_comp(self):
