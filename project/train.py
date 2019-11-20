@@ -7,7 +7,7 @@ import math
 import argparse
 import random
 import signal
-
+import datetime
 
 from utils import mkdir, Logger
 from dataloader import SimulationDataSet
@@ -203,6 +203,12 @@ test_loader = DataLoader(dataset, batch_size=batch_size, sampler=test_sampler, s
 print('--training samples count:', len(train_indices))
 print('--validation samples count:', len(val_indices))
 print('--test samples count:', len(test_indices))
+
+date = datetime.date.today().strftime('%H:%M:%S;%d-%m-%Y')
+print('--date:', date)
+
+with open(os.path.join(config['output_dir'], 'date_{}'.format(date)), 'w') as dh:
+    dh.write(date)
 
 print('===> Loading model')
 
