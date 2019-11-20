@@ -380,19 +380,24 @@ if args.evaluate:
         evaluator.set_output_name('train')
         evaluator.snapshots(net_g, train_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
         evaluator.individual_images_performance(net_g, train_loader)
-        evaluator.recusive_application_performance(net_g, dataset, 2, samples=config['evaluation_recursive_samples'])
+        evaluator.recusive_application_performance(net_g, dataset, 5, samples=config['evaluation_recursive_samples'])
 
         if args.model_type == 'c':
             print('===> Running simulations:')
+
             evaluator.set_output_name('simulations')
-            evaluator.run_full_simulation(net_g, dataset, 2, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(2))
+            evaluator.run_full_simulation(net_g, dataset, 3, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(2))
             evaluator.run_full_simulation(net_g, dataset, 100, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(100))
-            # evaluator.run_full_simulation(net_g, dataset, 200, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(200))
-            # evaluator.run_full_simulation(net_g, dataset, len(train_indices) + len(val_indices), config['full_simulaiton_samples'], sim_name ='simulation_i{}'.format(len(train_indices) + len(val_indices)))
+            evaluator.run_full_simulation(net_g, dataset, 200, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(200))
+            evaluator.run_full_simulation(net_g, dataset, 300, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(300))
 
             print('===> Evaluating recursively:')
+
             evaluator.set_output_name('recursive_i100')
             evaluator.recusive_application_performance(net_g, dataset, 20, samples=config['evaluation_recursive_samples'])
 
-            # evaluator.set_output_name('recursive_i200')
-            # evaluator.recusive_application_performance(net_g, dataset, 200, samples=config['evaluation_recursive_samples'])
+            evaluator.set_output_name('recursive_i200')
+            evaluator.recusive_application_performance(net_g, dataset, 200, samples=config['evaluation_recursive_samples'])
+
+            evaluator.set_output_name('recursive_i300')
+            evaluator.recusive_application_performance(net_g, dataset, 300, samples=config['evaluation_recursive_samples'])

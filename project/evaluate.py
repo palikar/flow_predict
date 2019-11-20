@@ -107,8 +107,8 @@ class Evaluator:
 
             cur_mse = self.criterionMSE(predicted, target).item()
 
-            predicted_img = predicted.detach().cpu().numpy()
-            target_img = target.detach().cpu().numpy()
+            predicted_img = self.denormalize(predicted).detach().cpu().numpy()
+            target_img = self.denormalize(target).detach().cpu().numpy()
 
             mse += [cur_mse]
             psnr += [10 * math.log10(1 / cur_mse)]
@@ -121,7 +121,6 @@ class Evaluator:
 
             diff_x.append(imgs_perc_diff(target_img[0][0], predicted_img[0][0])[0])
             diff_y.append(imgs_perc_diff(target_img[0][1], predicted_img[0][1])[0])
-
 
             if not self.args.use_pressure:
                 predicted_x, predicted_y = self._prepare_tensor_img(predicted_img[0])
@@ -178,8 +177,8 @@ class Evaluator:
 
             cur_mse = self.criterionMSE(predicted, real_b).item()
 
-            predicted = predicted.detach().cpu().numpy()
-            real_b = real_b.detach().cpu().numpy()
+            predicted = self.denormalize(predicted).detach().cpu().numpy()
+            real_b = self.denormalize(real_b).detach().cpu().numpy()
 
             mse += [cur_mse]
             psnr += [10 * math.log10(1 / cur_mse)]
@@ -190,8 +189,9 @@ class Evaluator:
             diff_avrg.append(diff_avrg_)
             diff_max.append(diff_max_)
 
-            diff_x.append(imgs_perc_diff(real_b[0], predicted[0])[0])
-            diff_y.append(imgs_perc_diff(real_b[1], predicted[1])[0])
+            for i in range(predicted.shape[0]):
+                diff_x.append(imgs_perc_diff(real_b[i][0], predicted[i][0])[0])
+                diff_y.append(imgs_perc_diff(real_b[i][1], predicted[i][1])[0])
 
             if iteration % 10 == 0:
                 print('> Evaluation {} completed'.format(iteration))
