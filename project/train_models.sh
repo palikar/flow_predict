@@ -3,8 +3,7 @@
 
 NGF=32
 LAYERS=5
-MODEL_CNT=10
-
+MODEL_CNT=${MODEL_CNT:-10}
 
 NETS=()
 
@@ -15,9 +14,12 @@ while [ "$1" != "" ]; do
         --pressure | -p)
             PRESSURE=1
             ;;
+        --np-pressure | -np)
+            NO_PRESSURE=1
+            ;;
 	
         --unet | -u)
-            NETS=( "${net}" "${NETS[@]}" )
+            NETS=( "unet" "${NETS[@]}" )
             ;;
 	
         --res | -r)
@@ -69,13 +71,8 @@ done
 # P2=$!
 # wait $P1 $P2
 
-exit
-
-python train.py --data ./data/generated_data/ --model-type 'c' --cuda --model-name 'unet' --threads 4 --batch-size 3 --shuffle --epochs 50 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_c/res/" --evaluate --g_nfg 4 --g_layers 2 --use-pressure --no-train
-
 for net in ${NETS[@]}
 do
-
     ##########################################################
     #  ____  _       _         __  __           _      _     #
     # |  _ \| | __ _(_)_ __   |  \/  | ___   __| | ___| |___ #
@@ -84,23 +81,27 @@ do
     # |_|   |_|\__,_|_|_| |_| |_|  |_|\___/ \__,_|\___|_|___/#
     ##########################################################
 
-
-
     if [ ! -z "$CONST" ]; then
 
 	if [ ! -z "$PRESSURE" ]; then
             for i in $(seq 1 ${MODEL_CNT}); do
-
-		python train.py --data ./data/generated_data/ --model-type 'c' --cuda --model-name '${net}' --threads 4 --batch-size 3 --shuffle --epochs 50 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_c/plain_results_$i_${RANDOM}/" --evaluate --g_nfg ${NGF} --g_layers ${LAYERS} --use-pressure
+                
+                python train.py --data ./data/generated_data/ --model-type 'c' --cuda --model-name "${net}" --threads 4 --batch-size 3 --shuffle --epochs 50 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_c/plain_results_$i_${RANDOM}/" --evaluate --g_nfg ${NGF} --g_layers ${LAYERS} --use-pressure
 
 	    done
         fi
 
-	for i in $(seq 1 ${MODEL_CNT}); do
 
-	    python train.py --data ./data/generated_data/ --model-type 'c' --cuda --model-name '${net}' --threads 4 --batch-size 3 --shuffle --epochs 50 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_c/plain_results_$i_${RANDOM}/" --evaluate --g_nfg ${NGF} --g_layers ${LAYERS}
+        if [ ! -z "$NO_PRESSURE" ]; then
+            for i in $(seq 1 ${MODEL_CNT}); do
+                
+                python train.py --data ./data/generated_data/ --model-type 'c' --cuda --model-name "${net}" --threads 4 --batch-size 3 --shuffle --epochs 50 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_c/plain_results_$i_${RANDOM}/" --evaluate --g_nfg ${NGF} --g_layers ${LAYERS}
+                
+	    done
+        fi
 
-	done
+        
+	
 
     fi
 
