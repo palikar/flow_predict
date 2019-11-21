@@ -245,7 +245,6 @@ class PlotProcessor():
         if len(l) != 0:
             return os.path.basename(l[0])
 
-
     def get_model_metric(self, mod, metric='psnr', test=True):
         file_loc = os.path.join(mod,
                                 'test' if test else 'train',
@@ -256,14 +255,25 @@ class PlotProcessor():
                     return float(line.split(':')[1].strip())
 
     def get_recursive_list(self, mod, metric='psnr', test=True):
-        file_loc = os.path.join(mod,
-                                'test' if test else 'train',
-                                'recursive_application.txt')
-        with open(file_loc, 'r') as fh:
-            for line in fh.readlines():
-                if metric in line:
-                    return [float(f.strip()) for f in line.split(':')[1].strip().split(',')]
 
+      rec_dirs = []
+
+      for di in os.listdir(mod):
+
+        if not os.path.isdir(os.path.join(mod, di)):
+          continue
+
+        if os.path.isfile(os.path.join(mod, di, 'recursive_application.txt')):
+         rec_dirs.append(die)
+
+      rec_lists = {}
+      for  in rec_dirs:
+        with open(os.path.isfile(os.path.join(mod, di, 'recursive_application.txt')), 'r') as fh:
+          for line in fh.readlines():
+            if metric in line:
+              rec_lists[di] = [float(f.strip()) for f in line.split(':')[1].strip().split(',')]
+
+      return rec_lists
 
     def val_losses(self):
         for mod in self.get_model_dirs():
@@ -348,22 +358,23 @@ class PlotProcessor():
         self._metrics_comp(os.path.join(self.root_dir, 'Models_COR.png'),  'cor')
 
 
-
-
     def recursive_plot(self):
-        for mod in self.get_model_dirs():
-            name = self.get_model_name(mod)
-            mse_train = self.get_recursive_list(mod, test=True, metric='mse')
-            ssim_train = self.get_recursive_list(mod, test=True, metric='ssim')
-
-            mse_test = self.get_recursive_list(mod, test=True, metric='mse')
-            ssim_test = self.get_recursive_list(mod, test=True, metric='ssim')
-
-            test_file = os.path.join(self.get_vis_dir(mod), 'recursive_app_test.png')
-            train_file = os.path.join(self.get_vis_dir(mod), 'recursive_app_train.png')
-
-            plot_recursive(name, mse_test, mse_train, ssim_test, ssim_train, test_file, train_file)
+      
+      for mod in self.get_model_dirs():
         
+        name = self.get_model_name(mod)
+        mse_train = self.get_recursive_list(mod, test=True, metric='mse')
+        # ssim_train = self.get_recursive_list(mod, test=True, metric='ssim')
+
+        print(mse_train)
+        # mse_test = self.get_recursive_list(mod, test=True, metric='mse')
+        # ssim_test = self.get_recursive_list(mod, test=True, metric='ssim')
+            
+        # test_file = os.path.join(self.get_vis_dir(mod), 'recursive_app_test.png')
+        # train_file = os.path.join(self.get_vis_dir(mod), 'recursive_app_train.png')
+        
+        # plot_recursive(name, mse_test, mse_train, ssim_test, ssim_train, test_file, train_file)
+            
 
 
 
@@ -376,9 +387,9 @@ def main():
 
     plotter = PlotProcessor(args)
 
-    plotter.val_losses()
-    plotter.train_losses()
-    plotter.matrics_comp()
+    # plotter.val_losses()
+    # plotter.train_losses()
+    # plotter.matrics_comp()
     plotter.recursive_plot()
     
 
