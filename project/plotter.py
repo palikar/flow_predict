@@ -188,7 +188,7 @@ def plot_model_comparision(self, labels, test_metr, test_metr_p, train_metr, tra
   plt.subplot(2,1,1)
   plt.title("Test")
   plt.barh(r1, test__metr[0], barWidth, edgecolor='black', label='Without pressure', alpha=0.5, xerr=test_metr[1])
-  plt.barh(r2, test_metr_p[1], barWidth, edgecolor='black', label='With pressure' , alpha=0.5, xerr=test_metr_p[1])        
+  plt.barh(r2, test_metr_p[1], barWidth, edgecolor='black', label='With pressure' , alpha=0.5, xerr=test_metr_p[1])
   plt.grid(b=True, which='major', color='#999999', linestyle='-', alpha=0.2)
   plt.minorticks_on()
   plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
@@ -245,6 +245,7 @@ class PlotProcessor():
         if len(l) != 0:
             return os.path.basename(l[0])
 
+
     def get_model_metric(self, mod, metric='psnr', test=True):
         file_loc = os.path.join(mod,
                                 'test' if test else 'train',
@@ -255,7 +256,7 @@ class PlotProcessor():
                     return float(line.split(':')[1].strip())
 
     def get_recursive_list(self, mod, metric='psnr', test=True):
-
+      
       rec_dirs = []
 
       for di in os.listdir(mod):
@@ -356,6 +357,8 @@ class PlotProcessor():
         self._metrics_comp(os.path.join(self.root_dir, 'Models_SSIM.png'), 'ssim')
         self._metrics_comp(os.path.join(self.root_dir, 'Models_MSE.png'),  'mse')
         self._metrics_comp(os.path.join(self.root_dir, 'Models_COR.png'),  'cor')
+
+
 
 
     def recursive_plot(self):
