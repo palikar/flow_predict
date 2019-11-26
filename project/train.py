@@ -8,6 +8,7 @@ import argparse
 import random
 import signal
 import datetime
+import itertools
 
 from utils import mkdir, Logger
 from dataloader import SimulationDataSet
@@ -112,9 +113,13 @@ if args.use_pressure:
     config['g_output_nc'] += 3 if args.rgb else 1
     config['g_input_nc'] += 3 if args.rgb else 1
 
-config['d_input_nc'] = 2*config['g_input_nc']
+config['d_input_nc'] = 2*config['g_input_nc'] + 1 
+
 if parameterized:
     config['g_input_nc'] += 1 if args.model_type == 's' else 2 if args.model_type == 'vd' else 0
+
+config['g_input_nc'] += 1
+
 
 if args.g_layers != -1: config['g_layers'] = args.g_layers
 if args.g_nfg != -1: config['g_nfg'] = args.g_nfg
@@ -257,7 +262,10 @@ val_losses_path = os.path.join(config['output_dir'], 'val_losses_test.txt')
 if not args.no_train:
     print('===> Starting the training loop')
 
+MASK = dataset.get_mask().to(device)
+
 training_started = True
+
 for epoch in range(num_epochs if not args.no_train else 0):
     epoch_loss_d = 0
     epoch_loss_g = 0
@@ -275,11 +283,15 @@ for epoch in range(num_epochs if not args.no_train else 0):
         else:
             fake_b = net_g(real_a)
 
+        # for i,j in itertools.product(range(fake_b.shape[0]), range(fake_b.shape[1])):
+        #     fake_b[i][j] = MASK * fake_b[i][j]
+
 
         ##############################
         # Training the descriminator #
         ##############################
         optimizer_d.zero_grad()
+
 
         fake_ab = torch.cat((real_a, fake_b), 1)
         pred_fake = net_d(fake_ab.detach())
@@ -347,6 +359,9 @@ for epoch in range(num_epochs if not args.no_train else 0):
                 else:
                     prediction = net_g(input_img)
 
+                for i,j in itertools.product(range(prediction.shape[0]), range(prediction.shape[1])):
+                    prediction[i][j] = MASK * prediction[i][j]
+
                 mse = criterionMSE(prediction, target)
                 psnr = 10 * math.log10(1 / mse.item())
                 avg_mse += mse
@@ -363,7 +378,7 @@ save_models(net_g, net_d, args, num_epochs)
 print("> Checkpoint saved to {}".format(os.path.join("checkpoints", args.model_name)))
 training_started = False
 
-evaluator = Evaluator(args, config['output_dir'], device=device, parameterized = parameterized)
+evaluator = Evaluator(args, config['output_dir'], MASK, device=device, parameterized = parameterized)
 if args.evaluate:
     print('===> Evaluating model')
 
@@ -384,16 +399,15 @@ if args.evaluate:
 
         if args.model_type == 'c':
             print('===> Running simulations:')
-
             evaluator.set_output_name('simulations')
-            evaluator.run_full_simulation(net_g, dataset, 3, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(2))
+            evaluator.run_full_simulation(net_g, dataset, 20, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(20))
             evaluator.run_full_simulation(net_g, dataset, 100, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(100))
             evaluator.run_full_simulation(net_g, dataset, 200, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(200))
             evaluator.run_full_simulation(net_g, dataset, 300, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(300))
 
             print('===> Evaluating recursively:')
 
-            evaluator.set_output_name('recursive_i100')
+            evaluator.set_output_name('recursive_i20')
             evaluator.recusive_application_performance(net_g, dataset, 20, samples=config['evaluation_recursive_samples'])
 
             evaluator.set_output_name('recursive_i200')

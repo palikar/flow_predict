@@ -5,6 +5,7 @@ import math
 import argparse
 import random
 import time
+import itertools
 
 import torch
 import torch.nn as nn
@@ -30,7 +31,7 @@ except ImportError:
 
 class Evaluator:
 
-    def __init__(self, args, root_dir, device='cpu', parameterized = False):
+    def __init__(self, args, root_dir, MASK, device='cpu', parameterized = False):
         self.args = args
         self.root_dir = root_dir
         self.criterionMSE = nn.MSELoss().to(device)
@@ -39,6 +40,8 @@ class Evaluator:
 
         self.output_name = 'test'
         self.gen_dirs()
+
+        self.MASK = MASK
 
         if args.rgb:
             if args.use_pressure:
@@ -95,12 +98,16 @@ class Evaluator:
             params = dataset[start_index][2].expand(1,-1,-1,-1).to(self.device)
 
         for index in range(start_index, end_index):
+            
             if self.parameterized:
                 predicted = net((input_img, params))
             else:
                 predicted = net(input_img)
 
-            input_img = predicted
+            for i,j in itertools.product(range(predicted.shape[0]), range(predicted.shape[1])):
+                predicted[i][j] = self.MASK * predicted[i][j]
+
+            input_img = torch.cat((torch.tensor(predicted[0][0:3]).expand(1,-1,-1,-1), self.MASK.expand(1,-1,-1,-1)), 1)
 
 
             target = dataset[index][1].expand(1,-1,-1,-1).to(self.device)
@@ -174,6 +181,9 @@ class Evaluator:
                 predicted = net((real_a, params))
             else:
                 predicted = net(real_a)
+
+            for i,j in itertools.product(range(predicted.shape[0]), range(predicted.shape[1])):
+                predicted[i][j] = self.MASK * predicted[i][j]
 
             cur_mse = self.criterionMSE(predicted, real_b).item()
 
@@ -260,6 +270,9 @@ class Evaluator:
                 input_img, target = dataset[index]
                 predicted = net(input_img.expand(1,-1,-1,-1).to(self.device))
 
+            for i,j in itertools.product(range(predicted.shape[0]), range(predicted.shape[1])):
+                predicted[i][j] = self.MASK * predicted[i][j]
+
 
             print('> Snapshot {}'.format(str(i)))
 
@@ -313,6 +326,7 @@ class Evaluator:
             params = dataset[start_index][2].expand(1,-1,-1,-1).to(self.device)
 
         for i, index in enumerate(range(start_index, start_index + cnt), 1):
+
             if self.parameterized:
                 t0 = time.time()
                 predicted = net((input_img, params))
@@ -322,21 +336,25 @@ class Evaluator:
                 predicted = net(input_img)
                 t1 = time.time()
 
+            for l,j in itertools.product(range(predicted.shape[0]), range(predicted.shape[1])):
+                predicted[l][j] = self.MASK * predicted[l][j]
+
             elapsed = int(round(t1*1000 - t0*1000))
             times.append(elapsed)
-
-            input_img = predicted
 
             if not self.args.use_pressure:
                 predicted_x, predicted_y = self._prepare_tensor_img(predicted[0])
             else:
                 predicted_x, predicted_y, predicted_p = self._prepare_tensor_img(predicted[0])
 
+            
             save_img(predicted_x, 'x_step_{}'.format(i), '{}/x_step_{}.png'.format(path, i))
-            save_img(predicted_y, 'y_step_{}'.format(i), '{}/y_step_{}.png'.format(path, i))
+            save_img(predicted_y, 'y_step_{}'.format(i), '{}/y_step_{}.png'.format(path, i))        
 
             if self.args.use_pressure:
                 save_img(predicted_p, 'p_step_{}'.format(i), '{}/p_step_{}.png'.format(path, i))
+
+            input_img = torch.cat((torch.tensor(predicted[0][0:3]).expand(1,-1,-1,-1), self.MASK.expand(1,-1,-1,-1)), 1)
 
         times = np.array(times)
 

@@ -53,6 +53,9 @@ class SimulationDataSet(data.Dataset):
         self.size = (config['input_width'], config['input_height'])
         
         self.root_dir = root_dir
+
+        self.mask_path = os.path.join(root_dir, 'mask.png')
+        self.mask_img = load_img(self.mask_path).astype(np.float)
         
         with open(data_file, 'r') as handle:
             first_line = handle.readline().rstrip('\n')
@@ -80,30 +83,32 @@ class SimulationDataSet(data.Dataset):
                 
             self.read_rest(handle, first_line)
 
-        transform_list = [transforms.ToTensor()]
+        transform_list_a = [transforms.ToTensor()]
+        transform_list_b = [transforms.ToTensor()]
         
-        if args.rgb:
-            if args.use_pressure:
-                transform_list.append(transforms.Normalize((0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5),(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)))
-            else:
-                transform_list.append(transforms.Normalize((0.5, 0.5, 0.5, 0.5, 0.5, 0.5),(0.5, 0.5, 0.5, 0.5, 0.5, 0.5)))
+        if args.use_pressure:
+            transform_list_a.append(transforms.Normalize((0.5, 0.5, 0.5, 0.0),(0.5, 0.5, 0.5, 1.0)))
+            transform_list_b.append(transforms.Normalize((0.5, 0.5, 0.5),(0.5, 0.5, 0.5)))
         else:
-            if args.use_pressure:
-                transform_list.append(transforms.Normalize((0.5, 0.5, 0.5),(0.5, 0.5, 0.5)))
-            else:
-                transform_list.append(transforms.Normalize((0.5, 0.5),(0.5, 0.5)))
+            transform_list_a.append(transforms.Normalize((0.5, 0.5, 0.0),(0.5, 0.5, 1.0)))
+            transform_list_b.append(transforms.Normalize((0.5, 0.5),(0.5, 0.5)))
             
-        self.transform = transforms.Compose(transform_list)
+            
+        self.transform_a = transforms.Compose(transform_list_a)
+        self.transform_b = transforms.Compose(transform_list_b)
 
 
     def _return_plain(self, a, b, index):
         return a, b
 
+
     def _return_fluid(self, a, b, index):
         return a, b, torch.tensor([self.densities[index], self.viscosities[index]]).view(1, 1, 2)
 
+
     def _return_speed(self, a, b, index):
         return a, b, torch.tensor([self.speeds[index]]).view(1, 1, 1)
+
 
     def read_rest(self, handle, first_line):
         line = handle.readline().rstrip('\n').replace(" ", "")
@@ -147,19 +152,33 @@ class SimulationDataSet(data.Dataset):
         if self.args.use_pressure:
             b_p = load_img(os.path.join(self.root_dir, b_path[2]), size=self.size)
             a_p = load_img(os.path.join(self.root_dir, a_path[2]), size=self.size)
-        
+
+
+        mask = self.mask_img
+
         if self.args.use_pressure:
-            a = np.concatenate((a_x, a_y, a_p), axis=2)
+            a = np.concatenate((a_x, a_y, a_p, mask), axis=2)
             b = np.concatenate((b_x, b_y, b_p), axis=2)
         else:
-            a = np.concatenate([a_x, a_y], axis=2)
-            b = np.concatenate([b_x, b_y], axis=2)
+            a = np.concatenate([a_x*mask, a_y*mask, mask], axis=2)
+            b = np.concatenate([b_x*mask, b_y*mask], axis=2)
 
-        a = self.transform(a)
-        b = self.transform(b)
+        a = self.transform_a(a).float()
+        b = self.transform_b(b).float()
+
+        for i in range(a.shape[0]):
+            a[i] = self.get_mask() * a[i]
+        for i in range(b.shape[0]):
+            b[i] = self.get_mask() * b[i]
 
         return self.return_func(a, b, index)
 
 
     def __len__(self):
         return len(self.paths_a)
+
+
+    def get_mask(self):
+        return transforms.ToTensor()(self.mask_img).float()
+        
+        
