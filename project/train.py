@@ -70,7 +70,7 @@ def save_models(net_g, net_d, args, epoch):
     net_g_model_out_path = "./{0}/{1}/netG_{1}_model_epoch_{2}.pth".format(config['output_dir'], args.model_name, epoch)
     net_d_model_out_path = "./{0}/{1}/netD_{1}_model_epoch_{2}.pth".format(config['output_dir'], args.model_name, epoch)
     torch.save(net_g, net_g_model_out_path)
-    torch.save(net_d, net_d_model_out_path)
+    # torch.save(net_d, net_d_model_out_path)
 
 
 parser = argparse.ArgumentParser(description='The training script of the flowPredict pytorch implementation')
@@ -100,6 +100,7 @@ parser.add_argument('--g_layers', type=int, dest='g_layers', default=-1, help='R
 parser.add_argument('--g_output_nc', type=int, dest='g_output_nc', default=-1, help='Number of output channels of the genrator network')
 parser.add_argument('--g_input_nc', type=int, dest='g_input_nc', default=-1, help='Number of input channels of the genrator network')
 parser.add_argument('--output-dir', dest='output_dir', default=None, help='The output directory for the model files')
+parser.add_argument('--no-mask', dest='mask', default=True, action='store_false', help='Disable the mask for the model')
 
 
 args = parser.parse_args()
@@ -113,12 +114,15 @@ if args.use_pressure:
     config['g_output_nc'] += 3 if args.rgb else 1
     config['g_input_nc'] += 3 if args.rgb else 1
 
-config['d_input_nc'] = 2*config['g_input_nc'] + 1 
+if args.mask:
+    config['d_input_nc'] = 2*config['g_input_nc'] + 1
+else:
+    config['d_input_nc'] = 2*config['g_input_nc']
 
 if parameterized:
     config['g_input_nc'] += 1 if args.model_type == 's' else 2 if args.model_type == 'vd' else 0
 
-config['g_input_nc'] += 1
+if args.mask: config['g_input_nc'] += 1
 
 
 if args.g_layers != -1: config['g_layers'] = args.g_layers
@@ -185,6 +189,7 @@ print('--device:', device)
 print('--gen. input channels:', config['g_input_nc'])
 print('--gen. output channels:', config['g_output_nc'])
 print('--desc. input channels:', config['d_input_nc'])
+print('--mask:', args.mask)
 
 
 print('===> Loading datasets')
@@ -262,7 +267,8 @@ val_losses_path = os.path.join(config['output_dir'], 'val_losses_test.txt')
 if not args.no_train:
     print('===> Starting the training loop')
 
-MASK = dataset.get_mask().to(device)
+if args.mask:
+    MASK = dataset.get_mask().to(device)
 
 training_started = True
 
@@ -282,9 +288,6 @@ for epoch in range(num_epochs if not args.no_train else 0):
             fake_b = net_g((real_a, params))
         else:
             fake_b = net_g(real_a)
-
-        # for i,j in itertools.product(range(fake_b.shape[0]), range(fake_b.shape[1])):
-        #     fake_b[i][j] = MASK * fake_b[i][j]
 
 
         ##############################
@@ -343,7 +346,7 @@ for epoch in range(num_epochs if not args.no_train else 0):
     with open(losses_path, 'a') as losses_hand:
         losses_hand.write('epoch: {}, gen:{:.5f}, desc:{:.5f}\n'.format(epoch, epoch_loss_g, epoch_loss_d))
 
-    if epoch % 10  == 0:
+    if epoch % 20  == 0:
         save_models(net_g, net_d, args, epoch)
         print("> Checkpoint saved to {}".format(os.path.join("checkpoints", args.model_name)))
 
@@ -359,8 +362,9 @@ for epoch in range(num_epochs if not args.no_train else 0):
                 else:
                     prediction = net_g(input_img)
 
-                for i,j in itertools.product(range(prediction.shape[0]), range(prediction.shape[1])):
-                    prediction[i][j] = MASK * prediction[i][j]
+                if args.mask:
+                    for i,j in itertools.product(range(prediction.shape[0]), range(prediction.shape[1])):
+                        prediction[i][j] = MASK * prediction[i][j]
 
                 mse = criterionMSE(prediction, target)
                 psnr = 10 * math.log10(1 / mse.item())
@@ -378,40 +382,40 @@ save_models(net_g, net_d, args, num_epochs)
 print("> Checkpoint saved to {}".format(os.path.join("checkpoints", args.model_name)))
 training_started = False
 
-evaluator = Evaluator(args, config['output_dir'], MASK, device=device, parameterized = parameterized)
+evaluator = Evaluator(args, config['output_dir'], MASK if args.mask else None, device=device, parameterized = parameterized)
 if args.evaluate:
     print('===> Evaluating model')
 
     net_g.eval()
     with torch.no_grad():
 
-        print('===> Evaluating with test set:')
-        evaluator.set_output_name('test')
-        evaluator.snapshots(net_g, test_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
-        evaluator.individual_images_performance(net_g, test_loader)
-        evaluator.recusive_application_performance(net_g, dataset, len(train_indices) + len(val_indices) , samples=config['evaluation_recursive_samples'])
+        # print('===> Evaluating with test set:')
+        # evaluator.set_output_name('test')
+        # evaluator.snapshots(net_g, test_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
+        # evaluator.individual_images_performance(net_g, test_loader)
+        # evaluator.recusive_application_performance(net_g, dataset, len(train_indices) + len(val_indices) , samples=config['evaluation_recursive_samples'])
 
-        print('===> Evaluating with train set:')
-        evaluator.set_output_name('train')
-        evaluator.snapshots(net_g, train_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
-        evaluator.individual_images_performance(net_g, train_loader)
-        evaluator.recusive_application_performance(net_g, dataset, 5, samples=config['evaluation_recursive_samples'])
+        # print('===> Evaluating with train set:')
+        # evaluator.set_output_name('train')
+        # evaluator.snapshots(net_g, train_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
+        # evaluator.individual_images_performance(net_g, train_loader)
+        # evaluator.recusive_application_performance(net_g, dataset, 5, samples=config['evaluation_recursive_samples'])
 
         if args.model_type == 'c':
             print('===> Running simulations:')
             evaluator.set_output_name('simulations')
             evaluator.run_full_simulation(net_g, dataset, 20, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(20))
-            evaluator.run_full_simulation(net_g, dataset, 100, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(100))
-            evaluator.run_full_simulation(net_g, dataset, 200, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(200))
-            evaluator.run_full_simulation(net_g, dataset, 300, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(300))
+            # evaluator.run_full_simulation(net_g, dataset, 100, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(100))
+            # evaluator.run_full_simulation(net_g, dataset, 200, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(200))
+            # evaluator.run_full_simulation(net_g, dataset, 300, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(300))
 
             print('===> Evaluating recursively:')
 
             evaluator.set_output_name('recursive_i20')
             evaluator.recusive_application_performance(net_g, dataset, 20, samples=config['evaluation_recursive_samples'])
 
-            evaluator.set_output_name('recursive_i200')
-            evaluator.recusive_application_performance(net_g, dataset, 200, samples=config['evaluation_recursive_samples'])
+            # evaluator.set_output_name('recursive_i200')
+            # evaluator.recusive_application_performance(net_g, dataset, 200, samples=config['evaluation_recursive_samples'])
 
-            evaluator.set_output_name('recursive_i300')
-            evaluator.recusive_application_performance(net_g, dataset, 300, samples=config['evaluation_recursive_samples'])
+            # evaluator.set_output_name('recursive_i300')
+            # evaluator.recusive_application_performance(net_g, dataset, 300, samples=config['evaluation_recursive_samples'])

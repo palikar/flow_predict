@@ -86,7 +86,7 @@ do
 	if [ ! -z "$PRESSURE" ]; then
             for i in $(seq 1 ${MODEL_CNT}); do
                 
-                python train.py --data ./data/generated_data/ --model-type 'c' --cuda --model-name "${net}" --threads 4 --batch-size 3 --shuffle --epochs 50 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_c/plain_results_$i_${RANDOM}/" --evaluate --g_nfg ${NGF} --g_layers ${LAYERS} --use-pressure
+                python train.py --data ./data/generated_data/ --model-type 'c' --model-name "${net}" --threads 4 --batch-size 3 --shuffle --epochs 50 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_c/plain_results_$i_${RANDOM}/" --evaluate --g_nfg ${NGF} --g_layers ${LAYERS} --use-pressure  --no-train
 
 	    done
         fi
