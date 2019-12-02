@@ -175,7 +175,7 @@ def plot_recursive(model_name, mse_test, mse_train, ssim_test, ssim_train, test_
     plt.clf()
         
     
-def plot_model_comparision(self, labels, test_metr, test_metr_p, train_metr, train_metr_p, filename):
+def plot_model_comparision(metric, labels, test_metr, test_metr_p, train_metr, train_metr_p, filename):
 
   barWidth = 0.2
   spacing = 0.05
@@ -187,13 +187,15 @@ def plot_model_comparision(self, labels, test_metr, test_metr_p, train_metr, tra
 
   plt.subplot(2,1,1)
   plt.title("Test")
-  plt.barh(r1, test__metr[0], barWidth, edgecolor='black', label='Without pressure', alpha=0.5, xerr=test_metr[1])
-  plt.barh(r2, test_metr_p[1], barWidth, edgecolor='black', label='With pressure' , alpha=0.5, xerr=test_metr_p[1])
+  plt.barh(r1, test_metr[0], barWidth, edgecolor='black', label='Without pressure', alpha=0.5, xerr=test_metr[1])
+  plt.barh(r2, test_metr_p[0], barWidth, edgecolor='black', label='With pressure' , alpha=0.5, xerr=test_metr_p[1])
   plt.grid(b=True, which='major', color='#999999', linestyle='-', alpha=0.2)
   plt.minorticks_on()
   plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
   plt.ylabel('Model', fontweight='bold')
-  plt.yticks([r + barWidth - spacing/2 for r in range(len(metr))], x)
+
+  plt.yticks([r + barWidth - spacing/2 for r in range(len(test_metr))], labels)
+  
   plt.legend(loc='upper left', bbox_to_anchor=(0.7, 1.1), ncol=3, fancybox=True, shadow=True)
 
 
@@ -204,9 +206,12 @@ def plot_model_comparision(self, labels, test_metr, test_metr_p, train_metr, tra
   plt.grid(b=True, which='major', color='#999999', linestyle='-', alpha=0.2)
   plt.minorticks_on()
   plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
+
   plt.xlabel(metric.upper(), fontweight='bold')
   plt.ylabel('Model', fontweight='bold')
-  plt.yticks([r + barWidth - spacing/2 for r in range(len(metr))], x)
+
+  plt.yticks([r + barWidth - spacing/2 for r in range(len(train_metr))], labels)
+
   plt.savefig(filename, bbox_inches='tight')
   plt.clf()
 
@@ -268,7 +273,8 @@ class PlotProcessor():
          rec_dirs.append(die)
 
       rec_lists = {}
-      for  in rec_dirs:
+
+      for di in rec_dirs:
         with open(os.path.isfile(os.path.join(mod, di, 'recursive_application.txt')), 'r') as fh:
           for line in fh.readlines():
             if metric in line:
@@ -305,10 +311,14 @@ class PlotProcessor():
 
         hel_d = {}
         for mod in self.get_model_dirs():
+
           model_name = self.get_model_name(mod)
           met = hel_d.setdefault(rchop(model_name, '_p'), {})
-          met.setdefault('with_p', [])
-          met.setdefault('without_p', [])
+
+          met.setdefault('train_with_p', [])
+          met.setdefault('train_without_p', [])
+          met.setdefault('test_with_p', [])
+          met.setdefault('test_without_p', [])
           
           if model_name.endswith('_p'):
             met['test_with_p'].append(self.get_model_metric(mod, metric=metric, test=True))
@@ -328,17 +338,23 @@ class PlotProcessor():
         train_metr_p = []
         train_metr_err = []
         train_metr_p_err = []
+
+        print(met)
+        print(hel_d)
         
         for mod, m_d in hel_d.items():
 
           test_metr.append(np.mean(m_d['test_without_p']))
           test_metr_err.append(np.std(m_d['test_without_p']))
+
+
           test_metr_p.append(np.mean(m_d['test_with_p']))
           test_metr_p_err.append(np.std(m_d['test_with_p']))
 
           
           train_metr.append(np.mean(m_d['train_without_p']))
           train_metr_err.append(np.std(m_d['train_without_p']))
+          
           train_metr_p.append(np.mean(m_d['train_with_p']))
           train_metr_p_err.append(np.std(m_d['train_with_p']))
 
@@ -346,7 +362,7 @@ class PlotProcessor():
           labels.append(mod)
 
 
-          plot_model_comparision(labels,
+          plot_model_comparision(metric, labels,
                                  (test_metr, test_metr_err), (test_metr_p, test_metr_p_err),
                                  (train_metr, train_metr_err), (train_metr_p, train_metr_p_err),
                                  os.path.join(self.root_dir, 'Models_comparision.png'))
@@ -354,9 +370,10 @@ class PlotProcessor():
 
     def matrics_comp(self):
         self._metrics_comp(os.path.join(self.root_dir, 'Models_PSNR.png'), 'psnr')
-        self._metrics_comp(os.path.join(self.root_dir, 'Models_SSIM.png'), 'ssim')
-        self._metrics_comp(os.path.join(self.root_dir, 'Models_MSE.png'),  'mse')
-        self._metrics_comp(os.path.join(self.root_dir, 'Models_COR.png'),  'cor')
+        
+        # self._metrics_comp(os.path.join(self.root_dir, 'Models_SSIM.png'), 'ssim')
+        # self._metrics_comp(os.path.join(self.root_dir, 'Models_MSE.png'),  'mse')
+        # self._metrics_comp(os.path.join(self.root_dir, 'Models_COR.png'),  'cor')
 
 
 
@@ -392,8 +409,9 @@ def main():
 
     # plotter.val_losses()
     # plotter.train_losses()
-    # plotter.matrics_comp()
-    plotter.recursive_plot()
+    plotter.matrics_comp()
+
+    # plotter.recursive_plot()
     
 
 

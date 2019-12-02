@@ -105,36 +105,21 @@ class Evaluator:
             else:
                 predicted = net(input_img)
 
+            target = dataset[index][1].expand(1,-1,-1,-1).to(self.device)
+
             if self.args.mask:
                 for i,j in itertools.product(range(predicted.shape[0]), range(predicted.shape[1])):
                     predicted[i][j] = self.MASK * predicted[i][j]
-                    input_img = torch.cat((torch.tensor(predicted[0][0:3]).expand(1,-1,-1,-1), self.MASK.expand(1,-1,-1,-1)), 1)
+                    input_img = torch.cat((torch.tensor(predicted.clone().detach()[0][0:3]).expand(1,-1,-1,-1), self.MASK.expand(1,-1,-1,-1)), 1)
             else:
-                input_img = predicted
-
-
-
-            target = dataset[index][1].expand(1,-1,-1,-1).to(self.device)
+                input_img = predicted.clone().detach()
+                
 
             cur_mse = self.criterionMSE(predicted, target).item()
 
-            predicted_img = self.denormalize(predicted).detach().cpu().numpy()
-            target_img = self.denormalize(target).detach().cpu().numpy()
-
-            mse += [cur_mse]
-            psnr += [10 * math.log10(1 / cur_mse)]
-            cor += [np.average(np.array([correlation(predicted_img[i], target_img[i]) for i in range(predicted_img.shape[0])]))]
-            ssim += [np.average(np.array([ssim_metr(predicted_img[i].T, target_img[i].T, multichannel=True) for i in range(predicted_img.shape[0])]))]
-
-            diff_avrg_, _, diff_max_ = imgs_perc_diff(target_img, predicted_img)
-            diff_avrg.append(diff_avrg_)
-            diff_max.append(diff_max_)
-
-            diff_x.append(imgs_perc_diff(target_img[0][0], predicted_img[0][0])[0])
-            diff_y.append(imgs_perc_diff(target_img[0][1], predicted_img[0][1])[0])
-
+            
             if not self.args.use_pressure:
-                predicted_x, predicted_y = self._prepare_tensor_img(predicted_img[0])
+                predicted_x, predicted_y = self._prepare_tensor_img(predicted[0])
                 target_x, target_y = self._prepare_tensor_img(dataset[index][1])
             else:
                 predicted_x, predicted_y, predicted_p = self._prepare_tensor_img(predicted[0])
@@ -148,6 +133,24 @@ class Evaluator:
             merge_and_save(target_y, predicted_y,
                            'Real', 'Predicted',
                            os.path.join(path, 'y_recursive_{}.png'.format(index - start_index)))
+
+
+            predicted_img = self.denormalize(predicted).detach().cpu().numpy()
+            target_img = self.denormalize(target).detach().cpu().numpy()
+
+            
+            mse += [cur_mse]
+            psnr += [10 * math.log10(1 / cur_mse)]
+            cor += [np.average(np.array([correlation(predicted_img[i], target_img[i]) for i in range(predicted_img.shape[0])]))]
+            ssim += [np.average(np.array([ssim_metr(predicted_img[i].T, target_img[i].T, multichannel=True) for i in range(predicted_img.shape[0])]))]
+
+            diff_avrg_, _, diff_max_ = imgs_perc_diff(target_img, predicted_img)
+            diff_avrg.append(diff_avrg_)
+            diff_max.append(diff_max_)
+
+            diff_x.append(imgs_perc_diff(target_img[0][0], predicted_img[0][0])[0])
+            diff_y.append(imgs_perc_diff(target_img[0][1], predicted_img[0][1])[0])
+
 
             print('> Recursive application {} completed'.format(index - start_index))
 
@@ -346,6 +349,11 @@ class Evaluator:
                 for l,j in itertools.product(range(predicted.shape[0]), range(predicted.shape[1])):
                     predicted[l][j] = self.MASK * predicted[l][j]
 
+            if self.args.mask:
+                input_img = torch.cat((torch.tensor(predicted.clone().detach()[0][0:3]).expand(1,-1,-1,-1), self.MASK.expand(1,-1,-1,-1)), 1)
+            else:
+                input_img = predicted.clone().detach()
+
             elapsed = int(round(t1*1000 - t0*1000))
             times.append(elapsed)
 
@@ -361,10 +369,7 @@ class Evaluator:
             if self.args.use_pressure:
                 save_img(predicted_p, 'p_step_{}'.format(i), '{}/p_step_{}.png'.format(path, i))
 
-            if self.args.mask:
-                input_img = torch.cat((torch.tensor(predicted[0][0:3]).expand(1,-1,-1,-1), self.MASK.expand(1,-1,-1,-1)), 1)
-            else:
-                input_img = predicted
+            
 
         times = np.array(times)
 

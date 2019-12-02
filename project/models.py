@@ -93,7 +93,7 @@ def define_D(input_nc, ndf, n_layers_D=3, norm='batch', use_sigmoid=False, init_
 
 
 
-class ResnetGenerator(nn.Module):#
+class ResnetGenerator(nn.Module):
 
     def __init__(self, input_nc, output_nc, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=True, n_blocks=4, padding_type='reflect', params=False):
         super(ResnetGenerator, self).__init__()
