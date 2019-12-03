@@ -67,7 +67,8 @@ def init_net(net, init_gain=0.02, gpu_id='cuda:0'):
 
 def define_G(input_nc, output_nc, ngf, norm='batch', use_dropout=True, init_gain=0.02, gpu_id='cuda:0', n_blocks=9, args={}):
     if args.model_path is not None:
-        net = torch.load(args.model_path).to(gpu_id)
+        # net = torch.load(args.model_path).to(gpu_id)
+        net = torch.load(args.model_path, map_location=lambda storage, loc: storage).to(gpu_id)
         return net
     else:
         norm_layer = get_norm_layer(norm_type=norm)

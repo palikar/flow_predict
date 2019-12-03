@@ -376,19 +376,75 @@ class PlotProcessor():
 
 
 
+    def _averge_recursive_plot(self, metrics):
+      rec = {}
+      
+      for mod in self.get_model_dirs():
+        name = self.get_model_name(mod)
+        for metric in metrics:
+          rec.setdefault(metric, [])
+          rec[metric].append(self.get_recursive_list(mod, metric=metric))
 
-    def recursive_plot(self):
 
+
+      plt.figure(figsize=(10,13), dpi=100)
+
+      def _add_plot(rec, metric, i):
+        mats = {}
+        for vals in rec[metric]:
+          mse_lists = vals
+          for eval_type, val_list in mse_lists.items():
+            if 'recursive' not in eval_type:
+              continue
+            mats.setdefault(eval_type, [])
+            mats[eval_type].append(val_list[0:20])
+
+
+        plt.subplot(3,2,i)
+        for eval_type, eval_mat in list(mats.items()):
+          arr = np.array(eval_mat)
+          std = np.std(arr, axis=0)
+          avrg = np.average(arr, axis=0)
+          plt.plot(np.arange(len(avrg)), avrg, linewidth=1, label=eval_type)
+          # plt.fill_between(np.arange(len(avrg)), avrg+0.95*std, avrg-0.95*std, linewidth=4, linestyle='dashdot', antialiased=True, alpha=0.2)
+
+        plt.grid(True)
+        plt.legend()
+        plt.ylabel(metric)
+        plt.title('Average {} drop'.format(metric.upper()), fontsize=14)
+
+
+
+      cnt = 1
+      for metric in metrics:
+        _add_plot(rec, metric, cnt)
+        cnt += 1
+
+        
+      plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+      plt.savefig(os.path.join(self.root_dir, 'average_recursive_application.png'))
+      plt.clf()
+
+
+    def averge_recursive_plot(self):
+      self._averge_recursive_plot(['psnr', 'cor', 'ssim', 'mse'])
+      
+    def recursive_plots(self):
+
+      rec = []
+      
       for mod in self.get_model_dirs():
         
         name = self.get_model_name(mod)
+        
         mse = self.get_recursive_list(mod, metric='mse')
         psnr = self.get_recursive_list(mod, metric='psnr')
         cor = self.get_recursive_list(mod, metric='cor')
         ssim = self.get_recursive_list(mod, metric='ssim')
 
+        rec.append(mse)
 
-        plt.figure(figsize=(12,9), dpi=100)
+        plt.figure(figsize=(10,13), dpi=100)
         
 
         def add_metric(metr, name, number):
@@ -406,11 +462,13 @@ class PlotProcessor():
         add_metric(cor, 'Cor', 3)
         add_metric(ssim, 'SSIM', 4)
         
-
         plt.suptitle('Recursive Applications\n Model: {}'.format(name), fontsize=16)
         plt.tight_layout(rect=[0, 0.03, 1, 0.95])
         plt.savefig(os.path.join(mod, 'recursive_application.png'))
         plt.clf()
+        
+
+        
             
 
 
@@ -427,8 +485,9 @@ def main():
     # plotter.val_losses()
     # plotter.train_losses()
     # plotter.matrics_comp()
+    plotter.recursive_plots()
+    plotter.averge_recursive_plot()
 
-    plotter.recursive_plot()
     
 
 
