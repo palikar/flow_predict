@@ -392,16 +392,12 @@ if args.evaluate:
         print('===> Evaluating with test set:')
         evaluator.set_output_name('test')
         evaluator.snapshots(net_g, test_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
-
-        # evaluator.individual_images_performance(net_g, test_loader)
-        # evaluator.recusive_application_performance(net_g, dataset, len(train_indices) + len(val_indices) , samples=config['evaluation_recursive_samples'])
+        evaluator.individual_images_performance(net_g, test_loader)
 
         print('===> Evaluating with train set:')
         evaluator.set_output_name('train')
         evaluator.snapshots(net_g, train_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
-
-        # evaluator.individual_images_performance(net_g, train_loader)
-        # evaluator.recusive_application_performance(net_g, dataset, 5, samples=config['evaluation_recursive_samples'])
+        evaluator.individual_images_performance(net_g, train_loader)
 
         if args.model_type == 'c':
             print('===> Running simulations:')
