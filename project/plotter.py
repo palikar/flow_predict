@@ -229,12 +229,15 @@ class PlotProcessor():
             with suppress(FileExistsError):
                 os.mkdir(os.path.join(mod, 'vis'))
 
+
     def get_model_dirs(self):
         return [os.path.join(self.root_dir, model_dir) for model_dir in os.listdir(self.root_dir)
                 if os.path.isdir(os.path.join(self.root_dir, model_dir))]
 
+
     def get_vis_dir(self, mod):
         return os.path.join(mod, 'vis')
+
 
     def get_model_name(self, mod):
 
@@ -251,14 +254,17 @@ class PlotProcessor():
             return os.path.basename(l[0])
 
 
-    def get_model_metric(self, mod, metric='psnr', test=True):
+    def get_model_metric(self, mod, metric='psnr', test=True, avrg=True):
         file_loc = os.path.join(mod,
                                 'test' if test else 'train',
                                 'metrics_avrg.txt')
+
+        pref = "Avrg " if avrg else "Var "
         with open(file_loc, 'r') as fh:
             for line in fh.readlines():
-                if metric in line:
+                if (pref + metric) in line:
                     return float(line.split(':')[1].strip())
+
 
     def get_recursive_list(self, mod, metric='psnr'):
       
@@ -278,15 +284,16 @@ class PlotProcessor():
         
         with open(os.path.join(mod, di, 'recursive_application.txt')) as fh:
           for line in fh.readlines():
-            if metric in line:
+            if line.startswith(metric):
               rec_lists[di] = [float(f.strip()) for f in line.split(':')[1].strip().split(',')]
 
       return rec_lists
 
+
     def val_losses(self):
         for mod in self.get_model_dirs():
             model_name = self.get_model_name(mod)
-            print('Generating plot for {}'.format(model_name))
+            print('Generating validation loss plot for {}'.format(model_name))
             if os.path.isfile(os.path.join(mod, 'val_losses_test.txt')):
                 plot_val_res(os.path.join(mod, 'val_losses_test.txt'),
                              model_name,
@@ -299,7 +306,7 @@ class PlotProcessor():
     def train_losses(self):
         for mod in self.get_model_dirs():
             model_name = self.get_model_name(mod)
-            print('Generating plot for {}'.format(model_name))
+            print('Generating models\' loss plot for {}'.format(model_name))
             if os.path.isfile(os.path.join(mod, 'losses.txt')):
                 plot_train_losses(os.path.join(mod, 'losses.txt'),
                              model_name,
@@ -309,7 +316,7 @@ class PlotProcessor():
 
 
     def _metrics_comp(self, file_loc, metric='psnr'):
-
+        print('Plotting', metric)
         hel_d = {}
         for mod in self.get_model_dirs():
 
@@ -329,7 +336,7 @@ class PlotProcessor():
             met['train_without_p'].append(self.get_model_metric(mod, metric=metric, test=False))
 
         labels = []
-            
+        
         test_metr = []
         test_metr_p = []
         test_metr_err = []
@@ -370,70 +377,73 @@ class PlotProcessor():
 
     def matrics_comp(self):
         self._metrics_comp(os.path.join(self.root_dir, 'Models_PSNR.png'), 'psnr')
-        self._metrics_comp(os.path.join(self.root_dir, 'Models_SSIM.png'), 'ssim')
-        self._metrics_comp(os.path.join(self.root_dir, 'Models_MSE.png'),  'mse')
+        # self._metrics_comp(os.path.join(self.root_dir, 'Models_SSIM.png'), 'ssim')
+        # self._metrics_comp(os.path.join(self.root_dir, 'Models_MSE.png'),  'mse')
         self._metrics_comp(os.path.join(self.root_dir, 'Models_COR.png'),  'cor')
 
-
+        self._metrics_comp(os.path.join(self.root_dir, 'Models_AVRG_DIFF.png'),  'avrg_diff_perc')
+        self._metrics_comp(os.path.join(self.root_dir, 'Models_MAX_DIFF.png'),  'max_diff_perc')
+        
 
     def _averge_recursive_plot(self, metrics):
-      rec = {}
+
+
+      model_met = {}
       
       for mod in self.get_model_dirs():
         name = self.get_model_name(mod)
+        model_met.setdefault(name, {})
         for metric in metrics:
-          rec.setdefault(metric, [])
-          rec[metric].append(self.get_recursive_list(mod, metric=metric))
+          model_met[name].setdefault(metric, [])
+          model_met[name][metric].append(self.get_recursive_list(mod, metric=metric))
 
-
-
-      plt.figure(figsize=(10,13), dpi=100)
 
       def _add_plot(rec, metric, i):
-        mats = {}
-        for vals in rec[metric]:
-          mse_lists = vals
-          for eval_type, val_list in mse_lists.items():
-            if 'recursive' not in eval_type:
-              continue
-            mats.setdefault(eval_type, [])
-            mats[eval_type].append(val_list[0:20])
+          mats = {}
+          for vals in rec[metric]:
+            mse_lists = vals
+            for eval_type, val_list in mse_lists.items():
+              if 'recursive' not in eval_type:
+                continue
+              mats.setdefault(eval_type, [])
+              mats[eval_type].append(val_list[0:20])
 
+          plt.subplot(2,2,i)
+          for eval_type, eval_mat in list(mats.items()):
+            arr = np.array(eval_mat)
+            std = np.std(arr, axis=0)
+            avrg = np.average(arr, axis=0)
+            plt.plot(np.arange(len(avrg)), avrg, linewidth=1, label=eval_type)
+            # plt.fill_between(np.arange(len(avrg)), avrg+0.95*std, avrg-0.95*std, linewidth=4, linestyle='dashdot', antialiased=True, alpha=0.2)
+          plt.grid(True)
+          plt.legend()
+          plt.ylabel(metric)
+          plt.title('Average {} drop'.format(metric.upper()), fontsize=14)
+          
+      
+      for mod, rec in list(model_met.items()):
+        plt.figure(figsize=(10,13), dpi=100)
 
-        plt.subplot(3,2,i)
-        for eval_type, eval_mat in list(mats.items()):
-          arr = np.array(eval_mat)
-          std = np.std(arr, axis=0)
-          avrg = np.average(arr, axis=0)
-          plt.plot(np.arange(len(avrg)), avrg, linewidth=1, label=eval_type)
-          # plt.fill_between(np.arange(len(avrg)), avrg+0.95*std, avrg-0.95*std, linewidth=4, linestyle='dashdot', antialiased=True, alpha=0.2)
+        cnt = 1
+        for metric in metrics:
+          _add_plot(rec, metric, cnt)
+          cnt += 1
 
-        plt.grid(True)
-        plt.legend()
-        plt.ylabel(metric)
-        plt.title('Average {} drop'.format(metric.upper()), fontsize=14)
-
-
-
-      cnt = 1
-      for metric in metrics:
-        _add_plot(rec, metric, cnt)
-        cnt += 1
-
-        
-      plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-      plt.savefig(os.path.join(self.root_dir, 'average_recursive_application.png'))
-      plt.clf()
-
+        plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+        plt.savefig(os.path.join(self.root_dir, 'average_recursive_application_{}.png'.format(mod)))
+        plt.clf()
 
     def averge_recursive_plot(self):
-      self._averge_recursive_plot(['psnr', 'cor', 'ssim', 'mse'])
+      self._averge_recursive_plot(['psnr', 'cor', 'diff_avrg', 'diff_max'])
+       
       
+
     def recursive_plots(self):
 
       rec = []
       
       for mod in self.get_model_dirs():
+        print('Processing directory:', mod)
         
         name = self.get_model_name(mod)
         
@@ -441,30 +451,35 @@ class PlotProcessor():
         psnr = self.get_recursive_list(mod, metric='psnr')
         cor = self.get_recursive_list(mod, metric='cor')
         ssim = self.get_recursive_list(mod, metric='ssim')
+        diff_avrg = self.get_recursive_list(mod, metric='diff_avrg')
+        diff_max = self.get_recursive_list(mod, metric='diff_max')
 
         rec.append(mse)
 
-        plt.figure(figsize=(10,13), dpi=100)
+        plt.figure(figsize=(9, 10), dpi=100)
         
 
         def add_metric(metr, name, number):
-          plt.subplot(3,2,number)
+          plt.subplot(2,2,number)
           for eval_type, val_list in metr.items():
             plt.plot(np.arange(len(val_list)), val_list, linewidth=0.9, label=eval_type)        
             plt.grid(True)
             plt.legend()
-            plt.title("")
+            plt.title('Recursive {}'.format(name))
             plt.ylabel(name)
 
 
-        add_metric(mse, 'MSE', 1)
-        add_metric(psnr, 'PSNR', 2)
-        add_metric(cor, 'Cor', 3)
-        add_metric(ssim, 'SSIM', 4)
+        # add_metric(mse, 'MSE', 1)
+        # add_metric(ssim, 'SSIM', 4)
+
+        add_metric(psnr, 'PSNR', 1)
+        add_metric(cor, 'Cor', 2)
+        add_metric(diff_avrg, 'Diff Avrg', 3)
+        add_metric(diff_max, 'Diff max', 4)
         
-        plt.suptitle('Recursive Applications\n Model: {}'.format(name), fontsize=16)
+        # plt.suptitle('Recursive Applications\n Model: {}'.format(name), fontsize=16)
         plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-        plt.savefig(os.path.join(mod, 'recursive_application.png'))
+        plt.savefig(os.path.join(mod, 'vis', 'recursive_application.png'))
         plt.clf()
         
 
@@ -485,7 +500,7 @@ def main():
     # plotter.val_losses()
     # plotter.train_losses()
     # plotter.matrics_comp()
-    plotter.recursive_plots()
+    # plotter.recursive_plots()
     plotter.averge_recursive_plot()
 
     
