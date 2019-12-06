@@ -1,0 +1,63 @@
+\documentclass[border=5mm]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{shadows}
+\usetikzlibrary{shapes}
+
+\begin{document}
+\tikzset{
+  cascaded/.style = {
+    general shadow = {
+      shadow scale = 1,
+      shadow xshift = -1ex,
+      shadow yshift = 1ex,
+      draw,
+      thick,
+      fill = white},
+    fill = white, 
+    draw,
+    thick,
+    minimum width = 2.5cm,
+    minimum height = 1.3cm},
+  roundnode/.style={circle, draw=green!60, fill=green!5, very thick, minimum width = 2.5cm, minimum height = 1.3cm},
+  squarednode/.style={rectangle, draw=red!60, fill=red!2, very thick, minimum width = 2.5cm, minimum height = 1.3cm},
+}
+\begin{tikzpicture}
+
+  \node[cascaded,label=below:Time $t$] (time_t) at (0,0) {};
+
+  \node [cloud, draw,cloud puffs=10,cloud puff arc=120, aspect=2, inner ysep=1em] (net) at (4,0) {Network};
+  
+  \node[cascaded,label=below:Time $t+1$] (time_t_1) at (8,0) {};
+
+  \draw [->,line width=1pt, shorten >=3pt, shorten <=9pt] (time_t) edge (net);
+  \draw [->,line width=1pt, shorten >=6pt, shorten <=6pt] (net) edge (time_t_1);
+
+
+  \node[squarednode] (pressure_i) at (0, -2.3) {Pressure};
+  \node[squarednode] (pressure_o) at (8, -2.3) {Pressure};
+
+  \draw [->,line width=1pt, shorten >=3pt, shorten <=4pt] (pressure_i.east) -- (2,-2.3) -- (2,0);
+  \draw [->,line width=1pt, shorten >=3pt, shorten <=4pt] (6,0) -- (6,-2.3) -- (pressure_o.west);
+
+  \draw  [dashed] (-1.5,-1.2) rectangle (9.5,-3.4);
+
+  \node[text width=1cm,align=center] (x_y) at (time_t.center) {$x$\&$y$ \\ Velocities};  
+  \node[text width=1cm,align=center] (x_y_1) at (time_t_1.center) {$x$\&$y$ \\ Velocities};
+  
+  
+  
+
+  
+  
+
+  
+\end{tikzpicture}
+
+
+\end{document}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
