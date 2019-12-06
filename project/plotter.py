@@ -27,7 +27,11 @@ from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
 
 import numpy as np
+
+import matplotlib
+if 'DISPLAY' not in os.environ: matplotlib.use('agg')
 from matplotlib import pyplot as plt
+
 
 from torchsummary import summary
 
