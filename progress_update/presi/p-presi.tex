@@ -139,8 +139,10 @@
     \includegraphics[scale=0.21]{images/x-direction}
   \end{center}
   \begin{center}
+    \begin{figure}[htb]
     \includegraphics[scale=0.21]{images/y-direction} \\
     \caption{Karman vortex street}
+    \end{figure}
   \end{center}
 \end{frame}
 
@@ -275,18 +277,244 @@
   
 \end{frame}
 
-\section{Results}
-\begin{frame}
-  \frametitle{Evaluation cases}
-\end{frame}
-
+\section{Evaluation}
 
 \begin{frame}
   \frametitle{Evaluating the results}
 \end{frame}
 
+\begin{frame}[t]
+  \frametitle{Evaluating the results}
+  \begin{center}
+    \textbf{\Large Two views of the results}
+  \end{center}
+
+  \begin{columns}[t]
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        {\large \underline{Computer Vision}}
+      \end{center}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        {\large \underline{Numerical Simulation}}
+      \end{center}  
+    \end{column}
+  \end{columns}
+\end{frame}
 
 
+\begin{frame}[t]
+  \frametitle{Evaluating the results}
+  \begin{center}
+    \textbf{\Large Two views of the results}
+  \end{center}
+  \begin{columns}[t]
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        {\large \underline{Computer Vision}}
+        \begin{itemize}
+        \item Perceived qualities of the \underline{image} results
+        \item Metrics:
+          \begin{itemize}
+          \item Peak signal-to-noise ratio - PSNR
+          \item Correlation
+          \end{itemize}
+        \end{itemize}
+      \end{center}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        {\large \underline{Numerical Simulation}}
+      \end{center}  
+    \end{column}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}[t]
+  \frametitle{Evaluating the results}
+  \begin{center}
+    \textbf{\Large Two views of the results}
+  \end{center}
+  \begin{columns}[t]
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        {\large \underline{Computer Vision}}
+        \begin{itemize}
+        \item Perceived qualities of the \underline{image} results
+        \item Metrics:
+          \begin{itemize}
+          \item Peak signal-to-noise ratio - PSNR
+          \item Correlation
+          \end{itemize}
+        \end{itemize}
+      \end{center}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        {\large \underline{Numerical Simulation}}
+        \begin{itemize}
+        \item \underline{Real} differences between the predicted and the actual \underline{values}
+        \item Metrics:
+          \begin{itemize}
+            \item Average percentage difference
+            \item Max percentage difference
+          \end{itemize}
+        \end{itemize}
+      \end{center}  
+    \end{column}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}[t]
+  \frametitle{Evaluation cases}
+  \begin{center}
+    \textbf{\Large Two evaluation cases}
+  \end{center}
+  \vspace{-1cm}
+  \begin{columns}[t]
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        {\large \underline{Individual Images}}
+      \end{center}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        {\large \underline{Recursive Application}}
+        \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}[t]
+  \frametitle{Evaluation cases}
+  \begin{center}
+    \textbf{\Large Two evaluation cases}
+  \end{center}
+  \vspace{-1cm}
+  \begin{columns}[t]
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        {\large \underline{Individual Images}}
+        \includegraphics[scale=0.12]{images/simple_eval}
+      \end{center}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        {\large \underline{Recursive Application}}
+        \includegraphics[scale=0.12]{images/rec_eval}
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\section{Results}
+\begin{frame}[t]
+  \frametitle{Results}
+  \vspace{-1cm}
+  \begin{center}
+    {\large \underline{Individual Images -- constant model}} \\
+    Cor. and PSNR:
+  \end{center}
+  \vspace{-1.3cm}
+  \begin{columns}[t]
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        \includegraphics[scale=0.22]{images/res/Models_PSNR}
+      \end{center}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        \includegraphics[scale=0.22]{images/res/Models_COR}
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Results}
+  \vspace{-1cm}
+  \begin{center}
+    {\large \underline{Individual Images -- constant model}} \\
+    Prediction image:
+  \end{center}
+
+  \begin{center}
+    \includegraphics[scale=0.32]{images/res/prediction}
+  \end{center}  
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Results}
+  \vspace{-1cm}
+  \begin{center}
+    {\large \underline{Individual Images -- constant model}} \\
+    Timestep image:
+  \end{center}
+
+  \begin{center}
+    \includegraphics[scale=0.32]{images/res/timestep}
+  \end{center}  
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Results}
+  \vspace{-1cm}
+  \begin{center}
+    {\large \underline{Individual Images -- constant model}} \\
+    Numerical view:
+  \end{center}
+  \vspace{-0.8cm}
+  \begin{columns}[t]
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        \textbf{Avrg difference} \\
+        \includegraphics[scale=0.22]{images/res/Models_AVRG_DIFF}
+      \end{center}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+        \textbf{Max difference} \\
+      \begin{center}
+        \includegraphics[scale=0.22]{images/res/Models_MAX_DIFF}
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}[t]
+  \frametitle{Results}
+  \vspace{-1cm}
+  \begin{center}
+    {\large \underline{Recursive application -- constant model}} \\
+  \end{center}
+  \begin{center}
+    \includegraphics[scale=0.25]{images/res/rec_avrg}
+  \end{center}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Results}
+  \vspace{-1cm}
+  \begin{center}
+    {\large \underline{Recursive application -- constant model}} \\
+  \end{center}
+  \vspace{1cm}
+  \begin{center}
+    \includegraphics[scale=0.15]{images/res/x_step_1}
+    \includegraphics[scale=0.15]{images/res/x_step_5}
+    \includegraphics[scale=0.15]{images/res/x_step_10}
+    \includegraphics[scale=0.15]{images/res/x_step_15}
+    \includegraphics[scale=0.15]{images/res/x_step_20}
+    \includegraphics[scale=0.15]{images/res/x_step_25}
+  \end{center}
+\end{frame}
+
+
+\section{End}
 \begin{frame}
   \frametitle{}
   \begin{center}
