@@ -501,10 +501,10 @@ def main():
 
     plotter = PlotProcessor(args)
 
-    # plotter.val_losses()
-    # plotter.train_losses()
-    # plotter.matrics_comp()
-    # plotter.recursive_plots()
+    plotter.val_losses()
+    plotter.train_losses()
+    plotter.matrics_comp()
+    plotter.recursive_plots()
     plotter.averge_recursive_plot()
 
     
