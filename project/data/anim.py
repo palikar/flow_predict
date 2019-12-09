@@ -170,14 +170,15 @@ uLUT.InterpretValuesAsCategories = 0
 uLUT.ShowCategoricalColorsinDataRangeOnly = 0
 uLUT.RescaleOnVisibilityChange = 0
 uLUT.EnableOpacityMapping = 0
-uLUT.RGBPoints = [0.0, 0.231373, 0.298039, 0.752941, 0.95, 0.865003, 0.865003, 0.865003, 1.9, 0.705882, 0.0156863, 0.14902]
+# uLUT.RGBPoints = [0.0, 0.231373, 0.298039, 0.752941, 0.95, 0.865003, 0.865003, 0.865003, 1.9, 0.705882, 0.0156863, 0.14902]
+uLUT.RGBPoints = [-0.567443, 0.0, 0.0, 0.0, 2.0006, 1.0, 1.0, 1.0]
 uLUT.UseLogScale = 0
-uLUT.ColorSpace = 'Diverging'
+uLUT.ColorSpace = 'RGB'
 uLUT.UseBelowRangeColor = 0
 uLUT.BelowRangeColor = [0.0, 0.0, 0.0]
 uLUT.UseAboveRangeColor = 0
 uLUT.AboveRangeColor = [1.0, 1.0, 1.0]
-uLUT.NanColor = [1.0, 1.0, 0.0]
+uLUT.NanColor = [1.0, 0.0, 0.0]
 uLUT.Discretize = 1
 uLUT.NumberOfTableValues = 256
 uLUT.ScalarRangeInitialized = 1.0
@@ -191,7 +192,8 @@ uLUT.IndexedColors = []
 
 # get opacity transfer function/opacity map for 'u'
 uPWF = GetOpacityTransferFunction('<var>')
-uPWF.Points = [0.0, 0.0, 0.5, 0.0, 1.9, 1.0, 0.5, 0.0]
+uPWF.Points = [-0.567443, 0.0, 0.5, 0.0, 2.0006, 1.0, 0.5, 0.0]
+# uPWF.Points = [0.0, 0.0, 0.5, 0.0, 1.9, 1.0, 0.5, 0.0]
 uPWF.AllowDuplicateScalars = 1
 uPWF.ScalarRangeInitialized = 1
 

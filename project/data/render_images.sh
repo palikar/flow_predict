@@ -27,13 +27,13 @@ do
     sol="${sol}"
     SOLUTION_LIST="'${sol}', ${SOLUTION_LIST}"
 done
-echo "Solution files: ${SOLUTION_LIST}"
+# echo "Solution files: ${SOLUTION_LIST}"
 sed -e "s#'<file_place>'#$SOLUTION_LIST#g" anim.py > anim_temp.py
 
 
 # render the U-Direction of velocity
 IMAGES_DEST="${ROOT_FOLDER}/${SOLUTION_FOLDER}/images_x"
-echo "Rendering images in $IMAGES_DEST"
+# echo "Rendering images in $IMAGES_DEST"
 mkdir -p ${IMAGES_DEST}
 sed -e "s#<output_place>#${IMAGES_DEST}/flow.png#g
         s#<var>#u#g" anim_temp.py > anim_temp_x.py
@@ -53,11 +53,11 @@ crop_images ${IMAGES_DEST}
 
 # render the U-Direction of velocity
 IMAGES_DEST="${ROOT_FOLDER}/${SOLUTION_FOLDER}/images_p"
-echo "Rendering images in $IMAGES_DEST"
+# echo "Rendering images in $IMAGES_DEST"
 mkdir -p ${IMAGES_DEST}
 sed -e "s#<output_place>#${IMAGES_DEST}/flow.png#g
         s#<var>#p#g" anim_temp.py > anim_temp_p.py
 eval "${PVPYTHON_EXE} anim_temp_p.py"
 crop_images ${IMAGES_DEST}
 
-# # rm -f anim_temp.py
+# # # rm -f anim_temp.py
