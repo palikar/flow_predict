@@ -9,7 +9,9 @@ import itertools
 
 import torch
 import torch.nn as nn
+import torchvision.transforms as transforms
 import numpy as np
+
 
 from utils import mkdir
 from utils import correlation
@@ -28,6 +30,8 @@ except ImportError:
         return 0.3
 
 
+# http://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=95018&copyownerid=127295
+
 
 class Evaluator:
 
@@ -44,16 +48,21 @@ class Evaluator:
         if self.args.mask:
             self.MASK = MASK
 
-        if args.rgb:
+        if self.args.mask:
             if args.use_pressure:
-                self.denormalize = UnNormalize([0.5]*9,[0.5]*9)
+                self.denormalize_input = UnNormalize([0.5, 0.5, 0.5, 0.0], [0.5, 0.5, 0.5, 1.0])
             else:
-                self.denormalize = UnNormalize([0.5]*6,[0.5]*6)
+                self.denormalize_input = UnNormalize([0.5, 0.5, 0.0], [0.5, 0.5, 1.0])
         else:
             if args.use_pressure:
-                self.denormalize = UnNormalize([0.5]*3, [0.5]*3)
+                self.denormalize_input = UnNormalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
             else:
-                self.denormalize = UnNormalize([0.5]*2, [0.5]*2)
+                self.denormalize_input = UnNormalize([0.5, 0.5], [0.5, 0.5])
+
+        if args.use_pressure:
+            self.denormalize_output = UnNormalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
+        else:
+            self.denormalize_output = UnNormalize([0.5, 0.5], [0.5, 0.5])
 
 
     def set_output_name(self, name):
@@ -135,8 +144,8 @@ class Evaluator:
                            os.path.join(path, 'y_recursive_{}.png'.format(index - start_index)))
 
 
-            predicted_img = self.denormalize(predicted).detach().cpu().numpy()
-            target_img = self.denormalize(target).detach().cpu().numpy()
+            predicted_img = self.denormalize_output(predicted).detach().cpu().numpy()
+            target_img = self.denormalize_input(target).detach().cpu().numpy()
 
             
             mse += [cur_mse]
@@ -195,8 +204,8 @@ class Evaluator:
 
             cur_mse = self.criterionMSE(predicted, real_b).item()
 
-            predicted = self.denormalize(predicted).detach().cpu().numpy()
-            real_b = self.denormalize(real_b).detach().cpu().numpy()
+            predicted = self.denormalize_output(predicted).detach().cpu().numpy()
+            real_b = self.denormalize_output(real_b).detach().cpu().numpy()
 
             mse += [cur_mse]
             psnr += [10 * math.log10(1 / cur_mse)]
@@ -249,18 +258,34 @@ class Evaluator:
             list_hand.write('{} {}\n'.format('diff_max: ',  ','.join(str(i) for i in diff_max)))
 
 
-    def _prepare_tensor_img(self, tens_img):
-        d = self.denormalize(tens_img).detach().cpu().numpy()
+    def _prepare_tensor_img(self, tens_img, is_input=False):
+
+        if is_input:
+            d = self.denormalize_input(tens_img).detach().cpu().numpy()
+        else:
+            d = self.denormalize_output(tens_img).detach().cpu().numpy()
+
+        
 
         x = np.transpose(d[:1], (1,2,0))*255
+                
 
-        if self.args.use_pressure:
-            y = np.transpose(d[1:2], (1,2,0))*255
-            p = np.transpose(d[2:], (1,2,0))*255
-            return x, y, p
+        if self.args.mask and is_input:
+            if self.args.use_pressure:
+                y = np.transpose(d[1:2], (1,2,0))*255
+                p = np.transpose(d[2:3], (1,2,0))*255
+                return x, y, p
+            else:
+                y = np.transpose(d[1:2], (1,2,0))*255
+                return x, y
         else:
-            y = np.transpose(d[1:], (1,2,0))*255
-            return x, y
+            if self.args.use_pressure:
+                y = np.transpose(d[1:2], (1,2,0))*255
+                p = np.transpose(d[2:], (1,2,0))*255
+                return x, y, p
+            else:
+                y = np.transpose(d[1:], (1,2,0))*255
+                return x, y
 
 
     def snapshots(self, net, sampler, dataset, samples=5):
@@ -283,15 +308,16 @@ class Evaluator:
                     predicted[l][j] = self.MASK * predicted[l][j]
 
 
+            
             print('> Snapshot {}'.format(str(i)))
 
             if not self.args.use_pressure:
                 predicted_x, predicted_y = self._prepare_tensor_img(predicted[0])
-                input_img_x, input_img_y = self._prepare_tensor_img(input_img)
+                input_img_x, input_img_y = self._prepare_tensor_img(input_img, is_input=True)
                 target_x, target_y       = self._prepare_tensor_img(target)
             else:
                 predicted_x, predicted_y, predicted_p = self._prepare_tensor_img(predicted[0])
-                input_img_x, input_img_y, input_img_p = self._prepare_tensor_img(input_img)
+                input_img_x, input_img_y, input_img_p = self._prepare_tensor_img(input_img, is_input=True)
                 target_x, target_y, target_p          = self._prepare_tensor_img(target)
 
 

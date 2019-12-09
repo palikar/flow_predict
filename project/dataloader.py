@@ -88,12 +88,13 @@ class SimulationDataSet(data.Dataset):
         transform_list_b = [transforms.ToTensor()]
 
         if args.mask:
+            
             if args.use_pressure:
-                transform_list_a.append(transforms.Normalize((0.5, 0.5, 0.5, 0.0),(0.5, 0.5, 0.5, 1.0)))
-                transform_list_b.append(transforms.Normalize((0.5, 0.5, 0.5),(0.5, 0.5, 0.5)))
+                transform_list_a.append(transforms.Normalize((0.5, 0.5, 0.5, 0.0), (0.5, 0.5, 0.5, 1.0)))
+                transform_list_b.append(transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)))
             else:
                 transform_list_a.append(transforms.Normalize((0.5, 0.5, 0.0),(0.5, 0.5, 1.0)))
-                transform_list_b.append(transforms.Normalize((0.5, 0.5),(0.5, 0.5)))
+                transform_list_b.append(transforms.Normalize((0.5, 0.5), (0.5, 0.5)))
         else:
             if args.use_pressure:
                 transform_list_a.append(transforms.Normalize((0.5, 0.5, 0.5),(0.5, 0.5, 0.5)))
@@ -164,23 +165,29 @@ class SimulationDataSet(data.Dataset):
             a_p = load_img(os.path.join(self.root_dir, a_path[2]), size=self.size)
 
 
-        if self.args.mask:mask = self.mask_img
+        if self.args.mask: mask = self.mask_img
 
         if self.args.use_pressure:
-            if self.args.mask:
-                a = np.concatenate((a_x, a_y, a_p, mask), axis=2)
-            else:
-                a = np.concatenate((a_x, a_y, a_p), axis=2)
+            # if self.args.mask:
+            #     a = np.concatenate((a_x, a_y, a_p), axis=2)
+            # else:
+            a = np.concatenate((a_x, a_y, a_p), axis=2)
+
             b = np.concatenate((b_x, b_y, b_p), axis=2)
         else:
-            if self.args.mask:
-                a = np.concatenate([a_x, a_y, mask], axis=2)
-            else:
-                a = np.concatenate([a_x, a_y], axis=2)                
-            b = np.concatenate([b_x*mask, b_y*mask], axis=2)
+            # if self.args.mask:
+            #     a = np.concatenate([a_x, a_y], axis=2)
+            # else:
+            a = np.concatenate([a_x, a_y], axis=2)                
 
-        a = self.transform_a(a).float()
+            b = np.concatenate([b_x, b_y], axis=2)
+
+        a = self.transform_b(a).float()
         b = self.transform_b(b).float()
+
+
+        if self.args.mask:
+            a = torch.cat((a, self.get_mask()), axis = 0)
 
         if self.args.mask:
             for i in range(a.shape[0]):
