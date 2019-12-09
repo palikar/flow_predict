@@ -1,0 +1,124 @@
+#+OPTIONS: ':t *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline author:t
+#+OPTIONS: broken-links:nil c:nil creator:nil d:(not "LOGBOOK")
+#+OPTIONS: date:t e:t email:nil f:t inline:t num:t p:nil pri:nil
+#+OPTIONS: prop:nil stat:t tags:t tasks:t tex:t timestamp:t title:t
+#+OPTIONS: toc:t todo:t |:t
+#+TITLE: What should be said
+#+DATE: <2019-12-08 Sun>
+#+AUTHOR: Stanislav Arnaudov
+#+EMAIL: stanislav.arn@gmail.com
+#+LANGUAGE: en
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+#+CREATOR: Emacs 26.1 (Org mode 9.2.1)
+
+
+* Anfang
+Hallo, ich bin Stsnislav und heute präsentiere ich euch was ich schon in meinem PDF-Projekt gemacht bzw. erreichte habe. Ich werde ein paar von den getroffenen Entscheidungen vorstellen aber auch die vorläufige Ergebnisse.
+
+
+* Beschreibung
+Zunächst muss ich aber kurz wiederholen genau was ich forsche.
+** Basic Idea
+Unsere Grundlegende Idee - ich versuche eine numerische Simulation über DNNs vorherzusagen. Damit wollen wir sehen wie verschiedene Simulations-Parameters von einem Netz generalisiert werden können.
+
+** Concrete setup
+Das konterte Problem, das wir untersuchen - Strömung um ein Objekt in einem Kanal nach den Navier-Stokes Gleichungen. Anschaulich sieht das so aus. Hier auf einer Seite fließt das Fluid ein und auf der anderer Seite aus.
+
+** Images as solutions of the timesteps
+Die Lösungen von der Simulation können als Bilder visualisiert werden. Wie zum Beispiel dies hier. Pro Zeitschritt gibt's drei solche Bilder - Geschwindigkeit und Druck in jedem Punkt. Diese Bilder wollen wir vorhersagen.
+
+** The models work on images
+Und zwar unter Verwendung von den Bildern vom vorherigen Zeitschritt. Dies wird hier visuell dargestellt. 
+
+** Different types of models
+Dazu gibt's einige Fälle zu unterschieden
+- konstant
+- variierte Einfließgeschwindigkeit
+- variierte Fluid-Parameter - Dichte und Viskosität
+- beliebigen Objekt im Kanal
+
+
+* Daten
+
+Die erste Aufgabe, die erledigt werden musste, war die Datengenerierung. Dazu sind einige Sachen zu benennen. Erst mal -wir haben einen numerischen Löser verwendet, damit wir wirklich echten Simulationsdaten genieren zu können. Der Löser löst also die tatsächlichen Differentialgleichungen.
+
+** Simulation and parameters
+Dafür müssten wir passende Parameter auswählen. Wie schon erwähnt, es gibt drei Arten davon. Geschwindigkeit, Dichte und Viskosität. Um diese Wahl zu treffen, gabs ein bisschen Spielerei.
+
+** Reynolds number
+Mehr oder weniger, zusammen die Werte der Parameter ergeben die sogenannte Reynonldszahl. Diese Zahl bestimmte einigermaßen die Strömung und machte eine aussage um den Typ davon -- laminar oder turbulent. Im Endeffekt haben wir Reynonldszahl Bereich von 90 zu 350 gewählt. Dann ist die Strömung immer noch laminar und der Löser kann die Simulation sinnvoll durchführen.
+
+** Interesting flow effects - Karman vortex street
+In diesem Fall gibts aber auch interessante Strömungseffekte, die beobachtet werden können. Und wir sind interessiert ob ein Netz damit umgehen kann. Zum Beispiel, dies hier ist die bekannte Karmansche Wirbelstrasse. Dies kann man sehen, nur wenn die Reynonldszahl größer als 90 ist.
+
+** RGB vs Gray scale
+Danach ist noch eine andere Überlegung zu machen. Und zwar, ob die schon gerenderten Bilder im Grauwert- oder RGB-Raum sein sollen. Theoretisch besitzen die beiden Alternativen dieselbe Information über die Werte der Lösung. Die RGB-Bilder sehen ein bisschen schöner aus und man kann damit quasi mehr verstehen. Anderseits haben die RGB-Bilder drei Channels, die für ein Netz komplexer sein können als nur ein Channel wie bei den Grauwert-Bildern. 
+
+Dazu haben wir sogar ein paar Experimente gemacht und es hat sich gezeigt, dass wenn man Grauwert-Bilder verwendet trainieren die Netze schneller und liefern bessere Ergebnisse. Deswegen haben wir dafür entschieden.
+
+
+* Modelle
+
+Jetzt schauen wir genauer die untersuchten Modellen und wie wir unsere Netze bauen. Hier sind auch einige Punkte zu berücksichtigen.
+
+** Types of Netze
+Während der State-of-the-Art Recherche, haben wir zwei generelle Architekturen von Netzen betrachtet. Der erste ist die bekannte ResNet. Das ist ein riesiges Netz mit solchen Residual-Verbindungen zwischen den Blocken, die eine Anordnung von den verschiedenen Layers
+
+Die andere Architektur war UNet. Hier gibt's auch diese Residual-Verbindungen zwischen den Blocken aber die sind in diese rekursive Weise aufgebaut. Also zwischen zwei Blöcken gibts eine Verbindung aber auch ein kleineres Unternetz und dies ist rekursiv fortgesetzt.
+
+Wieder anhand von Experimenten, Unet braucht weniger Speicher, wird schneller trainiert und allgemein liefert bessere Ergebnisse in einem geringeren Zeitraum. Deswegen haben wir unsere Untersuchungen darauf konzentriert.
+
+** Data usage
+Der nächste Punkt bei den Modellen ist bzgl. der verwendeten Daten. 
+
+*** Optional pressure
+Ich habe erwähnt, dass die Simulation drei Felder pro Zeitschritt liefert. Die Frage ist jetzt, ob wir das Druckbild für das Netz benutzen wollen. Einerseits ist dies ein extra Kannale für die Ein- und Ausgabe. Anderseits, das ist extra Information, die nützlich sein kann.
+
+Und ja, Es ist tatsächlich... aber nur manchmal. Die Ergebnisse könne auch schlechter werden
+
+***Q Real numbers
+Die andere Frage ist wie wir eine (oder mehrere) reelle Zahl (oder Zahl) ins Netz integrieren können. Wenn 3.14 z. B. die Geschwindigkeit des Fluids ist, wie ist dies zu berücksichtigen.
+
+Die aktuelle Lösung, wie erzeugen einfach ein zusätzliches konstantes Bild-Channel mit dem Wert der Zahl. Unklar ob das optimal ist, aber für jetzt funktioniert es ok.
+
+
+* Evaluation
+
+Jetzt kommt die Frage, wie sollen wir ein Modell evaluieren, wenn das Modell trainiert ist. Es ist klar das unsere Modelle Bilder erzeugen. Bilder die aber numerische Information repräsentieren
+
+** Sichten von den Ergebnissen
+In diesem Sinn, gibt es zwei Sichten, in die wie die Ergebnisse sehen können.
+*** Computer vision
+Einerseits, auf der Maschinelles-Sehen Schiene, so zu sagen. Hier sind wir an der wahrgenommenen Eigenschaften der Bilder. Also, was das menschliche Gefühl wenn man da die Bilder anschaut. Dazu haben wir die passende Metriken gewählt.
+Nämlich:
+- PSNR - Metrik, die für Bildkompression Güte verwendet wird
+- Korrelation - die Bilder sind 'gleich' bis zum Vorfaktor. Wenn ein Bild heller ist, kann man trotzdem verstehen was da passiert
+
+*** Numerical simulation
+Die absoluten Werte liegen im Fokus. Hier sollen wir objektiver sein. Dementsprechend messen wir wie unterschiedlich zwei Bilder sind nach:
+- durchschnittliche prozentuale Differenz
+- maximale prozentuale Differenz
+
+
+** Evaluation cases
+Beim Evaluieren gibt's auch Alternativen mit der Methodologie. Wir haben zwei Evaluierungsfälle und diese sind bei individuellen Bilder und bei rekursiver Anwendung vom Modell.
+
+Anschaulich sieht das ganze so aus.
+
+
+
+* Results
+Letztendlich können wir ein bisschen die konkreten Ergebnisse nachschauen
+
+** Constant
+*** Plots
+*** Predicted image
+*** Time step image
+*** Recursive plots
+*** Recursive Time step images
+
+
+* End
+
+Damit bin ich zu End. Ich bedanke mich für die Aufmerksamkeit
