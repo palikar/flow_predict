@@ -4,8 +4,13 @@
 NGF=32
 LAYERS=5
 MODEL_CNT=${MODEL_CNT:-10}
-
 NETS=()
+
+MASK=${MASK:-"--no-mask"}
+CUDA=${CUDA:-"--cuda"}
+
+EPOCHS=${EPOCHS:-30}
+
 
 while [ "$1" != "" ]; do
     
@@ -65,6 +70,14 @@ while [ "$1" != "" ]; do
 done
 
 
+echo "MASK: " $MASK
+echo "CUDA: " $CUDA
+echo "MODEL_CNT: " $MODEL_CNT
+echo "NETS: " ${NETS[@]}
+echo "EPOCHS: " ${EPOCHS}
+
+
+
 # some_command &
 # P1=$!
 # other_command &
@@ -86,7 +99,7 @@ do
 	if [ ! -z "$PRESSURE" ]; then
             for i in $(seq 1 ${MODEL_CNT}); do
                 
-                python train.py --data ./data/generated_data/ --model-type 'c' --model-name "${net}" --threads 4 --batch-size 3 --shuffle --epochs 50 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_c/plain_results_$i_${RANDOM}/" --evaluate --g_nfg ${NGF} --g_layers ${LAYERS} --use-pressure  --no-train
+                python train.py --data ./data/generated_data/ --model-type 'c' ${CUDA} --model-name "${net}" --threads 4 --batch-size 3 --shuffle --epochs ${EPOCHS} --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_c/plain_results_$i_${RANDOM}/" --evaluate --g_nfg ${NGF} --g_layers ${LAYERS} --use-pressure  ${MASK}
 
 	    done
         fi
@@ -95,7 +108,7 @@ do
         if [ ! -z "$NO_PRESSURE" ]; then
             for i in $(seq 1 ${MODEL_CNT}); do
                 
-                python train.py --data ./data/generated_data/ --model-type 'c' --cuda --model-name "${net}" --threads 4 --batch-size 3 --shuffle --epochs 50 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_c/plain_results_$i_${RANDOM}/" --evaluate --g_nfg ${NGF} --g_layers ${LAYERS}
+                python train.py --data ./data/generated_data/ --model-type 'c' ${CUDA} --model-name "${net}" --threads 4 --batch-size 3 --shuffle --epochs ${EPOCHS} --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_c/plain_results_$i_${RANDOM}/" --evaluate --g_nfg ${NGF} --g_layers ${LAYERS} ${MASK}
                 
 	    done
         fi
@@ -124,14 +137,14 @@ do
 	if [ ! -z "$PRESSURE" ]; then
             for i in $(seq 1 ${MODEL_CNT}); do
 
-		python train.py --data ./data/generated_data/ --model-type 's' --cuda --model-name '${net}' --threads 4 --batch-size 3 --shuffle --epochs 50 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_s/plain_results_$i_${RANDOM}/" --evaluate --g_nfg ${NGF} --g_layers ${LAYERS} --use-pressure
+		python train.py --data ./data/generated_data/ --model-type 's' ${CUDA} --model-name "${net}" --threads 4 --batch-size 3 --shuffle --epochs ${EPOCHS} --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_s/plain_results_${i}_${RANDOM}/" --evaluate --g_nfg ${NGF} --g_layers ${LAYERS} --use-pressure ${MASK}
 
 	    done
         fi
 
 	for i in $(seq 1 ${MODEL_CNT}); do
 
-	    python train.py --data ./data/generated_data/ --model-type 's' --cuda --model-name '${net}' --threads 4 --batch-size 3 --shuffle --epochs 50 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_s/plain_results_$i_${RANDOM}/" --evaluate --g_nfg ${NGF} --g_layers ${LAYERS}
+	    python train.py --data ./data/generated_data/ --model-type 's' ${CUDA} --model-name "${net}" --threads 4 --batch-size 3 --shuffle --epochs ${EPOCHS} --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_s/plain_results_${i}_${RANDOM}/" --evaluate --g_nfg ${NGF} --g_layers ${LAYERS} ${MASK}
 
 	done
     fi
@@ -154,14 +167,14 @@ do
 
 	    for i in $(seq 1 ${MODEL_CNT}); do
 
-		python train.py --data ./data/generated_data/ --model-type 'vd' --cuda --model-name '${net}' --threads 4 --batch-size 3 --shuffle --epochs 50 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_vd/plain_results_$i_${RANDOM}/" --evaluate --g_nfg ${NGF} --g_layers ${LAYERS} --use-pressure
+		python train.py --data ./data/generated_data/ --model-type 'vd' ${CUDA} --model-name "${net}" --threads 4 --batch-size 3 --shuffle --epochs ${EPOCHS} --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_vd/plain_results_$i_${RANDOM}/" --evaluate --g_nfg ${NGF} --g_layers ${LAYERS} --use-pressure ${MASK}
 
 	    done
 	fi
 
 	for i in $(seq 1 ${MODEL_CNT}); do
 
-	    python train.py --data ./data/generated_data/ --model-type 'vd' --cuda --model-name '${net}' --threads 4 --batch-size 3 --shuffle --epochs 50 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_vd/plain_results_$i_${RANDOM}/" --evaluate --g_nfg ${NGF} --g_layers ${LAYERS}
+	    python train.py --data ./data/generated_data/ --model-type 'vd' ${CUDA} --model-name "${net}" --threads 4 --batch-size 3 --shuffle --epochs ${EPOCHS} --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_vd/plain_results_$i_${RANDOM}/" --evaluate --g_nfg ${NGF} --g_layers ${LAYERS}  ${MASK}
 
 	done
 
