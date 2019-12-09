@@ -42,4 +42,3 @@ Wie gesagt, im Endeffekt haben wir keine Punktschätzungen, sonder Wahrscheinlic
 * Gliederung
 
 #+TOC: headlines 2
-

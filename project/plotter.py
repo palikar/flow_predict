@@ -178,7 +178,9 @@ def plot_recursive(model_name, mse_test, mse_train, ssim_test, ssim_train, test_
     plt.savefig(train_file)
     plt.clf()
         
-    
+matplotlib.rc('xtick', labelsize=17) 
+matplotlib.rc('ytick', labelsize=17)
+
 def plot_model_comparision(metric, labels, test_metr, test_metr_p, train_metr, train_metr_p, filename):
 
   barWidth = 0.2
@@ -501,11 +503,13 @@ def main():
 
     plotter = PlotProcessor(args)
 
-    plotter.val_losses()
-    plotter.train_losses()
+    # plotter.val_losses()
+    # plotter.train_losses()
+
     plotter.matrics_comp()
-    plotter.recursive_plots()
-    plotter.averge_recursive_plot()
+
+    # plotter.recursive_plots()
+    # plotter.averge_recursive_plot()
 
     
 
