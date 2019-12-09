@@ -41,19 +41,19 @@ Dazu gibt's einige Fälle zu unterschieden
 
 * Daten
 
-Die erste Aufgabe, die erledigt werden musste, war die Datengenerierung. Dazu sind einige Sachen zu benennen. Erst mal -wir haben einen numerischen Löser verwendet, damit wir wirklich echten Simulationsdaten genieren zu können. Der Löser löst also die tatsächlichen Differentialgleichungen.
+Die erste Aufgabe, die erledigt werden musste, war die Datengenerierung. Dazu sind einige Sachen zu benennen. Erst mal - wir haben einen numerischen Löser verwendet, damit wir wirklich echten Simulationsdaten genieren zu können. Der Löser löst also die tatsächlichen Differentialgleichungen.
 
 ** Simulation and parameters
 Dafür müssten wir passende Parameter auswählen. Wie schon erwähnt, es gibt drei Arten davon. Geschwindigkeit, Dichte und Viskosität. Um diese Wahl zu treffen, gabs ein bisschen Spielerei.
 
 ** Reynolds number
-Mehr oder weniger, zusammen die Werte der Parameter ergeben die sogenannte Reynonldszahl. Diese Zahl bestimmte einigermaßen die Strömung und machte eine aussage um den Typ davon -- laminar oder turbulent. Im Endeffekt haben wir Reynonldszahl Bereich von 90 zu 350 gewählt. Dann ist die Strömung immer noch laminar und der Löser kann die Simulation sinnvoll durchführen.
+Mehr oder weniger, zusammen die Werte der Parameter ergeben die sogenannte Reynonldszahl. Diese Zahl bestimmte einigermaßen die Strömung und macht eine aussage um den Typ davon -- laminar oder turbulent. Im Endeffekt haben wir Reynonldszahl Bereich von 90 bis 350 gewählt. Dann ist die Strömung immer noch laminar und der Löser kann die Simulation sinnvoll durchführen.
 
 ** Interesting flow effects - Karman vortex street
 In diesem Fall gibts aber auch interessante Strömungseffekte, die beobachtet werden können. Und wir sind interessiert ob ein Netz damit umgehen kann. Zum Beispiel, dies hier ist die bekannte Karmansche Wirbelstrasse. Dies kann man sehen, nur wenn die Reynonldszahl größer als 90 ist.
 
 ** RGB vs Gray scale
-Danach ist noch eine andere Überlegung zu machen. Und zwar, ob die schon gerenderten Bilder im Grauwert- oder RGB-Raum sein sollen. Theoretisch besitzen die beiden Alternativen dieselbe Information über die Werte der Lösung. Die RGB-Bilder sehen ein bisschen schöner aus und man kann damit quasi mehr verstehen. Anderseits haben die RGB-Bilder drei Channels, die für ein Netz komplexer sein können als nur ein Channel wie bei den Grauwert-Bildern. 
+Danach ist noch eine andere Überlegung zu machen. Und zwar, ob die schon gerenderten Bilder im Grauwert- oder RGB-Raum sein sollen. Theoretisch besitzen die beiden Alternativen dieselbe Information über die Werte der Lösung. Die RGB-Bilder sehen ein bisschen schöner aus und man kann damit quasi mehr verstehen. Anderseits haben die RGB-Bilder drei Channels, die für ein Netz komplexer sein können als nur ein Channel wie bei den Grauwert-Bildern.
 
 Dazu haben wir sogar ein paar Experimente gemacht und es hat sich gezeigt, dass wenn man Grauwert-Bilder verwendet trainieren die Netze schneller und liefern bessere Ergebnisse. Deswegen haben wir dafür entschieden.
 
@@ -77,7 +77,7 @@ Ich habe erwähnt, dass die Simulation drei Felder pro Zeitschritt liefert. Die 
 
 Und ja, Es ist tatsächlich... aber nur manchmal. Die Ergebnisse könne auch schlechter werden
 
-***Q Real numbers
+*** Real numbers
 Die andere Frage ist wie wir eine (oder mehrere) reelle Zahl (oder Zahl) ins Netz integrieren können. Wenn 3.14 z. B. die Geschwindigkeit des Fluids ist, wie ist dies zu berücksichtigen.
 
 Die aktuelle Lösung, wie erzeugen einfach ein zusätzliches konstantes Bild-Channel mit dem Wert der Zahl. Unklar ob das optimal ist, aber für jetzt funktioniert es ok.
@@ -96,12 +96,13 @@ Nämlich:
 - Korrelation - die Bilder sind 'gleich' bis zum Vorfaktor. Wenn ein Bild heller ist, kann man trotzdem verstehen was da passiert
 
 *** Numerical simulation
+
 Die absoluten Werte liegen im Fokus. Hier sollen wir objektiver sein. Dementsprechend messen wir wie unterschiedlich zwei Bilder sind nach:
 - durchschnittliche prozentuale Differenz
 - maximale prozentuale Differenz
 
 
-** Evaluation cases
+** Evaluation cases 
 Beim Evaluieren gibt's auch Alternativen mit der Methodologie. Wir haben zwei Evaluierungsfälle und diese sind bei individuellen Bilder und bei rekursiver Anwendung vom Modell.
 
 Anschaulich sieht das ganze so aus.
