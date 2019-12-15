@@ -18,7 +18,7 @@ Hallo, ich bin Stsnislav und heute präsentiere ich euch was ich schon in meinem
 
 
 * Beschreibung
-Zunächst muss ich aber kurz wiederholen genau was ich forsche.
+Zunächst muss ich aber kurz wiederholen was ich genau forsche.
 ** Basic Idea
 Unsere Grundlegende Idee - ich versuche eine numerische Simulation über DNNs vorherzusagen. Damit wollen wir sehen wie verschiedene Simulations-Parameters von einem Netz generalisiert werden können.
 
@@ -41,7 +41,7 @@ Dazu gibt's einige Fälle zu unterschieden
 
 * Daten
 
-Die erste Aufgabe, die erledigt werden musste, war die Datengenerierung. Dazu sind einige Sachen zu benennen. Erst mal - wir haben einen numerischen Löser verwendet, damit wir wirklich echten Simulationsdaten genieren zu können. Der Löser löst also die tatsächlichen Differentialgleichungen.
+Die erste Aufgabe, die erledigt werden musste, war die Datengenerierung. Dazu sind einige Sachen zu benennen. Erst mal - wir haben einen numerischen Löser verwendet, damit wir wirklich echten Simulationsdaten genieren können. Der Löser löst also die tatsächlichen Differentialgleichungen.
 
 ** Simulation and parameters
 Dafür müssten wir passende Parameter auswählen. Wie schon erwähnt, es gibt drei Arten davon. Geschwindigkeit, Dichte und Viskosität. Um diese Wahl zu treffen, gabs ein bisschen Spielerei.
@@ -109,15 +109,12 @@ Anschaulich sieht das ganze so aus.
 
 
 
-* Results
-Letztendlich können wir ein bisschen die konkreten Ergebnisse nachschauen
+* Ergebnisse
+Letztendlich können wir kurz die konkreten Ergebnisse nachschauen. 
 
-** Constant
-*** Plots
-*** Predicted image
-*** Time step image
-*** Recursive plots
-*** Recursive Time step images
+Diese verifizieren im Prinzip meine bisherige Aussage.
+
+Das Plot hier zeigt zusammengefasst die Ergebnisse von der individuellen Auswertung.
 
 
 * End

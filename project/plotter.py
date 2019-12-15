@@ -188,7 +188,7 @@ def plot_model_comparision(metric, labels, test_metr, test_metr_p, train_metr, t
   r1 = np.arange(len(test_metr[0]))
   r2 = [x + barWidth + spacing for x in r1]
   
-  plt.figure(figsize=(11, 10), dpi=100)
+  plt.figure(figsize=(9,12), dpi=100)
   plt.suptitle("Models comparison")
 
   plt.subplot(2,1,1)
@@ -428,7 +428,7 @@ class PlotProcessor():
           
       
       for mod, rec in list(model_met.items()):
-        plt.figure(figsize=(10,13), dpi=100)
+        plt.figure(figsize=(11,10), dpi=100)
 
         cnt = 1
         for metric in metrics:
@@ -509,7 +509,7 @@ def main():
     plotter.matrics_comp()
 
     # plotter.recursive_plots()
-    # plotter.averge_recursive_plot()
+    plotter.averge_recursive_plot()
 
     
 
