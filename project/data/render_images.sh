@@ -5,8 +5,7 @@ set +e
 BASEDIR=$(dirname $0)
 
 SOLUTION_LIST=""
-# PVPYTHON_EXE=${PVPYTHON_EXE:-"/home/arnaud/temp/Snap/ParaView-5.2.0-Qt4-OpenGL2-MPI-Linux-64bit/bin/pvpython"}
-PVPYTHON_EXE=${PVPYTHON_EXE:-"/home/arnaud/Downloads/ParaView-5.2.0-Qt4-OpenGL2-MPI-Linux-64bit/bin/pvpython"}
+PVPYTHON_EXE=${PVPYTHON_EXE:-"/home/arnaudov/code/ParaView-5.2.0-Qt4-OpenGL2-MPI-Linux-64bit/bin/pvpython"}
 
 CROPPER_SCRIPT="${BASEDIR}/cropper.py"
 
@@ -28,12 +27,15 @@ do
     SOLUTION_LIST="'${sol}', ${SOLUTION_LIST}"
 done
 # echo "Solution files: ${SOLUTION_LIST}"
-sed -e "s#'<file_place>'#$SOLUTION_LIST#g" anim.py > anim_temp.py
+# echo $SOLUTION_LIST
+echo "s#'<file_place>'#$SOLUTION_LIST#g" > command.txt
+sed -f command.txt anim.py > anim_temp.py
 
 
-# render the U-Direction of velocity
+
+# render the X-Direction of velocity
 IMAGES_DEST="${ROOT_FOLDER}/${SOLUTION_FOLDER}/images_x"
-# echo "Rendering images in $IMAGES_DEST"
+echo "Rendering images in $IMAGES_DEST"
 mkdir -p ${IMAGES_DEST}
 sed -e "s#<output_place>#${IMAGES_DEST}/flow.png#g
         s#<var>#u#g" anim_temp.py > anim_temp_x.py
@@ -41,7 +43,7 @@ eval "${PVPYTHON_EXE} anim_temp_x.py"
 crop_images ${IMAGES_DEST}
 
 
-# render the U-Direction of velocity
+# render the Y-Direction of velocity
 IMAGES_DEST="${ROOT_FOLDER}/${SOLUTION_FOLDER}/images_y"
 echo "Rendering images in $IMAGES_DEST"
 mkdir -p ${IMAGES_DEST}
@@ -51,9 +53,9 @@ eval "${PVPYTHON_EXE} anim_temp_y.py"
 crop_images ${IMAGES_DEST}
 
 
-# render the U-Direction of velocity
+# render the pressure
 IMAGES_DEST="${ROOT_FOLDER}/${SOLUTION_FOLDER}/images_p"
-# echo "Rendering images in $IMAGES_DEST"
+echo "Rendering images in $IMAGES_DEST"
 mkdir -p ${IMAGES_DEST}
 sed -e "s#<output_place>#${IMAGES_DEST}/flow.png#g
         s#<var>#p#g" anim_temp.py > anim_temp_p.py

@@ -9,8 +9,8 @@
 \usepackage{textcomp} % \textrightarrow
 \usepackage{svg}
 
-\title[Research proposal]{Towards Bringing Together Numerical Methods for Partial Differential Equation and Deep Neural Networks}
-\subtitle{Research proposal, Supervisor - Markus Hoffmann}
+\title[Project discussion]{Towards Bringing Together Numerical Methods for Partial Differential Equation and Deep Neural Networks}
+\subtitle{Project discussion, Supervisor - Markus Hoffmann}
 \author{Stanislav Arnaudov}
 \institute{Chair for Computer Architecture and Parallel Processing}
 \date{September 26, 2019}
@@ -155,7 +155,6 @@ Parameters:
 \begin{itemize}
 \item fluid viscosity and density -- $\rho$ and $n$
 \item inflow speed -- $g$
-\item the object in the space
 \end{itemize}
 \end{frame}
 
@@ -268,7 +267,6 @@ Solutions:
     \begin{itemize}
     \item Fluid viscosity and density
     \item Inflow speed
-    \item Object in space
     \end{itemize}
     To be studied is a DNN-based model that processes the image representations of the solutions of the simulation.
   \end{block}
@@ -390,14 +388,13 @@ Solutions:
       \item Implement a model in \textit{PyTorch}
         \begin{itemize}
           \item following the framework of \textit{pix2pix}
-          \item \textit{ResNet}\footnotemark \@ based architecture
           \item \textit{GAN} (Generative Adversarial Network) based approach
           \end{itemize}
           \item Train with the generated data
       \end{itemize}
     \end{column}
   \end{columns}
-  \footnotetext{Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun.  ``Delving deep into rectifiers: Surpassing human-level performance on imagenet classification.''}
+
 \end{frame}
 
 
@@ -426,6 +423,26 @@ Solutions:
 
 
 \begin{frame}[t]
+  \frametitle{Methodology}
+  \vspace{-1cm}
+  \begin{columns}[t]
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        {\large \underline{Individual Images}}
+        \includegraphics[scale=0.12]{images/simple_eval}
+      \end{center}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        {\large \underline{Recursive Application}}
+        \includegraphics[scale=0.12]{images/rec_eval}
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}[t]
   \frametitle{Definition}
   ...
   \begin{block}{Research question}
@@ -437,7 +454,6 @@ Solutions:
         \begin{itemize}
         \item Fluid viscosity and density
         \item Inflow speed
-        \item Object in space
         \end{itemize}
         \end{minipage}
       };
@@ -445,7 +461,7 @@ Solutions:
     To be studied is a DNN-based model that processes the image representations of the solutions of the simulation.
   \end{block}
   \pause
-  $\Longrightarrow$ \textbf{Goal:} Build a separate model for each of the cases being studied.
+  $\Longrightarrow$ \textbf{Goal:} Build a separate model for each of the cases.
 \end{frame}
 
 
@@ -470,7 +486,7 @@ Solutions:
       \includegraphics[scale=0.25]{images/meth/meth_2}
     \end{column}
     \begin{column}[t]{0.65\textwidth}
-      \vspace*{-7cm}
+      \vspace*{-5cm}
       \begin{itemize}
       \item Data generation
       \item Implementation of core components
@@ -498,7 +514,7 @@ Solutions:
       \includegraphics[scale=0.25]{images/meth/meth_3}
     \end{column}
     \begin{column}[t]{0.65\textwidth}
-      \vspace*{-7cm}
+      \vspace*{-5cm}
       \begin{itemize}
       \item Model modifications
         \begin{itemize}
@@ -518,31 +534,11 @@ Solutions:
       \includegraphics[scale=0.25]{images/meth/meth_4}
     \end{column}
     \begin{column}[t]{0.65\textwidth}
-      \vspace*{-7cm}
+      \vspace*{-5cm}
       \begin{itemize}
       \item Model modifications
         \begin{itemize}
         \item inflow speed as input
-        \end{itemize}
-      \item Training and evaluating
-      \end{itemize}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-
-\begin{frame}[t]
-  \frametitle{Methodology\textbackslash Workplan}
-  \begin{columns}[t]
-    \begin{column}{0.35\textwidth}
-      \includegraphics[scale=0.25]{images/meth/meth_5}
-    \end{column}
-    \begin{column}[t]{0.65\textwidth}
-      \vspace*{-7cm}
-      \begin{itemize}
-      \item Model modifications
-        \begin{itemize}
-        \item simulation space as input
         \end{itemize}
       \item Training and evaluating
       \end{itemize}
@@ -564,13 +560,332 @@ Solutions:
 \end{frame}
 
 
-\section{Timeplan}
+
+\section{Development}
+
 \begin{frame}[t]
-  \frametitle{Timeplan}
+  \frametitle{Project Development}
+\end{frame}
+
+
+\begin{frame}[t]
+  \frametitle{Project Development}
+  \large{\textbf{Data Generation}}
+\end{frame}
+
+
+
+\begin{frame}[t]
+  \frametitle{Project Development}
+  \large{\textbf{Data Generation}}
+
+  \begin{itemize}
+  \item The simulation has several adjustable parameters
+    \begin{itemize}
+    \item inflow speed
+    \item fluid viscosity
+    \item fluid density
+    \end{itemize}
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Project Development}
+  \large{\textbf{Data Generation}}
+  \begin{itemize}
+  \item The simulation has several adjustable parameters
+    \begin{itemize}
+    \item What is a good choice for the parameters.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[t]
+  \frametitle{Project Development}
+  \large{\textbf{Data Generation}}
+  \begin{itemize}
+  \item The simulation has several adjustable parameters
+    \begin{itemize}
+    \item Reynold's number in the range of [90, 350]
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Project Development}
+  \large{\textbf{Data Generation}}
+  \begin{itemize}
+  \item The simulation has several adjustable parameters
+    \begin{itemize}
+    \item Reynold's number in the range of [90, 350]
+    \end{itemize}
+  \end{itemize}
   \begin{center}
-    \includegraphics[scale=0.19]{images/time}
+    \includegraphics[scale=0.21]{images/x-direction}
+  \end{center}
+  \begin{center}
+    \begin{figure}[htb]
+    \includegraphics[scale=0.21]{images/y-direction} \\
+    \caption{Karman vortex street}
+    \end{figure}
   \end{center}
 \end{frame}
+
+
+\begin{frame}[t]
+  \frametitle{Project Development}
+  \large{\textbf{Data Generation}}
+  \begin{itemize}
+  \item Choosing appropriate color space
+    \begin{itemize}
+    \item Grayscale
+    \item RGB
+    \end{itemize}
+  \end{itemize}  
+  \begin{center}
+    \includegraphics[scale=0.27]{images/x-direction-gray} \hspace{0.7cm}
+    \includegraphics[scale=0.27]{images/x-direction-rgb} \\ \vspace{0.2cm}
+    \includegraphics[scale=0.27]{images/y-direction-gray} \hspace{0.7cm}
+    \includegraphics[scale=0.27]{images/y-direction-rgb} \\
+  \end{center}  
+\end{frame}
+
+
+\begin{frame}[t]
+  \frametitle{Project Development}
+  \large{\textbf{Models}}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Project Development}
+  \large{\textbf{Models}}
+  \begin{itemize}
+  \item Two types of architectures based on our preliminary research:
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Project Development}
+  \large{\textbf{Models}}
+  \begin{itemize}
+  \item Two types of architectures based on our preliminary research:
+    \begin{itemize}
+    \item ResNet 
+    \end{itemize}
+  \end{itemize}
+  \vspace{1cm}
+  \begin{center}
+      \includegraphics[scale=0.37]{images/nets/res}
+    \end{center}
+\end{frame}
+
+
+\begin{frame}[t]
+  \frametitle{Project Development}
+  \large{\textbf{Models}}
+  \begin{itemize}
+  \item Two types of architectures based on our preliminary research:
+    \begin{itemize}
+    \item UNet
+    \end{itemize}
+  \end{itemize}
+  \vspace{1cm}
+  \begin{center}
+    \includegraphics[scale=0.37]{images/nets/unet}
+  \end{center}  
+\end{frame}
+
+
+\begin{frame}[t]
+  \frametitle{Project Development}
+  \large{\textbf{Data Use}}
+\end{frame}
+
+
+\begin{frame}[t]
+  \frametitle{Project Development}
+  \large{\textbf{Data Use}}
+  \begin{itemize}
+  \item Usage of pressure field
+  \end{itemize}
+  \vspace{0.5cm}
+  \begin{center}
+    \includegraphics[scale=0.20]{images/models/pressure_optional}
+  \end{center}  
+\end{frame}
+
+
+\begin{frame}[t]
+  \frametitle{Project Development}
+  \large{\textbf{Data Use}}
+  \begin{itemize}
+  \item Usage of pressure field $\rightarrow$ the pressure field turned out to be useful
+  \end{itemize}
+  \vspace{0.5cm}
+  \begin{center}
+    \includegraphics[scale=0.20]{images/models/pressure_optional}
+  \end{center}  
+\end{frame}
+
+
+
+\begin{frame}[t]
+  \frametitle{Project Development}
+  \large{\textbf{Data Use}}
+  \begin{itemize}
+    \item Processing of real values
+  \end{itemize}
+  \vspace{0.5cm}
+  \begin{center}
+    \includegraphics[scale=0.20]{images/models/num_question}
+  \end{center}  
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Project Development}
+  \large{\textbf{Data Use}}
+  \begin{itemize}
+    \item Processing of real values $\rightarrow$ extra image channel filled with the value
+  \end{itemize}
+  \vspace{0.5cm}
+  \begin{center}
+    \includegraphics[scale=0.20]{images/models/num_answer}
+  \end{center}  
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Project Development}
+  \large{\textbf{Results consideration}}
+  \vspace{-0.5cm}
+  \begin{columns}[t]
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        {\large \underline{Image processing}}
+      \end{center}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        {\large \underline{Numerical Simulation}}
+      \end{center}  
+    \end{column}
+  \end{columns}  
+\end{frame}
+
+
+
+\begin{frame}[t]
+  \frametitle{Project Development}
+  \large{\textbf{Results consideration}}
+  \vspace{-0.5cm}
+  \begin{columns}[t]
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        {\large \underline{Image processing}}
+        \begin{itemize}
+        \item Perceived qualities of the \underline{image} results
+        \item Metrics:
+          \begin{itemize}
+          \item Peak signal-to-noise ratio - PSNR
+          \item Correlation
+          \end{itemize}
+        \end{itemize}
+      \end{center}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        {\large \underline{Numerical Simulation}}
+      \end{center}  
+    \end{column}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}[t]
+  \frametitle{Project Development}
+  \large{\textbf{Results consideration}}
+  \vspace{-0.5cm}
+  \begin{columns}[t]
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        {\large \underline{Image processing}}
+        \begin{itemize}
+        \item Perceived qualities of the \underline{image} results
+        \item Metrics:
+          \begin{itemize}
+          \item Peak signal-to-noise ratio - PSNR
+          \item Correlation
+          \end{itemize}
+        \end{itemize}
+      \end{center}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        {\large \underline{Numerical Simulation}}
+        \begin{itemize}
+        \item \underline{Real} differences between the predicted and the actual \underline{values}
+        \item Metrics:
+          \begin{itemize}
+            \item Average percentage difference
+            \item Max percentage difference
+          \end{itemize}
+        \end{itemize}
+      \end{center}  
+    \end{column}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}[t]
+  \frametitle{Results}
+  % Images of individual images
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Results}
+  % Images of timestep
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Results}
+  % Images of recursive application
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Results}
+  % Raw results but much less than before
+\end{frame}
+
+
+\begin{frame}[t]
+  \frametitle{Results}
+  % Numbrs of the recursive application
+\end{frame}
+
+
+\begin{frame}[t]
+  \frametitle{Further development}
+  % time checks
+  % Difference images
+  % Using the mask for the object
+\end{frame}
+
+
+
+
+
+
+
+  
+
+% \section{Timeplan}
+% \begin{frame}[t]
+%   \frametitle{Timeplan}
+%   \begin{center}
+%     \includegraphics[scale=0.19]{images/time}
+%   \end{center}
+% \end{frame}
 
 
 \section{Conclusion}
