@@ -1,0 +1,64 @@
+% Created 2020-01-14 Tue 11:33
+% Intended LaTeX compiler: pdflatex
+\documentclass{llncs}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+\usepackage[english]{babel}
+\usepackage{cite}
+\usepackage{parskip}
+\usepackage{pgfgantt}
+\usepackage{svg}
+\usepackage{color}
+\usepackage{tikz}
+\institute{Karlsruhe Institute of Technology,\\Kaiserstrasse 12,76131 Karlsruhe, Germany\\ \url{http://www.kit.edu/english/}}
+\selectlanguage{english}
+\author{Stanislav Arnaudov}
+\date{<14-01-2020>}
+\title{Towards Bringing Together Numerical Methods for Partial Differential Equation and Deep Neural Networks}
+\hypersetup{
+ pdfauthor={Stanislav Arnaudov},
+ pdftitle={Towards Bringing Together Numerical Methods for Partial Differential Equation and Deep Neural Networks},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2.1)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+
+\section{Timing experiments}
+\label{sec:orgf979350}
+
+In order to justify the requested resources, we've performed some preliminary experiments to see how much time our models need for training. Without getting into too much detail, we have three types of models that are to be evaluated -- constant (C), inflow speed (S) and viscosity-density (VD). Each model type has an estimated training time (ETT) and a certain number of tries because we also want to try different hyper-parameters. All of the models have to be trained on GPU nodes. This means that for one hour of training time, we need 48 hours of CPU time.
+
+
+
+The total time for a model type is calculated as SUM=TRIES x ETT x 48. We've also added 20\% overestimate to the expected total time, just to be sure that we can train our models. The following table summarizes our estimations:
+
+\begin{center}
+\begin{tabular}{l|lllllr|lll}
+Model type &  &  & ETT &  &  & Tries &  &  & Sum\\
+\hline
+C &  &  & 5 h &  &  & 10 &  &  & 2 400 cpu-h\\
+S &  &  & 70h &  &  & 10 &  &  & 33 600 cpu-h\\
+VD &  &  & 350h &  &  & 10 &  &  & 168 000 cpu-h\\
+\hline
+Total: &  &  &  &  &  &  &  &  & 204 000 cpu-h\\
++ 20\% &  &  &  &  &  &  &  &  & \(\approx\) 250 000 cpu-h\\
+\hline
+\end{tabular}
+\end{center}
+\end{document}

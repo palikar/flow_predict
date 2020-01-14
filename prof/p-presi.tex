@@ -13,12 +13,8 @@
 \subtitle{Project discussion, Supervisor - Markus Hoffmann}
 \author{Stanislav Arnaudov}
 \institute{Chair for Computer Architecture and Parallel Processing}
-\date{September 26, 2019}
+\date{January 8, 2020}
 \selectlanguage{english}
-
-% \usepackage[style=verbose,backend=bibtex]{biblatex}
-% \bibliography{bib}
-% \bibliographystyle{plain}
 
 \newcommand{\semitransp}[2][35]{\color{fg!#1}#2 \color{fg}}
 
@@ -226,6 +222,7 @@ Solutions:
   DNNs in the context of the described problem
   \begin{itemize}
   \item The solutions of the PDE can be visualized as images
+    \item DNNs perform well on image processing tasks
   \end{itemize}
   $\Longrightarrow$ use DNNs to generate solutions of the simulation in image form \\
   \vspace*{1.5cm}
@@ -311,21 +308,20 @@ Solutions:
   {\footnotesize (with focus on Navier-Stoke problems)}
   \begin{itemize}
 
-  \item Hidden Fluid Mechanics: A Navier-Stokes Informed Deep Learning Framework for Assimilating Flow Visualization Data\footnotemark
-    \begin{itemize}
-    \item tailored DNN-model
-    \item maps concentration of substance (in time and space) to velocity and pressure
-    \end{itemize}
+  % \item Hidden Fluid Mechanics: A Navier-Stokes Informed Deep Learning Framework for Assimilating Flow Visualization Data\footnotemark
+  %   \begin{itemize}
+  %   \item tailored DNN-model
+  %   \item maps concentration of substance (in time and space) to velocity and pressure
+  %   \end{itemize}
     
     \item Study of Deep Learning Methods for Reynolds-Averaged Navier-Stokes Simulations of Airfoil Flows\footnotemark
     \begin{itemize}
-    \item considers the Reynolds-Averaged Navier-Stokes equation
+    \item considers the \underline{Reynolds-Averaged Navier-Stokes} equations
     \item maps boundary conditions to velocity and pressure fields
       % \item does not test with different geometries and fluid-parameters 
     \end{itemize}
     
   \end{itemize}
-  \footnotetext[3]{Maziar Raissi and Alireza Yazdani and George Em Karniadakis. (2018) ``....'' 1808.04327}
   \footnotetext{Nils Thuerey, Konstantin Weissenow, Harshit Mehrotra, Nischal Mainali, Lukas Prantl. (2018). ``....''. 481-490. 1810.08217. }
 \end{frame}
 
@@ -561,7 +557,7 @@ Solutions:
 
 
 
-\section{Development}
+\section{Data Generation}
 
 \begin{frame}[t]
   \frametitle{Project Development}
@@ -652,7 +648,7 @@ Solutions:
   \end{center}  
 \end{frame}
 
-
+\section{Data Models}
 \begin{frame}[t]
   \frametitle{Project Development}
   \large{\textbf{Models}}
@@ -697,7 +693,7 @@ Solutions:
   \end{center}  
 \end{frame}
 
-
+\section{Data Use}
 \begin{frame}[t]
   \frametitle{Project Development}
   \large{\textbf{Data Use}}
@@ -755,6 +751,7 @@ Solutions:
   \end{center}  
 \end{frame}
 
+\section{Results}
 \begin{frame}[t]
   \frametitle{Project Development}
   \large{\textbf{Results consideration}}
@@ -839,53 +836,77 @@ Solutions:
 
 \begin{frame}[t]
   \frametitle{Results}
-  % Images of individual images
-\end{frame}
-
-\begin{frame}[t]
-  \frametitle{Results}
-  % Images of timestep
-\end{frame}
-
-\begin{frame}[t]
-  \frametitle{Results}
-  % Images of recursive application
-\end{frame}
-
-\begin{frame}[t]
-  \frametitle{Results}
-  % Raw results but much less than before
+  \vspace{-1cm}
+  \begin{center}
+    {\large \underline{Individual Images}} \\
+    Prediction image:
+  \end{center}
+  \begin{center}
+    \includegraphics[scale=0.32]{images/res/prediction}
+  \end{center}  
 \end{frame}
 
 
 \begin{frame}[t]
   \frametitle{Results}
-  % Numbrs of the recursive application
+  \vspace{-1cm}
+  \begin{center}
+    {\large \underline{Individual Images}} \\
+    Timestep image:
+  \end{center}
+  \begin{center}
+    \includegraphics[scale=0.32]{images/res/timestep}
+  \end{center}  
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Results}
+   \vspace{-0.5cm}
+  \begin{center}
+    {\large \underline{Recursive application -- constant model}} \\
+  \end{center}
+  \vspace{0.5cm}
+  \begin{center}
+    \includegraphics[scale=0.15]{images/res/x_step_1}
+    \includegraphics[scale=0.15]{images/res/x_step_5}
+    \includegraphics[scale=0.15]{images/res/x_step_10}
+    \includegraphics[scale=0.15]{images/res/x_step_15}
+    \includegraphics[scale=0.15]{images/res/x_step_20}
+    \includegraphics[scale=0.15]{images/res/x_step_25}
+  \end{center}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Results}
+  \vspace{-0.5cm}
+  \begin{center}
+    \large{\underline{PSNR Comparison}}
+  \end{center}
+  \begin{center}
+    \includegraphics[scale=0.3]{images/psnr_comp}
+  \end{center}
 \end{frame}
 
 
+\begin{frame}[t]
+  \frametitle{Results}
+  \vspace{-0.5cm}
+  \begin{center}
+    \large{\underline{Recursive application --- percentual difference change }}
+  \end{center}
+  \vspace{-0.3cm}
+  \begin{center}
+    \includegraphics[scale=0.29]{images/avrg_rec}
+  \end{center}
+\end{frame}
+
+\section{Time plan}
 \begin{frame}[t]
   \frametitle{Further development}
-  % time checks
-  % Difference images
-  % Using the mask for the object
+  \begin{center}
+    \includegraphics[scale=0.17]{images/time}
+  \end{center}
 \end{frame}
-
-
-
-
-
-
-
-  
-
-% \section{Timeplan}
-% \begin{frame}[t]
-%   \frametitle{Timeplan}
-%   \begin{center}
-%     \includegraphics[scale=0.19]{images/time}
-%   \end{center}
-% \end{frame}
 
 
 \section{Conclusion}

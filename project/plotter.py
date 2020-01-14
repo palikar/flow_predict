@@ -37,6 +37,8 @@ from torchsummary import summary
 
 plt.style.use('ggplot')
 plt.rcParams.update({'figure.max_open_warning': 0})
+matplotlib.rc('xtick', labelsize=17) 
+matplotlib.rc('ytick', labelsize=17)
 
 def rchop(thestring, ending):
   if thestring.endswith(ending):
@@ -178,8 +180,7 @@ def plot_recursive(model_name, mse_test, mse_train, ssim_test, ssim_train, test_
     plt.savefig(train_file)
     plt.clf()
         
-matplotlib.rc('xtick', labelsize=17) 
-matplotlib.rc('ytick', labelsize=17)
+
 
 def plot_model_comparision(metric, labels, test_metr, test_metr_p, train_metr, train_metr_p, filename):
 
@@ -188,10 +189,10 @@ def plot_model_comparision(metric, labels, test_metr, test_metr_p, train_metr, t
   r1 = np.arange(len(test_metr[0]))
   r2 = [x + barWidth + spacing for x in r1]
   
-  plt.figure(figsize=(9,12), dpi=100)
+  plt.figure(figsize=(12,8), dpi=100)
   plt.suptitle("Models comparison")
 
-  plt.subplot(2,1,1)
+  # plt.subplot(2,1,1)
   plt.title("Test")
   plt.barh(r1, test_metr[0], barWidth, edgecolor='black', label='Without pressure', alpha=0.5, xerr=test_metr[1])
   plt.barh(r2, test_metr_p[0], barWidth, edgecolor='black', label='With pressure' , alpha=0.5, xerr=test_metr_p[1])
@@ -205,18 +206,18 @@ def plot_model_comparision(metric, labels, test_metr, test_metr_p, train_metr, t
   plt.legend(loc='upper left', bbox_to_anchor=(0.7, 1.1), ncol=3, fancybox=True, shadow=True)
 
 
-  plt.subplot(2,1,2)
-  plt.title("Train")
-  plt.barh(r1, train_metr[0], barWidth, edgecolor='black', label='Without pressure', alpha=0.5, xerr=train_metr[1])
-  plt.barh(r2, train_metr_p[0], barWidth, edgecolor='black', label='With pressure', alpha=0.5, xerr=train_metr_p[1])
-  plt.grid(b=True, which='major', color='#999999', linestyle='-', alpha=0.2)
-  plt.minorticks_on()
-  plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
+  # plt.subplot(2,1,2)
+  # plt.title("Train")
+  # plt.barh(r1, train_metr[0], barWidth, edgecolor='black', label='Without pressure', alpha=0.5, xerr=train_metr[1])
+  # plt.barh(r2, train_metr_p[0], barWidth, edgecolor='black', label='With pressure', alpha=0.5, xerr=train_metr_p[1])
+  # plt.grid(b=True, which='major', color='#999999', linestyle='-', alpha=0.2)
+  # plt.minorticks_on()
+  # plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
 
-  plt.xlabel(metric.upper(), fontweight='bold')
-  plt.ylabel('Model', fontweight='bold')
+  # plt.xlabel(metric.upper(), fontweight='bold')
+  # plt.ylabel('Model', fontweight='bold')
 
-  plt.yticks([r + barWidth - spacing/2 for r in range(len(train_metr[0]))], labels)
+  # plt.yticks([r + barWidth - spacing/2 for r in range(len(train_metr[0]))], labels)
 
   plt.savefig(filename, bbox_inches='tight')
   plt.clf()
@@ -414,7 +415,7 @@ class PlotProcessor():
               mats.setdefault(eval_type, [])
               mats[eval_type].append(val_list[0:20])
 
-          plt.subplot(2,2,i)
+          # plt.subplot(2,2,i)
           for eval_type, eval_mat in list(mats.items()):
             arr = np.array(eval_mat)
             std = np.std(arr, axis=0)
@@ -440,7 +441,8 @@ class PlotProcessor():
         plt.clf()
 
     def averge_recursive_plot(self):
-      self._averge_recursive_plot(['psnr', 'cor', 'diff_avrg', 'diff_max'])
+      # self._averge_recursive_plot(['psnr', 'cor', 'diff_avrg', 'diff_max'])
+      self._averge_recursive_plot(['diff_avrg'])
        
       
 
@@ -466,7 +468,7 @@ class PlotProcessor():
         
 
         def add_metric(metr, name, number):
-          plt.subplot(2,2,number)
+          # plt.subplot(2,2,number)
           for eval_type, val_list in metr.items():
             plt.plot(np.arange(len(val_list)), val_list, linewidth=0.9, label=eval_type)        
             plt.grid(True)
@@ -478,10 +480,10 @@ class PlotProcessor():
         # add_metric(mse, 'MSE', 1)
         # add_metric(ssim, 'SSIM', 4)
 
-        add_metric(psnr, 'PSNR', 1)
-        add_metric(cor, 'Cor', 2)
+        # add_metric(psnr, 'PSNR', 1)
+        # add_metric(cor, 'Cor', 2)
         add_metric(diff_avrg, 'Diff Avrg', 3)
-        add_metric(diff_max, 'Diff max', 4)
+        # add_metric(diff_max, 'Diff max', 4)
         
         # plt.suptitle('Recursive Applications\n Model: {}'.format(name), fontsize=16)
         plt.tight_layout(rect=[0, 0.03, 1, 0.95])
@@ -505,10 +507,8 @@ def main():
 
     # plotter.val_losses()
     # plotter.train_losses()
-
-    plotter.matrics_comp()
-
-    # plotter.recursive_plots()
+    # plotter.matrics_comp()
+    # plotter.recursive_plots() 
     plotter.averge_recursive_plot()
 
     

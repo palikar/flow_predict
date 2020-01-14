@@ -8,7 +8,7 @@ for res_dir in $(ls -1v -d1 results_c/plain_results_*); do
         continue
     fi
 
-    
+        
     for rec_dir in $(ls -1v -d1 "${res_dir}"/recursive_i*) ; do
         ./make_anim.py "$rec_dir/x_recursive.gif" $(ls -1v $rec_dir/recursive/x_*)
         ./make_anim.py "$rec_dir/y_recursive.gif" $(ls -1v $rec_dir/recursive/y_*)
