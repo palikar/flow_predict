@@ -1,6 +1,6 @@
 
 
-SERVER=arnaudov@i82pc25.itec.kit.edu
+SERVER=arnaudov@i82pc27.itec.kit.edu
 LOCATION=~/code/flow_pred/
 
 

@@ -23,3 +23,6 @@ for model_dir in ${MODEL_DIRS[@]}; do
     fi
     
 done
+
+
+python train.py --data ./data/generated_data/ --model-type 'c' --model-name "unet" --threads 4 --batch-size 3 --shuffle --epochs 50 --lr_policy step --seed $RANDOM --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir results_c/res_1 --evaluate --use-pressure --no-train --no-mask

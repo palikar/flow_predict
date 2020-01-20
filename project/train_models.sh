@@ -99,7 +99,7 @@ do
 	if [ ! -z "$PRESSURE" ]; then
             for i in $(seq 1 ${MODEL_CNT}); do
                 
-                echo python train.py --data ./data/generated_data/ --model-type 'c' ${CUDA} --model-name "${net}" --threads 4 --batch-size 3 --shuffle --epochs ${EPOCHS} --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_c/plain_results_$i_${RANDOM}/" --evaluate --g_nfg ${NGF} --g_layers ${LAYERS} --use-pressure  ${MASK}
+                python train.py --data ./data/generated_data/ --model-type 'c' ${CUDA} --model-name "${net}" --threads 4 --batch-size 3 --shuffle --epochs ${EPOCHS} --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_c/plain_results_$i_${RANDOM}/" --evaluate --g_nfg ${NGF} --g_layers ${LAYERS} --use-pressure  ${MASK}
 
 	    done
         fi
@@ -108,7 +108,7 @@ do
         if [ ! -z "$NO_PRESSURE" ]; then
             for i in $(seq 1 ${MODEL_CNT}); do
                 
-                echo python train.py --data ./data/generated_data/ --model-type 'c' ${CUDA} --model-name "${net}" --threads 4 --batch-size 3 --shuffle --epochs ${EPOCHS} --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_c/plain_results_$i_${RANDOM}/" --evaluate --g_nfg ${NGF} --g_layers ${LAYERS} ${MASK}
+                python train.py --data ./data/generated_data/ --model-type 'c' ${CUDA} --model-name "${net}" --threads 4 --batch-size 3 --shuffle --epochs ${EPOCHS} --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_c/plain_results_$i_${RANDOM}/" --evaluate --g_nfg ${NGF} --g_layers ${LAYERS} ${MASK}
                 
 	    done
         fi

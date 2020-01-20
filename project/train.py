@@ -391,8 +391,9 @@ if args.evaluate:
 
         print('===> Evaluating with test set:')
         evaluator.set_output_name('test')
-        evaluator.snapshots(net_g, test_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
         evaluator.individual_images_performance(net_g, test_loader)
+        exit(1)
+        evaluator.snapshots(net_g, test_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
 
         print('===> Evaluating with train set:')
         evaluator.set_output_name('train')
@@ -428,30 +429,22 @@ if args.evaluate:
             print('===> Running simulations for s:')
 
             evaluator.set_output_name('simulations')
+            evaluator.run_full_simulation(net_g, dataset, 100, 300, sim_name = 'simulation_timings', saving_imgs=False)
             indices = [(1, 's'), (101, 's'), (1436, 's'), (3106, 's'), (6178, 's'), (9518, 's'), (11188, 's'), (12858, 's')]
             for start_index in indices:
                 evaluator.run_full_simulation(net_(g, ''), dataset, start_index[0],
                                               config['full_simulaiton_samples'],
                                               sim_name = 'simulation_{}_i{}'.format(start_index[1], start_index[0]))
 
-            evaluator.run_full_simulation(net_g, dataset, 100, 300, sim_name = 'simulation_timings', saving_imgs=False)            
+
 
             print('===> Evaluating recursively:')
 
             indices = [(1, 's'), (101, 's'), (1436, 's'), (3106, 's'), (6178, 's'), (9518, 's'), (11188, 's'), (12858, 's')]
             for start_index in indices:
-                evaluator.set_output_name('recursive_i20')
-                evaluator.recusive_application_performance(net_g, dataset, 20, samples=config['evaluation_recursive_samples'])
+                evaluator.set_output_name('recursive_{}_i{}'.format(start_index[1], start_index[0]))
+                evaluator.recusive_application_performance(net_g, dataset, start_index[0], samples=config['evaluation_recursive_samples'])
 
-                evaluator.set_output_name('recursive_i100')
-                evaluator.recusive_application_performance(net_g, dataset, 20, samples=config['evaluation_recursive_samples'])
-
-                evaluator.set_output_name('recursive_i200')
-                evaluator.recusive_application_performance(net_g, dataset, 200, samples=config['evaluation_recursive_samples'])
-
-                evaluator.set_output_name('recursive_i300')
-                evaluator.recusive_application_performance(net_g, dataset, 300, samples=config['evaluation_recursive_samples'])
-            
 
         if args.model_type == 'vd':
             pass

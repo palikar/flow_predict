@@ -189,6 +189,14 @@ class Evaluator:
         diff_y = []
 
 
+        change_mse_x  = []
+        change_mse_y  = []
+        change_psnr_x = []
+        change_psnr_y = []
+        change_diff_x = []
+        change_diff_y = []
+        change_psnr = []
+        
         for iteration, batch in enumerate(test_dataloader, 1):
             real_a, real_b = batch[0].to(self.device), batch[1].to(self.device)
 
@@ -205,6 +213,7 @@ class Evaluator:
             cur_mse = self.criterionMSE(predicted, real_b).item()
 
             predicted = self.denormalize_output(predicted).detach().cpu().numpy()
+            real_a = self.denormalize_output(real_a).detach().cpu().numpy()
             real_b = self.denormalize_output(real_b).detach().cpu().numpy()
 
             mse += [cur_mse]
@@ -220,6 +229,54 @@ class Evaluator:
                 diff_x.append(imgs_perc_diff(real_b[i][0], predicted[i][0])[0])
                 diff_y.append(imgs_perc_diff(real_b[i][1], predicted[i][1])[0])
 
+
+            # error images
+
+            batch_change_mse  = []
+            batch_change_mse_x  = []
+            batch_change_mse_y  = []
+            batch_change_psnr_x = []
+            batch_change_psnr_y = []
+            batch_change_diff_x = []
+            batch_change_diff_y = []
+            
+            for ind in range(real_a.shape[0]):
+
+                real_change_img = np.abs(real_a[ind] - real_b[ind])
+                predicted_change_img = np.abs(predicted[ind] - real_b[ind])
+                cur_mse = (np.square(real_change_img - predicted_change_img)).mean(axis=None)
+                cur_psnr = 10 * np.log10(255.0 / np.sqrt(cur_mse))
+                batch_change_mse.append(cur_psnr)
+                
+                real_change_img_x = np.abs(real_a[ind][0] - real_b[ind][0])
+                predicted_change_img_x = np.abs(predicted[ind][0] - real_b[ind][0])
+
+                real_change_img_y = np.abs(real_a[ind][1] - real_b[ind][1])
+                predicted_change_img_y = np.abs(predicted[ind][1] - real_b[ind][1])
+
+                x_cur_mse = (np.square(real_change_img_x - predicted_change_img_x)).mean(axis=None)
+                y_cur_mse = (np.square(real_change_img_y - predicted_change_img_y)).mean(axis=None)
+                x_cur_psnr = 10 * np.log10(255.0 / np.sqrt(x_cur_mse))
+                y_cur_psnr = 10 * np.log10(255.0 / np.sqrt(y_cur_mse))
+                cur_diff_x, _, _ = imgs_perc_diff(real_change_img_x, predicted_change_img_x)
+                cur_diff_y, _, __ = imgs_perc_diff(real_change_img_y, predicted_change_img_y)
+
+                batch_change_mse_x.append(x_cur_mse)
+                batch_change_mse_y.append(y_cur_mse)                
+                batch_change_psnr_x.append(x_cur_psnr)
+                batch_change_psnr_y.append(y_cur_psnr)                
+                batch_change_diff_x.append(cur_diff_x)
+                batch_change_diff_y.append(cur_diff_y)
+
+
+            change_psnr.append(np.array(batch_change_mse).mean())
+            change_mse_x.append(np.array(batch_change_mse_x ).mean())
+            change_mse_y.append(np.array(batch_change_mse_y ).mean())
+            change_psnr_x.append(np.array(batch_change_psnr_x).mean())
+            change_psnr_y.append(np.array(batch_change_psnr_y).mean())
+            change_diff_x.append(np.array(batch_change_diff_x).mean())
+            change_diff_y.append(np.array(batch_change_diff_y).mean())
+
             if iteration % 10 == 0:
                 print('> Evaluation {} completed'.format(iteration))
 
@@ -229,6 +286,13 @@ class Evaluator:
         ssim = np.array(ssim)
         diff_avrg = np.array(diff_avrg)
         diff_max = np.array(diff_max)
+
+        change_mse_x  = np.array(change_mse_x)
+        change_mse_y  = np.array(change_mse_y)
+        change_psnr_x = np.array(change_psnr_x)
+        change_psnr_y = np.array(change_psnr_y)
+        change_diff_x = np.array(change_diff_x)
+        change_diff_y = np.array(change_diff_y)
 
         with open(os.path.join(self.root_dir, self.output_name, 'metrics_avrg.txt'), 'w') as avrg_hand:
             avrg_hand.write('{} {}\n'.format('Avrg mse: ',  np.average(mse)))
@@ -248,6 +312,14 @@ class Evaluator:
             avrg_hand.write('{} {}\n'.format('Var max_diff_perc: ', np.var(diff_max)))
             avrg_hand.write('{} {}\n'.format('Var avrt_diff_x: ', np.var(diff_x)))
             avrg_hand.write('{} {}\n'.format('Var avrt_diff_y: ', np.var(diff_y)))
+
+            avrg_hand.write('{} {}\n'.format('avrg_Change_mse_x: ',  np.mean(change_psnr)))
+            avrg_hand.write('{} {}\n'.format('avrg_Change_mse_x: ',  np.mean(change_mse_x)))
+            avrg_hand.write('{} {}\n'.format('avrg_Change_mse_y: ',  np.mean(change_mse_y)))
+            avrg_hand.write('{} {}\n'.format('avrg_Change_psnr_x: ',  np.mean(change_psnr_x)))
+            avrg_hand.write('{} {}\n'.format('avrg_Change_psnr_y: ',  np.mean(change_psnr_y)))
+            avrg_hand.write('{} {}\n'.format('avrg_Change_diff_x: ',  np.mean(change_diff_x)))
+            avrg_hand.write('{} {}\n'.format('avrg_Change_diff_y: ',  np.mean(change_diff_y)))
 
         with open(os.path.join(self.root_dir, self.output_name, 'metrics_list.txt'), 'w') as list_hand:
             list_hand.write('{} {}\n'.format('mse: ' ,  ','.join(str(i) for i in mse)))
@@ -321,12 +393,18 @@ class Evaluator:
                 target_x, target_y, target_p          = self._prepare_tensor_img(target)
 
 
+            diff_x_real = np.abs(input_img_x - target_x)
+            diff_y_real = np.abs(input_img_y - target_y)
+
+            diff_x_predicted = np.abs(input_img_x - predicted_x)
+            diff_y_predicted = np.abs(input_img_y - predicted_y)
+
             merge_and_save(target_x, predicted_x,
-                           'Real image_x', 'Predicted image (x)',
+                           'Real image (x)', 'Predicted image (x)',
                            os.path.join(config['output_dir'], self.output_name, 'snapshots', 'x_prediction_{}_{}.png'.format(index, random.randint(0, 10000))))
 
             merge_and_save(target_y, predicted_y,
-                           'Real image_y', 'Predicted image (y)',
+                           'Real image (y)', 'Predicted image (y)',
                            os.path.join(config['output_dir'], self.output_name, 'snapshots', 'y_prediction_{}_{}.png'.format(index, random.randint(0, 10000))))
 
             merge_and_save(input_img_x, predicted_x,
@@ -336,6 +414,16 @@ class Evaluator:
             merge_and_save(input_img_y, predicted_y,
                            'Time step t (y)', 'Time step t+1 (y)',
                            os.path.join(config['output_dir'], self.output_name, 'snapshots', 'y_timestep_{}_{}.png'.format(index, random.randint(0, 10000))))
+
+
+            merge_and_save(diff_x_real, diff_x_predicted,
+                           'Real difference (x)', 'Predicted difference (x)',
+                           os.path.join(config['output_dir'], self.output_name, 'snapshots', 'x_difference_{}_{}.png'.format(index, random.randint(0, 10000))))
+
+            merge_and_save(diff_y_real, diff_y_predicted,
+                           'Real difference (y)', 'Predicted difference (y)',
+                           os.path.join(config['output_dir'], self.output_name, 'snapshots', 'y_difference_{}_{}.png'.format(index, random.randint(0, 10000))))
+            
 
             if self.args.use_pressure:
                 merge_and_save(target_p, predicted_p,
