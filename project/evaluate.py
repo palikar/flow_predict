@@ -450,6 +450,8 @@ class Evaluator:
 
         for i, index in enumerate(range(start_index, start_index + cnt), 1):
 
+            pred_output = self._prepare_tensor_img(input_img[0], is_input=True)
+            
             if self.parameterized:
                 t0 = time.time()
                 predicted = net((input_img, params))
@@ -463,6 +465,8 @@ class Evaluator:
                 for l,j in itertools.product(range(predicted.shape[0]), range(predicted.shape[1])):
                     predicted[l][j] = self.MASK * predicted[l][j]
 
+
+            
             if self.args.mask:
                 input_img = torch.cat((torch.tensor(predicted.clone().detach()[0][0:3]).expand(1,-1,-1,-1), self.MASK.expand(1,-1,-1,-1)), 1)
             else:
@@ -483,6 +487,28 @@ class Evaluator:
             if self.args.use_pressure:
                 save_img(predicted_p, 'p_step_{}'.format(i), '{}/p_step_{}.png'.format(path, i))
 
+
+            real_input = self._prepare_tensor_img(dataset[index][0], True)
+            real_output = self._prepare_tensor_img(dataset[index][1])
+
+            
+            
+
+            diff_x_real = np.abs(      real_output[0] - real_input[0])
+            diff_x_predicted = np.abs( pred_output[0] - predicted_x)
+
+            diff_y_predicted = np.abs( pred_output[1] - predicted_y)
+            diff_y_real = np.abs(      real_output[1] - real_input[1])
+
+            
+
+            merge_and_save(diff_x_real, diff_x_predicted,
+                           'Real difference_x {}'.format(i), 'Predicted difference_x {}'.format(i),
+                           os.path.join(path, 'diff_x_step_{}.png'.format(i)), txt_color=(255, 255,255,255))
+
+            merge_and_save(diff_y_real, diff_y_predicted,
+                           'Real difference_y {}'.format(i), 'Predicted difference_y {}'.format(i),
+                           os.path.join(path, 'diff_y_step_{}.png'.format(i)), txt_color=(255, 255,255,255))
             
 
         times = np.array(times)

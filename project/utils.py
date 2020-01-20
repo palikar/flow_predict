@@ -83,7 +83,7 @@ def correlation(img1, img2):
     return c
 
 
-def merge_and_save(img1, img2, text1, text2, dest, mode='L'):
+def merge_and_save(img1, img2, text1, text2, dest, mode='L', txt_color=(0,0,0,255)):
     image_1 = Image.fromarray(np.uint8(np.squeeze(img1)))
     image_2 = Image.fromarray(np.uint8(np.squeeze(img2)))
 
@@ -96,8 +96,8 @@ def merge_and_save(img1, img2, text1, text2, dest, mode='L'):
 
     draw = ImageDraw.Draw(new_im) 
     draw.line((0,height_1,width_1,height_2), fill=0, width=2)
-    draw.text((10,10), text1, (0,0,0), font=VERDANA_FONT)
-    draw.text((10,10 + height_1), text2, (0,0,0), font=VERDANA_FONT)
+    draw.text((10,10), text1,font=VERDANA_FONT, fill=txt_color)
+    draw.text((10,10 + height_1), text2, font=VERDANA_FONT, fill=txt_color)
     
     new_im.save(dest)
 
