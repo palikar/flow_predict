@@ -1,4 +1,4 @@
-% Created 2020-01-14 Tue 11:33
+% Created 2020-01-15 Wed 12:09
 % Intended LaTeX compiler: pdflatex
 \documentclass{llncs}
 \usepackage[utf8]{inputenc}
@@ -25,7 +25,7 @@
 \institute{Karlsruhe Institute of Technology,\\Kaiserstrasse 12,76131 Karlsruhe, Germany\\ \url{http://www.kit.edu/english/}}
 \selectlanguage{english}
 \author{Stanislav Arnaudov}
-\date{<14-01-2020>}
+\date{<15-01-2020>}
 \title{Towards Bringing Together Numerical Methods for Partial Differential Equation and Deep Neural Networks}
 \hypersetup{
  pdfauthor={Stanislav Arnaudov},
@@ -40,9 +40,9 @@
 
 
 \section{Timing experiments}
-\label{sec:orgf979350}
+\label{sec:orge340138}
 
-In order to justify the requested resources, we've performed some preliminary experiments to see how much time our models need for training. Without getting into too much detail, we have three types of models that are to be evaluated -- constant (C), inflow speed (S) and viscosity-density (VD). Each model type has an estimated training time (ETT) and a certain number of tries because we also want to try different hyper-parameters. All of the models have to be trained on GPU nodes. This means that for one hour of training time, we need 48 hours of CPU time.
+In order to justify the requested resources, we have performed some preliminary experiments to see how much time our models need for training. Without getting into too much detail, we have three types of models that are to be evaluated -- constant (C), inflow speed (S) and viscosity-density (VD). Each model type has an estimated training time (ETT) and a certain number of tries because we also want to try different hyperparameters. All of the models have to be trained on GPU nodes. This means that for one hour of training time, we need 48 hours of CPU time.
 
 
 
@@ -52,13 +52,15 @@ The total time for a model type is calculated as SUM=TRIES x ETT x 48. We've als
 \begin{tabular}{l|lllllr|lll}
 Model type &  &  & ETT &  &  & Tries &  &  & Sum\\
 \hline
-C &  &  & 5 h &  &  & 10 &  &  & 2 400 cpu-h\\
-S &  &  & 70h &  &  & 10 &  &  & 33 600 cpu-h\\
-VD &  &  & 350h &  &  & 10 &  &  & 168 000 cpu-h\\
+C &  &  & 10 h &  &  & 15 &  &  & 7 200 cpu-h\\
+S &  &  & 200h &  &  & 15 &  &  & 144 000 cpu-h\\
+VD &  &  & 1000h &  &  & 15 &  &  & 720 000 cpu-h\\
 \hline
-Total: &  &  &  &  &  &  &  &  & 204 000 cpu-h\\
-+ 20\% &  &  &  &  &  &  &  &  & \(\approx\) 250 000 cpu-h\\
+Total: &  &  &  &  &  &  &  &  & 871 200 cpu-h\\
++ 20\% &  &  &  &  &  &  &  &  & \(\approx\) \textbf{1 050 000 cpu-h}\\
 \hline
 \end{tabular}
 \end{center}
+
+Thus, the final requested time is \textbf{1 050 000} CPU hours.
 \end{document}

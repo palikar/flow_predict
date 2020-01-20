@@ -37,6 +37,6 @@
     "color"
     "tikz")
    (LaTeX-add-labels
-    "sec:orgf979350"))
+    "sec:orge340138"))
  :latex)
 
