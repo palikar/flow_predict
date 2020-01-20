@@ -389,22 +389,21 @@ if args.evaluate:
     net_g.eval()
     with torch.no_grad():
 
-        # print('===> Evaluating with test set:')
-        # evaluator.set_output_name('test')
-        # evaluator.individual_images_performance(net_g, test_loader)
-        # evaluator.snapshots(net_g, test_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
+        print('===> Evaluating with test set:')
+        evaluator.set_output_name('test')
+        evaluator.individual_images_performance(net_g, test_loader)
+        evaluator.snapshots(net_g, test_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
 
-        # print('===> Evaluating with train set:')
-        # evaluator.set_output_name('train')
-        # evaluator.snapshots(net_g, train_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
-        # evaluator.individual_images_performance(net_g, train_loader)
+        print('===> Evaluating with train set:')
+        evaluator.set_output_name('train')
+        evaluator.snapshots(net_g, train_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
+        evaluator.individual_images_performance(net_g, train_loader)
 
         if args.model_type == 'c':
             print('===> Running simulations for c:')
 
             evaluator.set_output_name('simulations')
             evaluator.run_full_simulation(net_g, dataset, 20, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(20))
-            exit(1)
             evaluator.run_full_simulation(net_g, dataset, 100, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(100))
             evaluator.run_full_simulation(net_g, dataset, 200, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(200))
             evaluator.run_full_simulation(net_g, dataset, 300, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(300))
@@ -415,7 +414,7 @@ if args.evaluate:
 
             evaluator.set_output_name('recursive_i20')
             evaluator.recusive_application_performance(net_g, dataset, 20, samples=config['evaluation_recursive_samples'])
-
+            
             evaluator.set_output_name('recursive_i100')
             evaluator.recusive_application_performance(net_g, dataset, 20, samples=config['evaluation_recursive_samples'])
 

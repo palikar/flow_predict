@@ -102,12 +102,19 @@ class Evaluator:
         diff_x = []
         diff_y = []
 
+        change_psnr_x = []
+        change_psnr_y = []
+        change_diff_x = []
+        change_diff_y = []
+        
         input_img = dataset[start_index][0].expand(1,-1,-1,-1).to(self.device)
 
         if self.parameterized:
             params = dataset[start_index][2].expand(1,-1,-1,-1).to(self.device)
 
         for index in range(start_index, end_index):
+
+            pred_input = self._prepare_tensor_img(input_img[0], is_input=True)
             
             if self.parameterized:
                 predicted = net((input_img, params))
@@ -161,6 +168,30 @@ class Evaluator:
             diff_y.append(imgs_perc_diff(target_img[0][1], predicted_img[0][1])[0])
 
 
+            real_input = self._prepare_tensor_img(dataset[index][0], True)
+
+            change_x_real = np.abs(      target_x - real_input[0])
+            change_x_predicted = np.abs( pred_input[0] - predicted_x)
+            change_y_real = np.abs(      target_y - real_input[1])
+            change_y_predicted = np.abs( pred_input[1] - predicted_y)
+            
+            change_mse_x = (np.square(change_x_real - change_x_predicted)).mean(axis=None)
+            change_mse_y = (np.square(change_y_real - change_y_predicted)).mean(axis=None)
+
+            change_psnr_x += [10.0 * np.log10(255.0 / np.sqrt(change_mse_x))]
+            change_psnr_y += [10.0 * np.log10(255.0 / np.sqrt(change_mse_y))]
+            change_diff_x += [imgs_perc_diff(change_x_real, change_x_predicted)[0]]
+            change_diff_y += [imgs_perc_diff(change_y_real, change_y_predicted)[0]]
+
+            merge_and_save(change_x_real, change_x_predicted,
+                           'Real', 'Predicted',
+                           os.path.join(path, 'x_diff_{}.png'.format(index - start_index)))
+
+            merge_and_save(change_y_real, change_y_predicted,
+                           'Real', 'Predicted',
+                           os.path.join(path, 'y_diff_{}.png'.format(index - start_index)))
+        
+
             print('> Recursive application {} completed'.format(index - start_index))
 
 
@@ -174,6 +205,12 @@ class Evaluator:
             list_hand.write('{} {}\n'.format('diff_max: ',  ','.join(str(i) for i in diff_max)))
             list_hand.write('{} {}\n'.format('x_diff_avrg: ',  ','.join(str(i) for i in diff_x)))
             list_hand.write('{} {}\n'.format('y_diff_max: ',  ','.join(str(i) for i in diff_y)))
+
+            list_hand.write('{} {}\n'.format('change_psnr_x: ',  ','.join(str(i) for i in change_psnr_x )))
+            list_hand.write('{} {}\n'.format('change_psnr_y: ',  ','.join(str(i) for i in change_psnr_y )))
+            list_hand.write('{} {}\n'.format('change_diff_x: ',  ','.join(str(i) for i in change_diff_x )))
+            list_hand.write('{} {}\n'.format('change_diff_y: ',  ','.join(str(i) for i in change_diff_y )))
+            
 
 
     def individual_images_performance(self, net, test_dataloader):
@@ -492,13 +529,11 @@ class Evaluator:
             real_output = self._prepare_tensor_img(dataset[index][1])
 
             
-            
-
             diff_x_real = np.abs(      real_output[0] - real_input[0])
             diff_x_predicted = np.abs( pred_output[0] - predicted_x)
 
-            diff_y_predicted = np.abs( pred_output[1] - predicted_y)
             diff_y_real = np.abs(      real_output[1] - real_input[1])
+            diff_y_predicted = np.abs( pred_output[1] - predicted_y)
 
             
 
