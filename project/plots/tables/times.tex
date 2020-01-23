@@ -25,22 +25,38 @@
 \usepackage{booktabs}
 \usepackage{array}
 
+\usepackage{caption}
+% FlowPredict (mean): 1.4161016666666668
+% FlowPredict (max): 1.729
+% FlowPredict (min): 1.348
+% FlowPredict (std): 0.054
+% ---
+% HiFlow (mean): 9.691606606606607
+% HiFlow (max): 11.826
+% HiFlow (min): 9.348
+% HiFlow (std): 0.329
 
 
 \begin{document}
 
 \section{Timing experiments}
-\label{sec:orge340138}
+\begin{itemize}
+\item CPU - Xeon(R) CPU E5-2650
+\item Single core execution
+\item Pytroch ran with \texttt{MKL\_NUM\_THREADS=1}
+\end{itemize}
+
 \begin{center}
-\begin{tabular}{@{}p{2cm}|p{1.5cm}p{1.5cm}p{1.5cm}p{1.5cm}@{}}
-  \toprule
-  Method & mean & std & max & min \\
-  \midrule
-  Unet & 10 & 10 & 10 & 10 \\[1ex]
-  Hiflow & 10 & 10 & 10 & 10 \\[1ex]
-  \bottomrule
-               
-\end{tabular}
+
+  \begin{tabular}{@{}p{2cm}|p{1.5cm}p{1.5cm}p{1.5cm}p{1.5cm}@{}}
+    \toprule
+    Method & mean & std & max & min \\
+    \midrule
+    Unet & 1.416 & 0.054 & 1.729 & 1.348 \\[1ex]
+    Hiflow & 9.691 & 0.329  & 11.826 & 9.348 \\[1ex]
+    \bottomrule
+  \end{tabular}
+  \captionof{table}{Execution times per iteration in seconds}
 \end{center}
 \end{document}
 

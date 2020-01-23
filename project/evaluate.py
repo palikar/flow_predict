@@ -212,7 +212,6 @@ class Evaluator:
             list_hand.write('{} {}\n'.format('change_diff_y: ',  ','.join(str(i) for i in change_diff_y )))
             
 
-
     def individual_images_performance(self, net, test_dataloader):
         print('===> Evaluating performance on individual images')
 
@@ -279,7 +278,7 @@ class Evaluator:
             
             for ind in range(real_a.shape[0]):
 
-                real_change_img = np.abs(real_a[ind] - real_b[ind])
+                real_change_img = np.abs(real_a[ind][0:3] - real_b[ind])
                 predicted_change_img = np.abs(predicted[ind] - real_b[ind])
                 cur_mse = (np.square(real_change_img - predicted_change_img)).mean(axis=None)
                 cur_psnr = 10 * np.log10(255.0 / np.sqrt(cur_mse))
@@ -472,7 +471,7 @@ class Evaluator:
                                os.path.join(config['output_dir'], self.output_name, 'snapshots', 'p_timestep_{}_{}.png'.format(index, random.randint(0, 10000))))
 
 
-    def run_full_simulation(self, net, dataset, start_index, cnt, sim_name='simulation'):
+    def run_full_simulation(self, net, dataset, start_index, cnt, sim_name='simulation', saving_imgs=False):
         print('===> Running simulation with the generator network')
 
         path = os.path.join(self.path_full_sim, sim_name)

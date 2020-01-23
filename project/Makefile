@@ -1,5 +1,7 @@
 
 
+# SERVER=qt9135@forhlr2.scc.kit.edu
+# LOCATION=/pfs/work6/workspace/scratch/qt9135-arnaud-0/code/flow_pred/
 SERVER=arnaudov@i82pc27.itec.kit.edu
 LOCATION=~/code/flow_pred/
 
@@ -22,7 +24,7 @@ pressure_run:
 deploy_training:
 	@echo "Deploying the files for the training of models"
 	@ssh -t $(SERVER) 'mkdir -p $(LOCATION)/data'
-	scp  ./plotter.py ./requirements.txt ./dataloader.py ./evaluate.py ./models.py ./train.py ./utils.py ./verdana.ttf ./train_models.sh "$(SERVER):$(LOCATION)/"
+	scp  ./plotter.py ./requirements.txt ./dataloader.py ./evaluate.py ./models.py ./train.py ./utils.py ./verdana.ttf ./train_models.sh ./eval_models.sh "$(SERVER):$(LOCATION)/"
 
 deploy_config:
 	@echo "Deploying the config file for the networks"
