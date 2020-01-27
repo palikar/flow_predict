@@ -391,7 +391,7 @@ if args.evaluate:
 
         print('===> Evaluating with test set:')
         evaluator.set_output_name('test')
-        evaluator.individual_images_performance(net_g, test_loader)
+        # evaluator.individual_images_performance(net_g, test_loader)
         evaluator.snapshots(net_g, test_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
 
         print('===> Evaluating with train set:')

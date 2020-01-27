@@ -265,7 +265,7 @@ class Evaluator:
                 diff_x.append(imgs_perc_diff(real_b[i][0], predicted[i][0])[0])
                 diff_y.append(imgs_perc_diff(real_b[i][1], predicted[i][1])[0])
 
-
+            
             # error images
 
             batch_change_mse  = []
