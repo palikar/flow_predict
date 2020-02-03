@@ -114,7 +114,7 @@ class Evaluator:
 
         for index in range(start_index, end_index):
 
-            pred_input = self._prepare_tensor_img(input_img[0], is_input=True)
+            pred_input = self._prepare_tensor_img(input_img[0].clone(), is_input=True)
             
             if self.parameterized:
                 predicted = net((input_img, params))
@@ -486,7 +486,8 @@ class Evaluator:
 
         for i, index in enumerate(range(start_index, start_index + cnt), 1):
 
-            pred_output = self._prepare_tensor_img(input_img[0], is_input=True)
+            pred_output = self._prepare_tensor_img(input_img[0].clone(), is_input=True)
+
             
             if self.parameterized:
                 t0 = time.time()
@@ -494,6 +495,7 @@ class Evaluator:
                 t1 = time.time()
             else:
                 t0 = time.time()
+                print(input_img.shape)
                 predicted = net(input_img)
                 t1 = time.time()
 
@@ -501,12 +503,10 @@ class Evaluator:
                 for l,j in itertools.product(range(predicted.shape[0]), range(predicted.shape[1])):
                     predicted[l][j] = self.MASK * predicted[l][j]
 
-
-            
             if self.args.mask:
                 input_img = torch.cat((torch.tensor(predicted.clone().detach()[0][0:3]).expand(1,-1,-1,-1), self.MASK.expand(1,-1,-1,-1)), 1)
             else:
-                input_img = predicted.clone().detach()
+                input_img = predicted.detach().clone().detach()
 
             elapsed = int(round(t1*1000 - t0*1000))
             times.append(elapsed)
@@ -515,6 +515,7 @@ class Evaluator:
                 predicted_x, predicted_y = self._prepare_tensor_img(predicted[0])
             else:
                 predicted_x, predicted_y, predicted_p = self._prepare_tensor_img(predicted[0])
+
 
             
             save_img(predicted_x, 'x_step_{}'.format(i), '{}/x_step_{}.png'.format(path, i))

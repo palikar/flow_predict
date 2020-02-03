@@ -391,7 +391,7 @@ if args.evaluate:
 
         print('===> Evaluating with test set:')
         evaluator.set_output_name('test')
-        # evaluator.individual_images_performance(net_g, test_loader)
+        evaluator.individual_images_performance(net_g, test_loader)
         evaluator.snapshots(net_g, test_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
 
         print('===> Evaluating with train set:')
@@ -409,7 +409,7 @@ if args.evaluate:
             evaluator.run_full_simulation(net_g, dataset, 300, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(300))
 
             evaluator.run_full_simulation(net_g, dataset, 100, 300, sim_name = 'simulation_timings', saving_imgs=False)
-
+        
             print('===> Evaluating recursively:')
 
             evaluator.set_output_name('recursive_i20')
