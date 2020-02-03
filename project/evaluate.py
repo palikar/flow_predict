@@ -278,7 +278,11 @@ class Evaluator:
             
             for ind in range(real_a.shape[0]):
 
-                real_change_img = np.abs(real_a[ind][0:3] - real_b[ind])
+                if self.args.use_pressure:
+                    real_change_img = np.abs(real_a[ind][0:3] - real_b[ind])
+                else:
+                    real_change_img = np.abs(real_a[ind][0:2] - real_b[ind])
+                    
                 predicted_change_img = np.abs(predicted[ind] - real_b[ind])
                 cur_mse = (np.square(real_change_img - predicted_change_img)).mean(axis=None)
                 cur_psnr = 10 * np.log10(255.0 / np.sqrt(cur_mse))
