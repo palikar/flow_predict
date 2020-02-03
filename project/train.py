@@ -138,6 +138,8 @@ if args.output_dir is not None: config['output_dir'] = args.output_dir
 args.model_name = '{}_{}_l{}_ngf{}'.format(args.model_type, args.model_name, config['g_layers'], config['g_nfg'])
 if args.use_pressure:
     args.model_name = '{}_p'.format(args.model_name)
+if args.mask:
+    args.model_name = '{}_m'.format(args.model_name)
 
 create_directories()
 

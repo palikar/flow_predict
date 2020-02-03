@@ -1,9 +1,10 @@
 
 
-# SERVER=qt9135@forhlr2.scc.kit.edu
-# LOCATION=/pfs/work6/workspace/scratch/qt9135-arnaud-0/code/flow_pred/
-SERVER=arnaudov@i82pc27.itec.kit.edu
-LOCATION=~/code/flow_pred/
+SERVER=qt9135@forhlr2.scc.kit.edu
+LOCATION=/pfs/work6/workspace/scratch/qt9135-arnaud-0/code/flow_pred/
+
+# SERVER=arnaudov@i82pc27.itec.kit.edu
+# LOCATION=~/code/flow_pred/
 
 
 trian:
