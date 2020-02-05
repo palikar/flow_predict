@@ -5,6 +5,7 @@ import numpy as np
 import torch
 import torch.utils.data as data
 import torchvision.transforms as transforms
+from torchvision.transforms import functional as F
 from torch.utils.data import DataLoader
 
 from utils import load_img
@@ -50,6 +51,8 @@ class SimulationDataSet(data.Dataset):
         self.viscosities = []
         self.speeds = []
 
+        self.train = True
+
         self.size = (config['input_width'], config['input_height'])
         
         self.root_dir = root_dir
@@ -84,6 +87,20 @@ class SimulationDataSet(data.Dataset):
                 
             self.read_rest(handle, first_line)
 
+
+        pre_image_transorms_list = [
+            
+        ]
+
+        self.pre_image_transorms = transforms.Compose(pre_image_transorms_list)
+        
+
+        image_transorms_list = [
+            transforms.Lambda(lambda x: x + 0.22*torch.rand_like(x)),
+        ]
+
+        self.image_transorms = transforms.Compose(image_transorms_list)
+        
         transform_list_a = [transforms.ToTensor()]
         transform_list_b = [transforms.ToTensor()]
 
@@ -150,6 +167,13 @@ class SimulationDataSet(data.Dataset):
         self.speeds.append(float(parts[6]))
 
 
+    def train(self):
+        self.train = True
+
+    def test(self):
+        self.train = False
+
+        
     def __getitem__(self, index):
         a_path = self.paths_a[index]
         b_path = self.paths_b[index]
@@ -182,9 +206,25 @@ class SimulationDataSet(data.Dataset):
 
             b = np.concatenate([b_x, b_y], axis=2)
 
+        if self.train:
+            h, w, _ = a.shape
+            th, tw = 128, 512
+            if not (w == tw and h == th):
+                i = np.random.randint(0, h - th)
+                j = np.random.randint(0, w - tw)
+                iO = i + th
+                jO = j + tw                
+                a = a[i:iO, j:jO, :]
+                b = b[i:iO, j:jO, :]
+
+                
+        
         a = self.transform_b(a).float()
         b = self.transform_b(b).float()
 
+        if self.train:
+            a = self.image_transorms(a).float()
+        
 
         if self.args.mask:
             a = torch.cat((a, self.get_mask()), axis = 0)
@@ -194,6 +234,7 @@ class SimulationDataSet(data.Dataset):
                 a[i] = self.get_mask() * a[i]
             for i in range(b.shape[0]):
                 b[i] = self.get_mask() * b[i]
+
 
         return self.return_func(a, b, index)
 

@@ -126,6 +126,7 @@ class Evaluator:
             if self.args.mask:
                 for i,j in itertools.product(range(predicted.shape[0]), range(predicted.shape[1])):
                     predicted[i][j] = self.MASK * predicted[i][j]
+                    
                     input_img = torch.cat((torch.tensor(predicted.clone().detach()[0][0:3]).expand(1,-1,-1,-1), self.MASK.expand(1,-1,-1,-1)), 1)
             else:
                 input_img = predicted.clone().detach()

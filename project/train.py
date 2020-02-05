@@ -389,42 +389,47 @@ if args.evaluate:
     print('===> Evaluating model')
 
     net_g.eval()
+
+    dataset.test()
+    
     with torch.no_grad():
 
         print('===> Evaluating with test set:')
         evaluator.set_output_name('test')
-        evaluator.individual_images_performance(net_g, test_loader)
         evaluator.snapshots(net_g, test_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
+        # evaluator.individual_images_performance(net_g, test_loader)
+        
 
-        print('===> Evaluating with train set:')
-        evaluator.set_output_name('train')
-        evaluator.snapshots(net_g, train_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
-        evaluator.individual_images_performance(net_g, train_loader)
+        # print('===> Evaluating with train set:')
+        # evaluator.set_output_name('train')
+        # evaluator.snapshots(net_g, train_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
+        # evaluator.individual_images_performance(net_g, train_loader)
+        
 
         if args.model_type == 'c':
             print('===> Running simulations for c:')
 
-            evaluator.set_output_name('simulations')
-            evaluator.run_full_simulation(net_g, dataset, 20, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(20))
-            evaluator.run_full_simulation(net_g, dataset, 100, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(100))
-            evaluator.run_full_simulation(net_g, dataset, 200, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(200))
-            evaluator.run_full_simulation(net_g, dataset, 300, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(300))
+            # evaluator.set_output_name('simulations')
+            # evaluator.run_full_simulation(net_g, dataset, 20, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(20))
+            # evaluator.run_full_simulation(net_g, dataset, 100, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(100))
+            # evaluator.run_full_simulation(net_g, dataset, 200, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(200))
+            # evaluator.run_full_simulation(net_g, dataset, 300, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(300))
 
-            evaluator.run_full_simulation(net_g, dataset, 100, 300, sim_name = 'simulation_timings', saving_imgs=False)
+            # evaluator.run_full_simulation(net_g, dataset, 100, 300, sim_name = 'simulation_timings', saving_imgs=False)
         
             print('===> Evaluating recursively:')
 
-            evaluator.set_output_name('recursive_i20')
-            evaluator.recusive_application_performance(net_g, dataset, 20, samples=config['evaluation_recursive_samples'])
+            # evaluator.set_output_name('recursive_i20')
+            # evaluator.recusive_application_performance(net_g, dataset, 20, samples=config['evaluation_recursive_samples'])
             
-            evaluator.set_output_name('recursive_i100')
-            evaluator.recusive_application_performance(net_g, dataset, 20, samples=config['evaluation_recursive_samples'])
+            # evaluator.set_output_name('recursive_i100')
+            # evaluator.recusive_application_performance(net_g, dataset, 20, samples=config['evaluation_recursive_samples'])
 
             evaluator.set_output_name('recursive_i200')
             evaluator.recusive_application_performance(net_g, dataset, 200, samples=config['evaluation_recursive_samples'])
 
-            evaluator.set_output_name('recursive_i300')
-            evaluator.recusive_application_performance(net_g, dataset, 300, samples=config['evaluation_recursive_samples'])
+            # evaluator.set_output_name('recursive_i300')
+            # evaluator.recusive_application_performance(net_g, dataset, 300, samples=config['evaluation_recursive_samples'])
 
         if args.model_type == 's':
             print('===> Running simulations for s:')
