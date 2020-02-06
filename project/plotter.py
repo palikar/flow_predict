@@ -194,8 +194,8 @@ def plot_model_comparision(metric, labels, test_metr, test_metr_p, train_metr, t
 
   # plt.subplot(2,1,1)
   plt.title("Test")
-  plt.barh(r1, test_metr[0], barWidth, edgecolor='black', label='Without pressure', alpha=0.5, xerr=test_metr[1])
-  plt.barh(r2, test_metr_p[0], barWidth, edgecolor='black', label='With pressure' , alpha=0.5, xerr=test_metr_p[1])
+  plt.barh(r1, test_metr[0], barWidth, edgecolor='black', label='Without pressure', alpha=0.5 )
+  plt.barh(r2, test_metr_p[0], barWidth, edgecolor='black', label='With pressure' , alpha=0.5)
   plt.grid(b=True, which='major', color='#999999', linestyle='-', alpha=0.2)
   plt.minorticks_on()
   plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
@@ -507,9 +507,9 @@ def main():
 
     # plotter.val_losses()
     # plotter.train_losses()
-    # plotter.matrics_comp()
+    plotter.matrics_comp()
     # plotter.recursive_plots() 
-    plotter.averge_recursive_plot()
+    # plotter.averge_recursive_plot()
 
     
 

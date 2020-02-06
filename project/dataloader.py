@@ -206,7 +206,7 @@ class SimulationDataSet(data.Dataset):
 
             b = np.concatenate([b_x, b_y], axis=2)
 
-        if self.train:
+        if self.train and self.args.crops:
             h, w, _ = a.shape
             th, tw = 128, 512
             if not (w == tw and h == th):
@@ -222,7 +222,7 @@ class SimulationDataSet(data.Dataset):
         a = self.transform_b(a).float()
         b = self.transform_b(b).float()
 
-        if self.train:
+        if self.train and self.args.noise:
             a = self.image_transorms(a).float()
         
 

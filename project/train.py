@@ -101,6 +101,8 @@ parser.add_argument('--g_output_nc', type=int, dest='g_output_nc', default=-1, h
 parser.add_argument('--g_input_nc', type=int, dest='g_input_nc', default=-1, help='Number of input channels of the genrator network')
 parser.add_argument('--output-dir', dest='output_dir', default=None, help='The output directory for the model files')
 parser.add_argument('--no-mask', dest='mask', default=True, action='store_false', help='Disable the mask for the model')
+parser.add_argument('--no-noise', dest='noise', default=True, action='store_false', help='Use noise for the input')
+parser.add_argument('--no-crops', dest='crops', default=True, action='store_false', help='Use crops for the input')
 
 
 args = parser.parse_args()
@@ -140,6 +142,10 @@ if args.use_pressure:
     args.model_name = '{}_p'.format(args.model_name)
 if args.mask:
     args.model_name = '{}_m'.format(args.model_name)
+if args.noise:
+    args.model_name = '{}_n'.format(args.model_name)
+if args.crops:
+    args.model_name = '{}_c'.format(args.model_name)
 
 create_directories()
 
@@ -273,7 +279,7 @@ if args.mask:
     MASK = dataset.get_mask().to(device)
 
 training_started = True
-
+dataset.test()
 for epoch in range(num_epochs if not args.no_train else 0):
     epoch_loss_d = 0
     epoch_loss_g = 0
@@ -400,36 +406,36 @@ if args.evaluate:
         # evaluator.individual_images_performance(net_g, test_loader)
         
 
-        # print('===> Evaluating with train set:')
-        # evaluator.set_output_name('train')
-        # evaluator.snapshots(net_g, train_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
-        # evaluator.individual_images_performance(net_g, train_loader)
+        print('===> Evaluating with train set:')
+        evaluator.set_output_name('train')
+        evaluator.snapshots(net_g, train_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
+        evaluator.individual_images_performance(net_g, train_loader)
         
 
         if args.model_type == 'c':
             print('===> Running simulations for c:')
 
-            # evaluator.set_output_name('simulations')
-            # evaluator.run_full_simulation(net_g, dataset, 20, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(20))
-            # evaluator.run_full_simulation(net_g, dataset, 100, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(100))
-            # evaluator.run_full_simulation(net_g, dataset, 200, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(200))
-            # evaluator.run_full_simulation(net_g, dataset, 300, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(300))
+            evaluator.set_output_name('simulations')
+            evaluator.run_full_simulation(net_g, dataset, 20, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(20))
+            evaluator.run_full_simulation(net_g, dataset, 100, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(100))
+            evaluator.run_full_simulation(net_g, dataset, 200, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(200))
+            evaluator.run_full_simulation(net_g, dataset, 300, config['full_simulaiton_samples'], sim_name = 'simulation_i{}'.format(300))
 
-            # evaluator.run_full_simulation(net_g, dataset, 100, 300, sim_name = 'simulation_timings', saving_imgs=False)
+            evaluator.run_full_simulation(net_g, dataset, 100, 300, sim_name = 'simulation_timings', saving_imgs=False)
         
             print('===> Evaluating recursively:')
 
-            # evaluator.set_output_name('recursive_i20')
-            # evaluator.recusive_application_performance(net_g, dataset, 20, samples=config['evaluation_recursive_samples'])
+            evaluator.set_output_name('recursive_i20')
+            evaluator.recusive_application_performance(net_g, dataset, 20, samples=config['evaluation_recursive_samples'])
             
-            # evaluator.set_output_name('recursive_i100')
-            # evaluator.recusive_application_performance(net_g, dataset, 20, samples=config['evaluation_recursive_samples'])
+            evaluator.set_output_name('recursive_i100')
+            evaluator.recusive_application_performance(net_g, dataset, 20, samples=config['evaluation_recursive_samples'])
 
             evaluator.set_output_name('recursive_i200')
             evaluator.recusive_application_performance(net_g, dataset, 200, samples=config['evaluation_recursive_samples'])
 
-            # evaluator.set_output_name('recursive_i300')
-            # evaluator.recusive_application_performance(net_g, dataset, 300, samples=config['evaluation_recursive_samples'])
+            evaluator.set_output_name('recursive_i300')
+            evaluator.recusive_application_performance(net_g, dataset, 300, samples=config['evaluation_recursive_samples'])
 
         if args.model_type == 's':
             print('===> Running simulations for s:')
