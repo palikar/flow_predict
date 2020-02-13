@@ -34,6 +34,12 @@ if not sys.warnoptions:
 training_started = False
 STOP_TRAINING = False
 
+s_test_indices = [i for i in range(669, 1003)] + [i for i in range(2339, 2673)] + [i for i in range(4009, 4343)] + [i for i in range(5077, 5411)] + [i for i in range(6747, 7081)] + [i for i in range(8417, 8751)] + [i for i in range(10087, 10421)] + [i for i in range(11757, 12091)] + [i for i in range(12425, 12759)] 
+
+vd_test_indices = [i for i in range(322, 643)] + [i for i in range(1927, 2248)] + [i for i in range(3532, 3853)] + [i for i in range(5137, 5458)] + [i for i in range(6742, 7063)] + [i for i in range(8347, 8668)] + [i for i in range(9952, 10273)] + [i for i in range(11557, 11878)] + [i for i in range(13162, 13483)] + [i for i in range(14767, 15088)] + [i for i in range(16372, 16693)] + [i for i in range(17977, 18298)] + [i for i in range(19582, 19903)] + [i for i in range(21187, 21508)] + [i for i in range(22792, 23113)] + [i for i in range(24397, 24718)] + [i for i in range(26002, 26323)] + [i for i in range(27607, 27928)] + [i for i in range(29212, 29533)] + [i for i in range(30817, 31138)] + [i for i in range(32422, 32743)] + [i for i in range(34027, 34348)] + [i for i in range(35632, 35953)] + [i for i in range(37237, 37558)] + [i for i in range(38842, 39163)] + [i for i in range(40447, 40768)] + [i for i in range(42052, 42373)] + [i for i in range(43657, 43978)] + [i for i in range(45262, 45583)] + [i for i in range(46867, 47188)] + [i for i in range(48472, 48793)] + [i for i in range(50077, 50398)] + [i for i in range(51682, 52003)] + [i for i in range(53287, 53608)] + [i for i in range(54892, 55213)] + [i for i in range(56497, 56818)] + [i for i in range(58102, 58423)] + [i for i in range(59707, 60028)] + [i for i in range(61312, 61633)] + [i for i in range(62917, 63238)] + [i for i in range(64522, 64843)] + [i for i in range(66127, 66448)] + [i for i in range(67732, 68053)] + [i for i in range(69337, 69658)] + [i for i in range(70942, 71165)] + [i for i in range(72449, 72770)] + [i for i in range(74054, 74375)] + [i for i in range(75659, 75980)] + [i for i in range(77264, 77585)] + [i for i in range(78869, 79190)] + [i for i in range(80474, 80795)] + [i for i in range(82079, 82400)] + [i for i in range(83684, 84005)] + [i for i in range(85289, 85610)] + [i for i in range(86894, 87215)] + [i for i in range(88499, 88820)] + [i for i in range(90104, 90425)] + [i for i in range(91709, 92030)] + [i for i in range(93314, 93635)] + [i for i in range(94919, 95240)] + [i for i in range(96524, 96845)] + [i for i in range(98129, 98450)] + [i for i in range(99734, 100055)] + [i for i in range(101339, 101660)] + [i for i in range(102944, 103265)]
+
+
+
 def signal_handler(sig, frame):
     if not training_started:
         sys.exit(0)
@@ -52,18 +58,46 @@ def get_dataconf_file(args):
     return args.model_type + '_dataconf.txt'
 
 
-def test_validation_test_split(dataset, test_train_split=0.8, val_train_split=0.1, shuffle=False):
-    dataset_size = len(dataset)
-    indices = list(range(dataset_size))
-    test_split = int(np.floor(test_train_split * dataset_size))
-    if shuffle:
-        np.random.shuffle(indices)
-    train_indices, test_indices = indices[:test_split], indices[test_split:]
-    train_size = len(train_indices)
-    validation_split = int(np.floor((1 - val_train_split) * train_size))
-    train_indices, val_indices = train_indices[ : validation_split], train_indices[validation_split:]
+def test_validation_test_split(dataset, test_train_split=0.8, val_train_split=0.1, shuffle=False, model_type = 'c'):
 
-    return train_indices, val_indices, test_indices
+    if model_type is 'c':
+        dataset_size = len(dataset)
+        indices = list(range(dataset_size))
+        test_split = int(np.floor(test_train_split * dataset_size))
+        if shuffle:
+            np.random.shuffle(indices)
+        train_indices, test_indices = indices[:test_split], indices[test_split:]
+        train_size = len(train_indices)
+        validation_split = int(np.floor((1 - val_train_split) * train_size))
+        train_indices, val_indices = train_indices[ : validation_split], train_indices[validation_split:]
+        return train_indices, val_indices, test_indices
+
+    if model_type is 's':
+        dataset_size = len(dataset)
+        indices = list(range(dataset_size))
+        
+        test_indices = s_test_indices
+        train_indices = list(set(indices) - set(s_test_indices))
+        if shuffle:
+            np.random.shuffle(train_indices)
+        train_size = len(train_indices)
+        validation_split = int(np.floor((1 - val_train_split) * train_size))
+        train_indices, val_indices = train_indices[ : validation_split], train_indices[validation_split:]
+        return train_indices, val_indices, test_indices
+
+    if model_type is 'vd':
+        dataset_size = len(dataset)
+        indices = list(range(dataset_size))
+        
+        test_indices = vd_test_indices
+        train_indices = list(set(indices) - set(s_test_indices))
+        if shuffle:
+            np.random.shuffle(train_indices)
+        train_size = len(train_indices)
+        validation_split = int(np.floor((1 - val_train_split) * train_size))
+        train_indices, val_indices = train_indices[ : validation_split], train_indices[validation_split:]
+        return train_indices, val_indices, test_indices
+        
 
 
 def save_models(net_g, net_d, args, epoch):
@@ -207,7 +241,8 @@ dataset = SimulationDataSet(args.data_dir, dataconf_file, args)
 
 train_indices, val_indices, test_indices = test_validation_test_split(dataset, shuffle=shuffle_dataset,
                                                                       test_train_split=args.test_train_split,
-                                                                      val_train_split=args.val_train_split)
+                                                                      val_train_split=args.val_train_split,
+                                                                      model_type = model_type)
 
 train_sampler = SubsetRandomSampler(train_indices)
 val_sampler = SubsetRandomSampler(val_indices)
