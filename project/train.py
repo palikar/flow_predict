@@ -459,7 +459,26 @@ if args.evaluate:
 
 
         if args.model_type == 'vd':
-            pass
+            print('===> Running simulations for vd:')
+
+            indices = [(7705 + 150, 'vd'), (17335 + 150, 'vd'), (23755 + 150, 'vd'), (31780 + 150, 'vd'), (39805 + 150, 'vd'),
+                       (55855 + 150, 'vd'), (63880 + 150, 'vd'), (71807 + 150, 'vd'), (79832 + 150, 'vd'), (87857 + 150, 'vd'),
+                       (95882 + 150, 'vd'), (99092 + 150, 'vd')]
+            
+            evaluator.set_output_name('simulations')
+
+            evaluator.run_full_simulation(net_g, dataset, 100, 300, sim_name = 'simulation_timings', saving_imgs=False)
+            for start_index in indices:
+                evaluator.run_full_simulation(net_(g, ''), dataset, start_index[0],
+                                              config['full_simulaiton_samples'],
+                                              sim_name = 'simulation_{}_i{}'.format(start_index[1], start_index[0]))
+            
+            
+            print('===> Evaluating recursively:')
+
+            for start_index in indices:
+                evaluator.set_output_name('recursive_{}_i{}'.format(start_index[1], start_index[0]))
+                evaluator.recusive_application_performance(net_g, dataset, start_index[0], samples=config['evaluation_recursive_samples'])
 
 
             
