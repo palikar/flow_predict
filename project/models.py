@@ -81,12 +81,14 @@ def define_G(input_nc, output_nc, ngf, norm='batch', use_dropout=True, init_gain
         else:
             raise Exception("Unknowns model: {}:".format(args.model_name))
 
+        net.device = gpu_id
         return init_net(net, init_gain, gpu_id=gpu_id)
 
 
 def define_D(input_nc, ndf, n_layers_D=3, norm='batch', use_sigmoid=False, init_gain=0.02, gpu_id='cuda:0'):
     norm_layer = get_norm_layer(norm_type=norm)
     net = NLayerDiscriminator(input_nc, ndf=ndf, n_layers=n_layers_D, norm_layer=norm_layer, use_sigmoid=use_sigmoid)
+    net.device = gpu_id
     return init_net(net, init_gain, gpu_id=gpu_id)
 
 
@@ -342,7 +344,7 @@ class UnetGenerator(nn.Module):
                 for j in range(params.size(3)):
                     t.append(torch.ones(1, 1, input.shape[2], input.shape[3]) * params[i][0][0][j])                    
                 tens.append(torch.torch.cat(t, 1))
-            input = torch.cat((torch.torch.cat(tens, 0).to('cuda'), input), 1).to('cuda')
+            input = torch.cat((torch.torch.cat(tens, 0).to(self.device), input), 1).to(self.device)
 
 
         return self.model(input)

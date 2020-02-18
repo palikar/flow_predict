@@ -16,20 +16,17 @@ module load devel/cuda/10.1
 echo "Job ID: " ${SLURM_JOB_ID}
 
 
-MASK=" "          EPOCHS=40 CUDA_VISIBLE_DEVICES=0 ./train_models.sh --unet -c -n 32 -l 5 -p -np -m 2 &
-MASK=" "          EPOCHS=40 CUDA_VISIBLE_DEVICES=1 ./train_models.sh --unet -c -n 32 -l 5 -p -np -m 2 & 
-MASK=" "          EPOCHS=40 CUDA_VISIBLE_DEVICES=1 ./train_models.sh --unet -c -n 32 -l 5 -p -np -m 2 &
-MASK=" "          EPOCHS=40 CUDA_VISIBLE_DEVICES=1 ./train_models.sh --unet -c -n 32 -l 5 -p -np -m 2
+# MASK=" "          EPOCHS=40 CUDA_VISIBLE_DEVICES=0 ./train_models.sh --unet -c -n 32 -l 5 -p -np -m 2 &
+# MASK=" "          EPOCHS=40 CUDA_VISIBLE_DEVICES=1 ./train_models.sh --unet -c -n 32 -l 5 -p -np -m 2 & 
+# MASK=" "          EPOCHS=40 CUDA_VISIBLE_DEVICES=1 ./train_models.sh --unet -c -n 32 -l 5 -p -np -m 2 &
+# MASK=" "          EPOCHS=40 CUDA_VISIBLE_DEVICES=1 ./train_models.sh --unet -c -n 32 -l 5 -p -np -m 2
 
 # MASK="--no-mask"  EPOCHS=40 CUDA_VISIBLE_DEVICES=2 ./train_models.sh --unet -c -n 32 -l 5 -p -np -m 2 &
 # MASK="--no-mask"  EPOCHS=40 CUDA_VISIBLE_DEVICES=3 ./train_models.sh --unet -c -n 32 -l 5 -p -np -m 2
-
-
 # MASK="--no-mask"  EPOCHS=45 CUDA_VISIBLE_DEVICES=2 ./train_models.sh --unet -c -n 32 -l 5 -p -np -m 5 & 
 # MASK="--no-mask"  EPOCHS=45 CUDA_VISIBLE_DEVICES=3 ./train_models.sh --unet -c -n 32 -l 5 -p -np -m 5
 
-
-# MASK="--no-mask"  EPOCHS=45 CUDA_VISIBLE_DEVICES=0 ./train_models.sh --unet -s -n 32 -l 5 -p -np -m 2 &
-# MASK="--no-mask"  EPOCHS=45 CUDA_VISIBLE_DEVICES=1 ./train_models.sh --unet -s -n 32 -l 5 -p -np -m 2 &
-# MASK=" "          EPOCHS=45 CUDA_VISIBLE_DEVICES=2 ./train_models.sh --unet -s -n 32 -l 5 -p -np -m 2 & 
-# MASK=" "          EPOCHS=45 CUDA_VISIBLE_DEVICES=3 ./train_models.sh --unet -s -n 32 -l 5 -p -np -m 2 
+MASK=" "          EPOCHS=45 CUDA_VISIBLE_DEVICES=0 ./train_models.sh --unet -s -n 32 -l 5 -p -np -m 2 &
+MASK=" "          EPOCHS=45 CUDA_VISIBLE_DEVICES=1 ./train_models.sh --unet -s -n 32 -l 5 -p -np -m 2 &
+MASK=" "          EPOCHS=45 CUDA_VISIBLE_DEVICES=2 ./train_models.sh --unet -s -n 32 -l 5 -p -np -m 2 & 
+MASK=" "          EPOCHS=45 CUDA_VISIBLE_DEVICES=3 ./train_models.sh --unet -s -n 32 -l 5 -p -np -m 2 

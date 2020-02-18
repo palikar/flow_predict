@@ -476,7 +476,7 @@ class Evaluator:
                                os.path.join(config['output_dir'], self.output_name, 'snapshots', 'p_timestep_{}_{}.png'.format(index, random.randint(0, 10000))))
 
 
-    def run_full_simulation(self, net, dataset, start_index, cnt, sim_name='simulation', saving_imgs=False):
+    def run_full_simulation(self, net, dataset, start_index, cnt, sim_name='simulation', saving_imgs=True):
         print('===> Running simulation with the generator network')
 
         path = os.path.join(self.path_full_sim, sim_name)
@@ -522,12 +522,13 @@ class Evaluator:
                 predicted_x, predicted_y, predicted_p = self._prepare_tensor_img(predicted[0])
 
 
-            
-            save_img(predicted_x, 'x_step_{}'.format(i), '{}/x_step_{}.png'.format(path, i))
-            save_img(predicted_y, 'y_step_{}'.format(i), '{}/y_step_{}.png'.format(path, i))        
 
-            if self.args.use_pressure:
-                save_img(predicted_p, 'p_step_{}'.format(i), '{}/p_step_{}.png'.format(path, i))
+            if saving_imgs:
+                save_img(predicted_x, 'x_step_{}'.format(i), '{}/x_step_{}.png'.format(path, i))
+                save_img(predicted_y, 'y_step_{}'.format(i), '{}/y_step_{}.png'.format(path, i))        
+
+                if self.args.use_pressure:
+                    save_img(predicted_p, 'p_step_{}'.format(i), '{}/p_step_{}.png'.format(path, i))
 
 
             real_input = self._prepare_tensor_img(dataset[index][0], True)
@@ -541,14 +542,14 @@ class Evaluator:
             diff_y_predicted = np.abs( pred_output[1] - predicted_y)
 
             
+            if saving_imgs:
+                merge_and_save(diff_x_real, diff_x_predicted,
+                               'Real difference_x {}'.format(i), 'Predicted difference_x {}'.format(i),
+                               os.path.join(path, 'diff_x_step_{}.png'.format(i)), txt_color=(255, 255,255,255))
 
-            merge_and_save(diff_x_real, diff_x_predicted,
-                           'Real difference_x {}'.format(i), 'Predicted difference_x {}'.format(i),
-                           os.path.join(path, 'diff_x_step_{}.png'.format(i)), txt_color=(255, 255,255,255))
-
-            merge_and_save(diff_y_real, diff_y_predicted,
-                           'Real difference_y {}'.format(i), 'Predicted difference_y {}'.format(i),
-                           os.path.join(path, 'diff_y_step_{}.png'.format(i)), txt_color=(255, 255,255,255))
+                merge_and_save(diff_y_real, diff_y_predicted,
+                               'Real difference_y {}'.format(i), 'Predicted difference_y {}'.format(i),
+                               os.path.join(path, 'diff_y_step_{}.png'.format(i)), txt_color=(255, 255,255,255))
             
 
         times = np.array(times)

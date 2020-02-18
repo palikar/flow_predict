@@ -194,8 +194,8 @@ def plot_model_comparision(metric, labels, test_metr, test_metr_p, train_metr, t
 
   # plt.subplot(2,1,1)
   plt.title("Test")
-  plt.barh(r1, test_metr[0], barWidth, edgecolor='black', label='Without pressure', alpha=0.5 )
-  plt.barh(r2, test_metr_p[0], barWidth, edgecolor='black', label='With pressure' , alpha=0.5)
+  plt.barh(r1, test_metr[0], barWidth, edgecolor='black', label='Without pressure', alpha=0.5, xerr=test_metr[1] )
+  plt.barh(r2, test_metr_p[0], barWidth, edgecolor='black', label='With pressure' , alpha=0.5, xerr=test_metr_p[1])
   plt.grid(b=True, which='major', color='#999999', linestyle='-', alpha=0.2)
   plt.minorticks_on()
   plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
@@ -214,8 +214,8 @@ def plot_model_comparision(metric, labels, test_metr, test_metr_p, train_metr, t
   # plt.minorticks_on()
   # plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
 
-  # plt.xlabel(metric.upper(), fontweight='bold')
-  # plt.ylabel('Model', fontweight='bold')
+  plt.xlabel(metric.upper(), fontweight='bold')
+  plt.ylabel('Model', fontweight='bold')
 
   # plt.yticks([r + barWidth - spacing/2 for r in range(len(train_metr[0]))], labels)
 
@@ -328,14 +328,14 @@ class PlotProcessor():
         for mod in self.get_model_dirs():
 
           model_name = self.get_model_name(mod)
-          met = hel_d.setdefault(rchop(model_name, '_p'), {})
+          met = hel_d.setdefault(model_name.replace('_p', ''), {})
 
           met.setdefault('train_with_p', [])
           met.setdefault('train_without_p', [])
           met.setdefault('test_with_p', [])
           met.setdefault('test_without_p', [])
-          
-          if model_name.endswith('_p'):
+
+          if '_p' in model_name:
             met['test_with_p'].append(self.get_model_metric(mod, metric=metric, test=True))
             met['train_with_p'].append(self.get_model_metric(mod, metric=metric, test=False))
           else:
@@ -507,9 +507,9 @@ def main():
 
     # plotter.val_losses()
     # plotter.train_losses()
-    plotter.matrics_comp()
     # plotter.recursive_plots() 
     # plotter.averge_recursive_plot()
+    plotter.matrics_comp()
 
     
 

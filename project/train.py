@@ -58,9 +58,10 @@ def get_dataconf_file(args):
     return args.model_type + '_dataconf.txt'
 
 
-def test_validation_test_split(dataset, test_train_split=0.8, val_train_split=0.1, shuffle=False, model_type = 'c'):
+def test_validation_test_split(dataset, test_train_split=0.8, val_train_split=0.1, shuffle=False, model = 'c'):
 
-    if model_type is 'c':
+    if model == 'c':
+        print('Splitting for c')
         dataset_size = len(dataset)
         indices = list(range(dataset_size))
         test_split = int(np.floor(test_train_split * dataset_size))
@@ -72,7 +73,8 @@ def test_validation_test_split(dataset, test_train_split=0.8, val_train_split=0.
         train_indices, val_indices = train_indices[ : validation_split], train_indices[validation_split:]
         return train_indices, val_indices, test_indices
 
-    if model_type is 's':
+    if model == 's':
+        print('Splitting for s')
         dataset_size = len(dataset)
         indices = list(range(dataset_size))
         
@@ -85,7 +87,8 @@ def test_validation_test_split(dataset, test_train_split=0.8, val_train_split=0.
         train_indices, val_indices = train_indices[ : validation_split], train_indices[validation_split:]
         return train_indices, val_indices, test_indices
 
-    if model_type is 'vd':
+    if model == 'vd':
+        print('Splitting for vd')
         dataset_size = len(dataset)
         indices = list(range(dataset_size))
         
@@ -97,7 +100,6 @@ def test_validation_test_split(dataset, test_train_split=0.8, val_train_split=0.
         validation_split = int(np.floor((1 - val_train_split) * train_size))
         train_indices, val_indices = train_indices[ : validation_split], train_indices[validation_split:]
         return train_indices, val_indices, test_indices
-        
 
 
 def save_models(net_g, net_d, args, epoch):
@@ -239,10 +241,11 @@ print('===> Loading datasets')
 dataconf_file = get_dataconf_file(args)
 dataset = SimulationDataSet(args.data_dir, dataconf_file, args)
 
-train_indices, val_indices, test_indices = test_validation_test_split(dataset, shuffle=shuffle_dataset,
+train_indices, val_indices, test_indices = test_validation_test_split(dataset,
                                                                       test_train_split=args.test_train_split,
                                                                       val_train_split=args.val_train_split,
-                                                                      model_type = model_type)
+                                                                      shuffle=shuffle_dataset,
+                                                                      model=model_type)
 
 train_sampler = SubsetRandomSampler(train_indices)
 val_sampler = SubsetRandomSampler(val_indices)
@@ -287,19 +290,19 @@ criterionGAN = GANLoss().to(device)
 criterionL1 = nn.L1Loss().to(device)
 criterionMSE = nn.MSELoss().to(device)
 
-if args.print_summeries:
-    print('===> Generator network:')
+# if args.print_summeries:
+#     print('===> Generator network:')
 
-    if args.model_type == 's':
-        summary(net_g, [(config['g_input_nc'] - 1, config['input_width'], config['input_height']), (1, 1, 1)], batch_size=2, device='cuda')
-    elif args.model_type == 'vd':
-        summary(net_g, [(config['g_input_nc'] - 2, config['input_width'], config['input_height']), (1, 1, 2)])
-    else:
-        summary(net_g, (config['g_input_nc'], config['input_width'], config['input_height']))
-    # net_g.to(device)
+#     if args.model_type == 's':
+#         summary(net_g, [(config['g_input_nc'] - 1, config['input_width'], config['input_height']), (1, 1, 1)], batch_size=2, device='cuda')
+#     elif args.model_type == 'vd':
+#         summary(net_g, [(config['g_input_nc'] - 2, config['input_width'], config['input_height']), (1, 1, 2)])
+#     else:
+#         summary(net_g, (config['g_input_nc'], config['input_width'], config['input_height']))
+#     # net_g.to(device)
 
-    print('===> Detector network:')
-    summary(net_d, (config['d_input_nc'], config['input_width'], config['input_height']))
+#     print('===> Detector network:')
+#     summary(net_d, (config['d_input_nc'], config['input_width'], config['input_height']))
 
 
 
@@ -438,7 +441,7 @@ if args.evaluate:
         print('===> Evaluating with test set:')
         evaluator.set_output_name('test')
         evaluator.snapshots(net_g, test_sampler, dataset, samples=config['evaluation_snapshots_cnt'])
-        # evaluator.individual_images_performance(net_g, test_loader)
+        evaluator.individual_images_performance(net_g, test_loader)
         
 
         print('===> Evaluating with train set:')
@@ -479,7 +482,8 @@ if args.evaluate:
             evaluator.run_full_simulation(net_g, dataset, 100, 300, sim_name = 'simulation_timings', saving_imgs=False)
             indices = [(1, 's'), (101, 's'), (1436, 's'), (3106, 's'), (6178, 's'), (9518, 's'), (11188, 's'), (12858, 's')]
             for start_index in indices:
-                evaluator.run_full_simulation(net_(g, ''), dataset, start_index[0],
+                print(start_index)
+                evaluator.run_full_simulation(net_g, dataset, start_index[0],
                                               config['full_simulaiton_samples'],
                                               sim_name = 'simulation_{}_i{}'.format(start_index[1], start_index[0]))
 
@@ -489,14 +493,15 @@ if args.evaluate:
 
             indices = [(1, 's'), (101, 's'), (1436, 's'), (3106, 's'), (6178, 's'), (9518, 's'), (11188, 's'), (12858, 's')]
             for start_index in indices:
+                print(start_index)
                 evaluator.set_output_name('recursive_{}_i{}'.format(start_index[1], start_index[0]))
                 evaluator.recusive_application_performance(net_g, dataset, start_index[0], samples=config['evaluation_recursive_samples'])
 
 
         if args.model_type == 'vd':
             print('===> Running simulations for vd:')
-
-            indices = [(7705 + 150, 'vd'), (17335 + 150, 'vd'), (23755 + 150, 'vd'), (31780 + 150, 'vd'), (39805 + 150, 'vd'),
+            
+            indices = [(7705 + 50, 'vd_50'), (17335 + 150, 'vd_150'), (23755 + 10, 'vd_10'), (31780 + 250, 'vd_250'), (39805 + 2, 'vd_2'),
                        (55855 + 150, 'vd'), (63880 + 150, 'vd'), (71807 + 150, 'vd'), (79832 + 150, 'vd'), (87857 + 150, 'vd'),
                        (95882 + 150, 'vd'), (99092 + 150, 'vd')]
             
@@ -504,7 +509,8 @@ if args.evaluate:
 
             evaluator.run_full_simulation(net_g, dataset, 100, 300, sim_name = 'simulation_timings', saving_imgs=False)
             for start_index in indices:
-                evaluator.run_full_simulation(net_(g, ''), dataset, start_index[0],
+                print(start_index)
+                evaluator.run_full_simulation(net_g, dataset, start_index[0],
                                               config['full_simulaiton_samples'],
                                               sim_name = 'simulation_{}_i{}'.format(start_index[1], start_index[0]))
             
@@ -512,6 +518,7 @@ if args.evaluate:
             print('===> Evaluating recursively:')
 
             for start_index in indices:
+                print(start_index)
                 evaluator.set_output_name('recursive_{}_i{}'.format(start_index[1], start_index[0]))
                 evaluator.recusive_application_performance(net_g, dataset, start_index[0], samples=config['evaluation_recursive_samples'])
 
