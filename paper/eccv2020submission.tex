@@ -1,0 +1,125 @@
+\documentclass{llncs}
+\usepackage[pagebackref]{hyperref}
+\usepackage{graphicx}
+\usepackage{comment}
+\usepackage{amsmath,amssymb} % define this before the line numbering.
+\usepackage{color}
+
+\newcommand{\reffig}[1]{\hyperref[#1]{Figure \ref*{#1}}}
+\newcommand{\refsec}[1]{\hyperref[#1]{Section \ref*{#1}}}
+\newcommand{\reftab}[1]{\hyperref[#1]{Table \ref*{#1}}}
+\newcommand{\refapp}[1]{\hyperref[#1]{Appendix \ref*{#1}}}
+
+% INITIAL SUBMISSION - The following two lines are NOT commented
+% CAMERA READY - Comment OUT the following two lines
+% \usepackage{ruler}
+% \usepackage[width=122mm,left=12mm,paperwidth=146mm,height=193mm,top=12mm,paperheight=217mm]{geometry}
+
+\begin{document}
+% \renewcommand\thelinenumber{\color[rgb]{0.2,0.5,0.8}\normalfont\sffamily\scriptsize\arabic{linenumber}\color[rgb]{0,0,0}}
+% \renewcommand\makeLineNumber {\hss\thelinenumber\ \hspace{6mm} \rlap{\hskip\textwidth\ \hspace{6.5mm}\thelinenumber}}
+% \linenumbers
+\pagestyle{headings}
+\mainmatter
+\def\ECCVSubNumber{100}  % Insert your submission number here
+
+\title{Towards Bringing Together Numerical Methods for Partial Differential Equation and Deep Neural Networks} % Replace with your title
+
+% INITIAL SUBMISSION 
+\begin{comment}
+\titlerunning{Towards Bringing Together Numerical Methods for Partial Differential Equation and Deep Neural Networks} 
+\authorrunning{Stanislav Arnaudov, Markus Hoffmann} 
+\author{Stanislav Arnaudov, Markus Hoffmann}
+\institute{Karlsruhe Institute of Technology,\\Kaiserstrasse 12,76131 Karlsruhe, Germany\\ \url{http://www.kit.edu/english/}}
+\end{comment}
+%******************
+
+% CAMERA READY SUBMISSION
+% \begin{comment}
+\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{Stanislav Arnaudoc, Markus Hoffmann }
+%
+\authorrunning{F. Author et al.}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{Karlsruhe Institute of Technology,\\Kaiserstrasse 12,76131 Karlsruhe, Germany\\ \url{http://www.kit.edu/english/}}
+% \end{comment}
+%******************
+\maketitle
+
+\begin{abstract}
+A central problem in the field of Computational Fluid Dynamics (CFD) is to efficiently perform a simulation of fluid flow while keeping the processing time low. Classical methods that provide accurate results, work based on partial differential equation solvers. They, however, require a considerable amount of processing time which is a problem when there are different simulation-parameter sets. We propose an alternative method for performing a simulation of fluid flow around an object based on convolutional neural networks (CNNs). We investigate a novel approach that uses simulation images as input for the CNN.\@ Several models are built, each trying to generalize a different subset of the parameters of the simulation. All models are based on the U-Net architecture and generate an image for the next time-step of the simulation. On average, the models perform an order of magnitude faster than the classical solvers at the cost of reduced accuracy. The generated images, however, are close enough to the real ones, so that a human observer can perceive them as the same. We also evaluate the results with appropriate error metrics.
+\keywords{Computational Fluid Dynamics, Convolutional Neural Networks, U-Net, Image processing}
+\end{abstract}
+
+
+\section{Introduction}\label{introduction}
+Computational Fluid Dynamics (CFD) is a field that deals with performing simulations of fluid flows. The task usually consists of setting certain initial conditions in a defined space and solving a large mathematical problem for each timestep of the simulation. Two central points of interest in CFD is the processing time needed for a simulation as well as the accuracy of the results. It is clear that low processing time and high accuracy are desired but often e certain trade off has to be made. With our research we want to propose an innovative method for quickly inspecting the results of a simulation while keeping the accuracy high enough for them to make sense.
+
+We've concentrated our study on 2D simulations of a incompressible fluid flow around an object in a channel according to the Navier-Stokes equations. This setup has three adjustable parameters --- the inflow speed, the viscosity and the density of the fluid. The solutions of the simulation are three separate fields over the input space --- two velocity fields in x and y directions and a pressure field. These can be conveniently visualized as images over the input space. We are mainly interested in those image representations of the timeteps of the simulation.
+
+Classical methods for performing such simulations are based on partial differential equations (PDEs) solvers. The simulation setup is first formalized and a mathematical model in form of a time dependent differential equation is given. In itself this equation is then transformed and brought into a suitable form. A common technique is the finite difference method (FDM). This can provide accurate results at the cost of large computational time. The generated results are in form of raw numbers representing the velocities and pressure fields which has to be visualized separately. Our method aims to generate straight the visualizations while needing much lower computational time.
+
+In recent years there has been a large interest in neural networks and their capabilities. Convolutional Neural Networks (CNNs) in particular have been successfully applied in a wide variety of contexts and having proven to be a valuable tools. On of the major fields where the performance of CNNs is recognized is image processing. A lot of research has shown how CNNs can achieve state-of-the-art performance in tasks like image classification, image segmentation of image-to-image mapping. With our research we try to tie CFD and CNNs together and show how image processing approaches can be applied to performing numerical simulations.
+
+In our research we want to investigate how a CNN can be used in order generate an image of the simulation in interest. We build models that take an image from the previous timestep as an input and transform it into an image for the next timestep. The built CNNs can also take certain parameters of the simulation and transform the image in accordance with these parameters. With this approach we are trying to transform the numerical task of calculating a timestep of a simulation into an image processing task.
+
+The goal of our research is to see to what extend the described approach is viable. We achieve that by investigating how a CNN generalizes the different parameters of the investigated simulation. Two subsets of the parameters are defined --- fluid parameters (viscosity and density) and inflow speed of the fluid. For each of these two subsets we train a separate model and evaluate its performance in different use cases. A baseline model that does not take parameters into account is also built. We give more details on the models in section \refsec{methodology}.
+
+
+The built models are evaluated from two points of view. Firstly, as the output of the network is meant for a human observer, we evaluate the generated images based on their perceived fidelity. Secondly, as the networks tries to model a numerical task, we also compare the real and generated images in a objective manner by measuring the actual differences between them.
+
+Because of the nature of our task, two evaluation cases are given. On the one side, we want to see how the networks perform while predicting individual images. That is, a network performs a single simulation timestep and the results of that are evaluated. On the other side, we also want to see how the inaccuracies in the predicted images can accumulate over time. Hence also evaluate the models by recursive application where the output of the network is used again as an input for certain amount of timesteps.
+
+Lastly, we briefly want to motivate why we propose exactly this approach.
+
+\section{Related Work}\label{related_work}
+
+\section{Methodology}\label{methodology}
+
+
+The models were trained with real simulation data. We first descibe the process of generating said data, then we give details on the training procedure and the architecture of the models. We then descibe the three types of models that we build and evaluated.
+
+\subsection{Simulation Setup}
+\begin{itemize}
+\item first describe the simulation setup in details
+\item initial conditions and boundary conditions --- inflow condition, no slip conditions, outflow condition
+\item schematic of the channel with the object in it
+\item the simulations were preformed by a FEM solver --- HiFlow. The final images were rendered by ParaView. The images were cropped in order to contain only the relevant region of the simulation.
+\item Gray scale images because [\ldots]
+\item Example images
+\item The parameters of the simulation were appropriately chosen. Argumentation with the Reynold's number. We want interesting effects but not a turbulent flow.
+\item Simulations according to the Navier-Stokes equations are appropriate only if the flow is laminar. 
+\item Concrete parameter numbers [\ldots]
+\item Details on how HiFlow runs the simulation --- method, parameters, timestep time.
+\end{itemize}
+
+\subsection{Networks Details}
+
+\subsection{Model types}
+
+\subsection{Evaluation}
+
+\section{Results}\label{results}
+
+
+
+\section{Conclusion}\label{conclusion}
+
+
+
+\clearpage
+\bibliographystyle{splncs04}
+\bibliography{egbib}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
+
+% LocalWords:  Convolutional timestep timesteps
