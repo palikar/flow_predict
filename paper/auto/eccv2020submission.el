@@ -3,7 +3,6 @@
  (lambda ()
    (TeX-add-to-alist 'LaTeX-provided-package-options
                      '(("hyperref" "pagebackref")))
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "href")
    (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperref")
    (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperimage")
    (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperbaseurl")

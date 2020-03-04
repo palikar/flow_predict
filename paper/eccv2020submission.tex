@@ -105,10 +105,23 @@ The simulations were performed numerically by solving the differential equation 
 
 The numerical solver on itself cannot be used to render the simulation results to images. For this reason we used ParaView to load the simulation data and exported it as a sequence of images in PNG format. We opted out for using grayscale images as early experiments with RGB-images did not deliver satisfying results. We used the default ``Grayscale'' color preset of ParaView to visualize the results.
 
-\subsection{Network Details}
+The images are finally cropped.
+
+\subsection{Network and Training Details}
 \emph{In this subsection we turn our attention to the details around the architecture of the used network.}
 
-The architecture of the used network and the training approach are entirely based on pix2pix. 
+Our task is an image generation task we used the conditional GAN method introduced in pix2pix.
+
+Some of the experiments in pix2pix suggest that keeping the noise vector can be reasonable but we decided to use only a single multichannel image as an input for the generator network.
+
+The generator is trained to produced the next frame of the simulation based on the previous one. A single frame contains the two velocity fields as well as optional pressure field. We experimented with using and leaving out the pressure field.
+
+Some of the models, however, also take some simulation parameters into account. For those models, the generator also receives one or two constant channels with a value equal to the value of the parameter.
+
+The training approach is almost entirely based on pix2pix. We used the conditional GAN (Generative adversarial network) method to build a minimal image translation framework. In contrast to classical GANs, conditional GANs present both the original and the generated image to the discriminator network. The discriminator network is also used as part of the loss function for the generator network.
+
+In our case, the generator network is presented a single timestep of the simulation in an image form. For the inflow-speed and fluid viscosity-density models the corresponding parameters of the simulation are also given to the network. The parameters are represented as separate constant channels with a value equal to the one of the parameter. 
+
 
 \subsection{Model types}
 
