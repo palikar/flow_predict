@@ -143,12 +143,11 @@ For all of the models we used $\lambda = 100$.
 
 For the discriminator we follow the method of pix2pix and we use their PatchGAN.\@ This is a convolutional network that examines only patches of the input. It tires to guess if each patch is from real or generated image. We use patches of size $70\times 70$  pixels.
 
-\noindent\textbf{Training details: } We train the described three models with the generated datasets. When loading the images in memory, we first resize them to $1024\times 256$. We then apply random crops as well as add random noise to each channel of the images. We do this to force the generator to learn actual features of the simulation and make over-fitting harder. Before the input images are fed into the networks, we also multiply them with a mask of the object in the channel. This is an image that has zero value in the area where the object is located and one for every other location. The multiplication with the mask results in an input image with values of zero in the are of the object. The object mask itself is also given as an input to the generator network.
+\noindent\textbf{Training details:} We train the described three models with the generated datasets. When loading the images in memory, we first resize them to $1024\times 256$. We then apply random crops as well as add random noise to each channel of the images. We do this to force the generator to learn actual features of the simulation and make over-fitting harder. Before the input images are fed into the networks, we also multiply them with a mask of the object in the channel. This is an image that has zero value in the area where the object is located and one for every other location. The multiplication with the mask results in an input image with values of zero in the are of the object. The object mask itself is also given as an input to the generator network.
 
-Two of the models also take certain simulation parameters as inputs. In all cases the parameters are real values. These are first transformed in a constant single channel images with a value equal to the one of the parameter. This means that for each simulation parameter 
+Two of the models also take certain simulation parameters as inputs. In all cases the parameters are real values. In order for the network to be able to use them as part of the input, we transform these values in a constant single channel images with a value equal to the one of the parameter. This means that for each simulation parameter there is an extra channel in the for the generator network. Thus, depending on the model being trained, the network can take anywhere between 3 (velocity fields and object mask) and 6 (velocity and pressure fields, object mask and two parameter channels) channel input.
 
-% how does the generator handles parameters
-
+The output of the generator, however, is limited to either 2 or 3 channel image depending on whether the pressure field is used or not.
 
 \section{Evaluation}\label{eval}
 
