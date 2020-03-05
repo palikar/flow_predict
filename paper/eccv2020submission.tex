@@ -9,6 +9,7 @@
 \newcommand{\refsec}[1]{\hyperref[#1]{Section \ref*{#1}}}
 \newcommand{\reftab}[1]{\hyperref[#1]{Table \ref*{#1}}}
 \newcommand{\refapp}[1]{\hyperref[#1]{Appendix \ref*{#1}}}
+\DeclareMathOperator*{\argminA}{arg\,min} % Jan Hlavacek
 
 % INITIAL SUBMISSION - The following two lines are NOT commented
 % CAMERA READY - Comment OUT the following two lines
@@ -120,8 +121,6 @@ The simulations were performed numerically by solving the differential equation 
 The numerical solver on itself cannot be used to render the simulation results to images. For this reason we used ParaView to load the simulation data and exported it as a sequence of images in PNG format. We opted out for using grayscale images as early experiments with RGB-images did not deliver satisfying results. We used the default ``Grayscale'' color preset of ParaView to visualize the results. Each frame of the simulation was exported as three separate grayscale images. The images were finally cropped to select a subset of the space that contains the object and the space behind it.
 
 \subsection{Training approach and networks details}
-\emph{In this subsection we turn our attention to the details around the architecture of the used network.}
-
 We base our generative models almost entirely on pix2pix. We use the conditional GAN approach to train a generator network that can perform image-to-image translation. As explained in [], the traditional GAN method uses a random vector $z$ as in input to the generator network $G$ to generate output $y$, $G:z \rightarrow y$. Conditional GANs also feed an input image $x$ to the generator, $G: x,z \rightarrow y$. Pix2Pix suggests that in certain cases the usage of $z$ can be usefully but we decided not to include for out generator as we want a deterministic network.
 
 We adopt the objective for the discriminator network as we modify it slightly by leaving out the random vector $z$.
@@ -130,28 +129,28 @@ We adopt the objective for the discriminator network as we modify it slightly by
 \end{equation}
 where $x$ is the input image and $y$ is the target image. In contrast to unconditional GANs, both the generator and the discriminator network have access to the input image. The objective is divided by 2 to slow down the training of the discriminator relative to the generator as suggested by [].
 
-The objective for the generator network is comprised of two parts --- the value of the discriminator as well as 
+The objective for the generator network is comprised of two parts --- the value of the discriminator as well as a L1 distance loss between the target and the predicted images. According to [] the L1 loss promotes less blurring and captures the low frequency details of the images. The L1 loss is given by:
+\begin{equation}
+\mathcal{L}_{L1} (G) = \mathbb{E}[\left\lVert y - G(x)\right\rVert_1]
+\end{equation}
+The final object for the generator is thus:
+\begin{equation}
+G^* = \argminA_G \max_D \mathcal{L}_{cGAN}  + \lambda \mathcal{L}_{L1} (G)
+\end{equation}
+For all of the models we used $\lambda = 100$.
+\\
+\noindent\textbf{Networks Architectures:} For our generator we use the U-Net variant proposed in pix2pix. It is a standard encoder-decoder model that skip connections between parts of the encoder and the decoder. We also experimented with ResNet based generator but the results were not satisfactory. The network uses blocks of layers of the from convolution-normalization-ReLu. The encoder-decoder first downsamples the input till a bottleneck layer is reached and what follows is a upsampling to the original size of the input image.
 
-% In contrast to pix2pix we also disable the dropout and batch normalization layers during testing.
+For the discriminator we follow the method of pix2pix and we use their PatchGAN.\@ This is a convolutional network that examines only patches of the input. It tires to guess if each patch is from real or generated image. We use patches of size $70\times 70$  pixels.
 
-% Our task is an image generation task we used the conditional GAN method introduced in pix2pix.
+\noindent\textbf{Training details: } We train the described three models with the generated datasets. When loading the images in memory, we first resize them to $1024\times 256$. We then apply random crops as well as add random noise to each channel of the images. We do this to force the generator to learn actual features of the simulation and make over-fitting harder. Before the input images are fed into the networks, we also multiply them with a mask of the object in the channel. This is an image that has zero value in the area where the object is located and one for every other location. The multiplication with the mask results in an input image with values of zero in the are of the object. The object mask itself is also given as an input to the generator network.
 
-% Some of the experiments in pix2pix suggest that keeping the noise vector can be reasonable but we decided to use only a single multichannel image as an input for the generator network.
+Two of the models also take certain simulation parameters as inputs. In all cases the parameters are real values. These are first transformed in a constant single channel images with a value equal to the one of the parameter. This means that for each simulation parameter 
 
-% The generator is trained to produced the next frame of the simulation based on the previous one. A single frame contains the two velocity fields as well as optional pressure field. We experimented with using and leaving out the pressure field.
-
-% Some of the models, however, also take some simulation parameters into account. For those models, the generator also receives one or two constant channels with a value equal to the value of the parameter.
-
-% The training approach is almost entirely based on pix2pix. We used the conditional GAN (Generative adversarial network) method to build a minimal image translation framework. In contrast to classical GANs, conditional GANs present both the original and the generated image to the discriminator network. The discriminator network is also used as part of the loss function for the generator network.
-
-% In our case, the generator network is presented a single timestep of the simulation in an image form. For the inflow-speed and fluid viscosity-density models the corresponding parameters of the simulation are also given to the network. The parameters are represented as separate constant channels with a value equal to the one of the parameter. 
+% how does the generator handles parameters
 
 
-\subsection{Model types}
-
-\subsection{Evaluation}
-
-\section{Results}\label{results}
+\section{Evaluation}\label{eval}
 
 
 

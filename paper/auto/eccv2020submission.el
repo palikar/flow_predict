@@ -31,7 +31,7 @@
     "introduction"
     "related_work"
     "methodology"
-    "results"
+    "eval"
     "conclusion")
    (LaTeX-add-bibliographies
     "egbib"))
