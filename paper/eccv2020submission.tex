@@ -26,10 +26,10 @@
 
 \title{Towards Bringing Together Numerical Methods for Partial Differential Equation and Deep Neural Networks} % Replace with your title
 
-% INITIAL SUBMISSION 
+% INITIAL SUBMISSION
 \begin{comment}
-\titlerunning{Towards Bringing Together Numerical Methods for Partial Differential Equation and Deep Neural Networks} 
-\authorrunning{Stanislav Arnaudov, Markus Hoffmann} 
+\titlerunning{Towards Bringing Together Numerical Methods for Partial Differential Equation and Deep Neural Networks}
+\authorrunning{Stanislav Arnaudov, Markus Hoffmann}
 \author{Stanislav Arnaudov, Markus Hoffmann}
 \institute{Karlsruhe Institute of Technology,\\Kaiserstrasse 12,76131 Karlsruhe, Germany\\ \url{http://www.kit.edu/english/}}
 \end{comment}
@@ -59,71 +59,65 @@ A central problem in the field of Computational Fluid Dynamics (CFD) is to effic
 
 
 \section{Introduction}\label{introduction}
-Computational Fluid Dynamics (CFD) is a field that deals with performing simulations of fluid flows. The task usually consists of setting certain initial conditions in a defined space and solving a large mathematical problem for each timestep of the simulation. Two central points of interest in CFD is the processing time needed for a simulation as well as the accuracy of the results. It is clear that low processing time and high accuracy are desired but often e certain trade off has to be made. With our research we want to propose an innovative method for quickly inspecting the results of a simulation while keeping the accuracy high enough for them to make sense.
+Computational Fluid Dynamics (CFD) is a field that deals with performing simulations of fluid flows. The task usually consists of setting certain initial conditions in a defined space and solving a large mathematical problem for each timestep of the simulation. Two central points of interest in CFD are the processing time needed for a simulation and the accuracy of the results. It is clear that low processing time and high accuracy are desired but often a certain trade off has to be made. With our research we want to propose an innovative method for quickly inspecting the results of a simulation while keeping the accuracy high enough for them to make sense.
 
-We've concentrated our study on 2D simulations of a incompressible fluid flow around an object in a channel according to the Navier-Stokes equations. This setup has three adjustable parameters --- the inflow speed, the viscosity and the density of the fluid. The solutions of the simulation are three separate fields over the input space --- two velocity fields in x and y directions and a pressure field. These can be conveniently visualized as images over the input space. We are mainly interested in those image representations of the timeteps of the simulation.
+We've concentrated our study on 2D simulations of an incompressible fluid flow around an object in a channel according to the Navier-Stokes equations. This setup has three adjustable parameters --- the inflow speed, the viscosity and the density of the fluid. The solutions of the simulation are three separate fields over the input space --- two velocity fields in $x$ and $y$ directions and a pressure field. These can be conveniently visualized as images over the input space. We are mainly interested in those image representations of the timeteps of the simulation. We call the image representations of the timesteps ``frames'' of the simulation. The sequence of this frames show how the flow develops over the course of the simulation.
 
-Classical methods for performing such simulations are based on partial differential equations (PDEs) solvers. The simulation setup is first formalized and a mathematical model in form of a time dependent differential equation is given. In itself this equation is then transformed and brought into a suitable form. A common technique is the finite difference method (FDM). This can provide accurate results at the cost of large computational time. The generated results are in form of raw numbers representing the velocities and pressure fields which has to be visualized separately. Our method aims to generate straight the visualizations while needing much lower computational time.
+Classical methods for performing such simulations are based on partial differential equations (PDEs) solvers. The simulation setup is first formalized as a mathematical model in the form of a time dependent differential equation. In itself this equation is then transformed and brought into a suitable for solving form. A common technique is the finite difference method (FDM). This can provide accurate results at the cost of large computational time. The generated results are in form of raw numbers representing the velocities and pressure fields which have to be visualized separately. Our method aims to generate straight the visualizations while needing much lower computational time.
 
-In recent years there has been a large interest in neural networks and their capabilities. Convolutional Neural Networks (CNNs) in particular have been successfully applied in a wide variety of contexts and having proven to be a valuable tools. On of the major fields where the performance of CNNs is recognized is image processing. A lot of research has shown how CNNs can achieve state-of-the-art performance in tasks like image classification, image segmentation of image-to-image mapping. With our research we try to tie CFD and CNNs together and show how image processing approaches can be applied to performing numerical simulations.
+In recent years there has been a large interest in neural networks and their capabilities. Convolutional Neural Networks (CNNs) in particular have been successfully applied in a wide variety of contexts and having proven to be a valuable tools. One of the major fields where the performance of CNNs is clearly recognized is image processing. A lot of research has shown how CNNs can achieve state-of-the-art performance in tasks like image classification, image segmentation of image-to-image mapping. With our research we try to tie CFD and CNNs together and show how image processing approaches can be applied to performing numerical simulations.
 
 In our research we want to investigate how a CNN can be used in order generate an image of the simulation in interest. We build models that take an image from the previous timestep as an input and transform it into an image for the next timestep. The built CNNs can also take certain parameters of the simulation and transform the image in accordance with these parameters. With this approach we are trying to transform the numerical task of calculating a timestep of a simulation into an image processing task.
 
-The goal of our research is to see to what extend the described approach is viable. We achieve that by investigating how a CNN generalizes the different parameters of the investigated simulation. Two subsets of the parameters are defined --- fluid parameters (viscosity and density) and inflow speed of the fluid. For each of these two subsets we train a separate model and evaluate its performance in different use cases. A baseline model that does not take parameters into account is also built. We give more details on the models in section \refsec{methodology}.
+We try to apply the approach of [pix2pix] in our work. In recent years GAN show impressive results in image generation. Conditional GANs (cGANs) extend this capabilities of the generator network and allow it to learn image-to-image translation tasks. We wanted to show that conditional GANs can be used in the context of numerical simulations. In this case, the generation of a frame of a simulation is conditioned on the previous frame of the same simulation.
 
+The goal of our research is to see to what extend the described approach is viable. We achieve that by investigating how a cGANs generalizes the different parameters of the investigated simulation. Two subsets of the parameters are defined --- fluid parameters (viscosity and density) and inflow speed of the fluid. For each of these two subsets we train a separate models and evaluate their performance in different use cases. A baseline model that does not take parameters into account is also built. We give more details on the models in section \refsec{methodology}.
 
-The built models are evaluated from two points of view. Firstly, as the output of the network is meant for a human observer, we evaluate the generated images based on their perceived fidelity. Secondly, as the networks tries to model a numerical task, we also compare the real and generated images in a objective manner by measuring the actual differences between them.
+The built models are evaluated from two points of view. Firstly, as the output of the network is meant for a human observer, we evaluate the generated images based on their perceived fidelity. Secondly, as the networks tries to model a numerical task, we also compare the real and generated images in an objective manner by measuring the actual differences between them.
 
-Because of the nature of our task, two evaluation cases are given. On the one side, we want to see how the networks perform while predicting individual images. That is, a network performs a single simulation timestep and the results of that are evaluated. On the other side, we also want to see how the inaccuracies in the predicted images can accumulate over time. Hence also evaluate the models by recursive application where the output of the network is used again as an input for certain amount of timesteps.
+Because of the nature of our task, two evaluation cases are given. On the one side, we want to see how the networks perform while predicting individual images. That is, a network performs a single simulation timestep and the results of that are evaluated. On the other side, we also want to see how the inaccuracies in the predicted images can accumulate over time. Hence also evaluate the models by recursive application where the output of the network is used again as an input for certain amount of timesteps. More details about the evaluations are given in \refsec{eval}.
 
-Lastly, we briefly want to motivate why we propose exactly this approach.
-
-
-Our contributions are \ldots.
+Lastly, we briefly want to motivate why we propose exactly this approach. Images represent a well defined input space as every pixel can take limited range of values --- $[0, 255]$. This makes the handling of data in image form convenient. Our assumption was that a neural network can process the information in this from more easily. Furthermore, convolutional neural networks are well established models for preforming image processing tasks. We were interested how a numerical task can be turn into an image processing task as in certain situations, the image result has the priority. We also think that the image processing can be done much quicker in a more optimal way. Those considerations urged us to conduct the research presented in this paper.
 
 \section{Related Work}\label{related_work}
 
 \section{Methodology}\label{methodology}
-% \emph{The models were trained with real simulation data. We first describe the process of generating said data, then we give details on the training procedure and the architecture of the models. We then descibe the three types of models that we build and evaluated.}
-
-The task is to build a network that can predict the next frame of the simulation based on the previous one. Each frame represents a timestep of the simulation and consists of a three channel image. Two of the channels encode the velocity fields in both directions and the third channel is the pressure field of the fluid. We were interested in how the usage of the pressure field affects the performance of the built models. Therefore, for each model be trained two variants --- one that uses the pressure field and one that does not.
+The task is to build a network that can predict the next frame of the simulation based on the previous one. Each frame represents a timestep of the simulation and consists of a three channel image. Two of the channels encode the velocity fields in both directions and the third channel is the pressure field of the fluid. We were interested in how the usage of the pressure field affects the performance of the built models. Therefore, for each model two variants are trained --- one that uses the pressure field and one that does not.
 
 We did not construct a single holistic model that can handle all of the simulation's parameters. Our efforts were concentrated on building a couple of smaller ones that take into account subsets of the parameters. The studied models are:
-\begin{itemize}
-\item A Constant model --- does not take into any of the parameters and it is trained with data from a single simulation. It is conceived as a baseline and proof of concept model that is there to show how a neural network can learn to generate simulation timesteps in from of images.
+\begin{list}{$\circ$}{}
+\item a constant model --- does not take into any of the parameters and it is trained with data from a single simulation. It is conceived as a baseline and proof of concept model that is there to show how a neural network can learn to generate simulation timesteps in from of images.
 \item A fluid inflow speed model --- the model receives the inflow speed of the fluid as an extra input. It is trained with data from several simulations with different inflow speeds.
 \item A viscosity and density model --- the model receives the viscosity and density of the fluid as extra inputs.
-\end{itemize}
+\end{list}
 By evaluating each models we want to see how a network can generalize each of the parameter subsets and to what extent
 
-To study the performance of conditional GANs on generating frames of the concrete simulation we generated the training data ourselves. In what follows we give details about the process.
-
 \subsection{Simulation Setup and Data generation}
-The training data was generated by performing numerous simulations of an incompressible fluid flow around a rectangular object in a channel. The simulations were modeled according to the Navier-Stokes equations for incompressible flow. Because we are interested in the image representations of the simulations, we are dealing only with the 2D case. There are several boundary conditions that describe the simulation setup:
-\begin{itemize}
+\emph{To study the performance of conditional GANs on generating frames of the concrete simulation we generated the training data ourselves. In what follows we give details about the process.} The training data was generated by performing numerous simulations of an incompressible fluid flow around a rectangular object in a channel. The simulations were modeled according to the Navier-Stokes equations for incompressible flow. Because we are interested in the image representations of the simulations, we are dealing only with the 2D case. There are several boundary conditions that describe the simulation setup:
+\begin{list}{$\circ$}{}
 \item Inflow condition on the left side of the channel
 \item Outflow condition on the right side of the channel
 \item No slip condition on bottom and top side of the channel as well as the sides of the object.
-\end{itemize}
-The simulation setup has three separate adjustable parameters --- inflow speed, fluid density and fluid viscosity.
+\end{list}
+The simulation setup has three separate adjustable parameters --- inflow speed $g$, fluid density $\rho$ and fluid viscosity $\vu$.
 \\
 We generated three sets of simulations for training the three kinds of models.
-\begin{itemize}
+\begin{list}{$\circ$}{}
 \item plain: a single simulation with \ldots.
 \item varying inflow speed: \ldots simulations with different inflow speed. The inflow speeds are in the range of \ldots with a step of \ldots.
 \item varying viscosity and density of the fluid: \ldots simulations all with different fluid viscosity and density. The viscosity was in the range of \ldots with a step of \ldots and the density was in the range of \ldots with a step of \ldots. We used the product of the two parameter ranges to perform simulations with all of the possible combinations between the two parameters.
-\end{itemize}
+\end{list}
 
-The choice of the concrete values for the parameters was deliberate. All of the values are chosen so that the Reynolds number of the simulations in the range of \ldots. This keeps the flow laminar while still making it interesting enough. We were interested whether the built models can predict the emerging Kármán vortex street behind the object in the channel. Thus the Reynolds numbers were chosen so that the effect can occur.
+The choice of the concrete values for the parameters is deliberate. All of the values are chosen so that the Reynolds number of the simulations in the range of [90, 450]. This keeps the flow laminar while still making it interesting enough. We were interested whether the built models can predict the emerging Kármán vortex street behind the object in the channel. Thus the Reynolds numbers were chosen so that the effect can occur.
 
-The simulations were performed numerically by solving the differential equation describing the flow --- the Navier-Stokes equation. This was done with a numerical solver library --- HiFlow ---  that works on the base of Finite element method. The solver supports parallelization with MPI and OpenMP and we used 12 MPI processes to run each simulation. For all of the simulations the timestep for of solver was set to $0.035$ seconds. This means the a single timestep of the simulations corresponds to a $0.035$ seconds of physical time.
+The simulations were performed numerically by solving the differential equation describing the flow --- the Navier-Stokes equation. This was done with a numerical solver library --- \emph{HiFlow} [] ---  that works on the base of Finite element method. The solver supports parallelization with MPI and OpenMP and we used 12 MPI processes to run each simulation. For all of the simulations the timestep for of solver was set to $0.035$ seconds. This means the a single timestep of the simulations corresponds to a $0.035$ seconds of physical time.
 
-The numerical solver on itself cannot be used to render the simulation results to images. For this reason we used ParaView to load the simulation data and exported it as a sequence of images in PNG format. We opted out for using grayscale images as early experiments with RGB-images did not deliver satisfying results. We used the default ``Grayscale'' color preset of ParaView to visualize the results. Each frame of the simulation was exported as three separate grayscale images. The images were finally cropped to select a subset of the space that contains the object and the space behind it.
+The numerical solver on itself cannot be used to render the simulation results to images. For this reason we used \emph{ParaView} to load the simulation data and exported it as a sequence of images in PNG format. We opted out for using grayscale images as early experiments with RGB-images did not deliver satisfying results. We used the default ``Grayscale'' color preset of ParaView to visualize the results. Each frame of the simulation was exported as three separate grayscale images. The images were finally cropped to select a subset of the space that contains the object and the space behind it.
 
 Because the number of simulations in each set is different, we also generated different number of images per simulation based on the corresponding set. For the plain dataset, we rendered 1904 frames of the simulation (66 seconds of simulated physical time). For the inflow speed dataset --- overall 10050 frames coming from the 40 simulations (335 frames per simulation for 12 seconds of simulated physical time). For the viscosity-density model --- overall 104328 frames from 334 simulation (322 frames per simulation for 11 seconds of simulated physical time). Even though the simulation in the different datasets represent different time intervals, they are all long enough to develop the flow patterns that we are interested in.
 
 \subsection{Training approach and networks details}
-We base our generative models almost entirely on pix2pix. We use the conditional GAN approach to train a generator network that can perform image-to-image translation. As explained in [], the traditional GAN method uses a random vector $z$ as in input to the generator network $G$ to generate output $y$, $G:z \rightarrow y$. Conditional GANs also feed an input image $x$ to the generator, $G: x,z \rightarrow y$. Pix2Pix suggests that in certain cases the usage of $z$ can be usefully but we decided not to include for out generator as we want a deterministic network.
+We base our generative models almost entirely on [pix2pix]. We use the conditional GAN approach to train a generator network that can perform image-to-image translation. As explained in [], the traditional GAN method uses a random vector $z$ as in input to the generator network $G$ to generate output $y$, $G:z \rightarrow y$. Conditional GANs also feed an input image $x$ to the generator, $G: x,z \rightarrow y$. Pix2Pix suggests that in certain cases the usage of $z$ can be usefully but we decided not to include for out generator as we want a deterministic network.
 
 We adopt the objective for the discriminator network as we modify it slightly by leaving out the random vector $z$.
 \begin{equation}
@@ -140,10 +134,10 @@ The final object for the generator is thus:
 G^* = \argminA_G \max_D \mathcal{L}_{cGAN}  + \lambda \mathcal{L}_{L1} (G)
 \end{equation}
 For all of the models we used $\lambda = 100$.
-\\
+
 \noindent\textbf{Networks Architectures:} For our generator we use the U-Net variant proposed in pix2pix. It is a standard encoder-decoder model that skip connections between parts of the encoder and the decoder. We also experimented with ResNet based generator but the results were not satisfactory. The network uses blocks of layers of the from convolution-normalization-ReLu. The encoder-decoder first downsamples the input till a bottleneck layer is reached and what follows is a upsampling to the original size of the input image.
 
-For the discriminator we follow the method of pix2pix and we use their PatchGAN.\@ This is a convolutional network that examines only patches of the input. It tires to guess if each patch is from real or generated image. We use patches of size $70\times 70$  pixels.
+For the discriminator we follow the method of pix2pix and we use their PatchGAN.\@ This is a convolutional network that examines only patches of the input. It tires to guess if each patch is from real or generated image. We use patches of size $70\times 70$ pixels.
 
 \noindent\textbf{Training details:} We train the described three models with the generated datasets. When loading the images in memory, we first resize them to $1024\times 256$. We then apply random crops as well as add random noise to each channel of the images. We do this to force the generator to learn actual features of the simulation and make over-fitting harder. Before the input images are fed into the networks, we also multiply them with a mask of the object in the channel. This is an image that has zero value in the area where the object is located and one for every other location. The multiplication with the mask results in an input image with values of zero in the are of the object. The object mask itself is also given as an input to the generator network.
 
@@ -175,4 +169,4 @@ All of the models were trained and evaluated on a single Nvidia GTX 980Ti GPU.\@
 %%% TeX-master: t
 %%% End:
 
-% LocalWords:  Convolutional timestep timesteps grayscale
+% LocalWords:  Convolutional timestep timesteps grayscale cGANs
