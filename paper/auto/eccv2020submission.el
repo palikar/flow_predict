@@ -26,6 +26,7 @@
     '("reftab" 1)
     '("refsec" 1)
     '("reffig" 1)
+    "argminA"
     "ECCVSubNumber")
    (LaTeX-add-labels
     "introduction"
