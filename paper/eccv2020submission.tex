@@ -159,7 +159,9 @@ On one hand, we are dealing with image data that is meant to be perceived by hum
 \begin{equation}
 PSNR = 10 \cdot \log_{10}\left(\frac{255^2}{MSE}\right)
 \end{equation}
-PSNR is measured in decibel (dB) and it is a common metric used to evaluate lossy compression algorithms. It measures the difference between original and reconstructed image and considers the fidelity of the reconstruction. This makes the metric suitable in our case. Typical PSNR values of lossy image and video compression  algorithms are between 30 and 50 dB. 
+PSNR is measured in decibel (dB) and it is a common metric used to evaluate lossy compression algorithms. It measures the difference between original and reconstructed image and considers the fidelity of the reconstruction. This makes the metric suitable in our case. Typical PSNR values of lossy image and video compression  algorithms are between $30$ and $50$ dB.
+
+When considering the perceived image quality, we also have decided to use correlation to compare the predicted and the real simulation frames. We think that if the predicted images differ only in a factor from the real ones, the models can accurately capture the relative difference between the pixels of the target image. For this reason we opted for also evaluating the results through correlation.
 
 \section{Conclusion}\label{conclusion}
 
