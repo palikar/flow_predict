@@ -2,7 +2,7 @@
  "eccv2020submission"
  (lambda ()
    (TeX-add-to-alist 'LaTeX-provided-package-options
-                     '(("hyperref" "pagebackref")))
+                     '(("appendix" "title") ("hyperref" "pagebackref")))
    (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperref")
    (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperimage")
    (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperbaseurl")
@@ -15,7 +15,9 @@
     "latex2e"
     "llncs"
     "llncs10"
+    "appendix"
     "hyperref"
+    "subcaption"
     "graphicx"
     "comment"
     "amsmath"
@@ -32,6 +34,7 @@
     "related_work"
     "methodology"
     "eval"
+    "tab:table-name"
     "conclusion")
    (LaTeX-add-bibliographies
     "egbib"))

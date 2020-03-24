@@ -1,5 +1,7 @@
 \documentclass{llncs}
+\usepackage[title]{appendix}
 \usepackage[pagebackref]{hyperref}
+\usepackage{subcaption}
 \usepackage{graphicx}
 \usepackage{comment}
 \usepackage{amsmath,amssymb} % define this before the line numbering.
@@ -103,7 +105,7 @@ The simulation setup has three separate adjustable parameters --- inflow speed $
 \\
 We generated three sets of simulations for training the three kinds of models.
 \begin{list}{$\circ$}{}
-\item plain: a single simulation with \ldots.
+\item constant: a single simulation with \ldots.
 \item varying inflow speed: \ldots simulations with different inflow speed. The inflow speeds are in the range of \ldots with a step of \ldots.
 \item varying viscosity and density of the fluid: \ldots simulations all with different fluid viscosity and density. The viscosity was in the range of \ldots with a step of \ldots and the density was in the range of \ldots with a step of \ldots. We used the product of the two parameter ranges to perform simulations with all of the possible combinations between the two parameters.
 \end{list}
@@ -114,7 +116,9 @@ The simulations were performed numerically by solving the differential equation 
 
 The numerical solver on itself cannot be used to render the simulation results to images. For this reason we used \emph{ParaView} to load the simulation data and exported it as a sequence of images in PNG format. We opted out for using grayscale images as early experiments with RGB-images did not deliver satisfying results. We used the default ``Grayscale'' color preset of ParaView to visualize the results. Each frame of the simulation was exported as three separate grayscale images. The images were finally cropped to select a subset of the space that contains the object and the space behind it.
 
-Because the number of simulations in each set is different, we also generated different number of images per simulation based on the corresponding set. For the plain dataset, we rendered 1904 frames of the simulation (66 seconds of simulated physical time). For the inflow speed dataset --- overall 10050 frames coming from the 40 simulations (335 frames per simulation for 12 seconds of simulated physical time). For the viscosity-density model --- overall 104328 frames from 334 simulation (322 frames per simulation for 11 seconds of simulated physical time). Even though the simulation in the different datasets represent different time intervals, they are all long enough to develop the flow patterns that we are interested in.
+Because the number of simulations in each set is different, we also generated different number of images per simulation based on the corresponding set. For the constant dataset, we rendered 1904 frames of the simulation (66 seconds of simulated physical time). For the inflow speed dataset --- overall 10050 frames coming from the 40 simulations (335 frames per simulation for 12 seconds of simulated physical time). For the viscosity-density model --- overall 104328 frames from 334 simulation (322 frames per simulation for 11 seconds of simulated physical time). Even though the simulation in the different datasets represent different time intervals, they are all long enough to develop the flow patterns that we are interested in.
+
+After all images were generated, a test-train split was created for each of the datasets The split for the inflow speed and viscosity-density sets were done manually. For the inflow speed set, we selected every fourth simulation to be part of the test set and for the viscosity-density set --- every 25th. All other simulations are used for training. The split for the constant dataset was done at random. All of the splits result in a 80\% of the data being used for training and the rest for testing. It is important to note that all of the images in the test sets come from simulations with parameters that are not found for the simulations in the training sets. This means that the datasets are designed in a way to see if the models can generalize the parameters of the simulations and predict simulations with parameters that are unseen during the training.
 
 \subsection{Training approach and networks details}
 We base our generative models almost entirely on [pix2pix]. We use the conditional GAN approach to train a generator network that can perform image-to-image translation. As explained in [], the traditional GAN method uses a random vector $z$ as in input to the generator network $G$ to generate output $y$, $G:z \rightarrow y$. Conditional GANs also feed an input image $x$ to the generator, $G: x,z \rightarrow y$. Pix2Pix suggests that in certain cases the usage of $z$ can be usefully but we decided not to include for out generator as we want a deterministic network.
@@ -181,34 +185,70 @@ As mentioned before, we have two evaluation strategies for the models. The first
 
 [Table] summarizes the results of the evaluation with the average and maximal difference metrics.
 
-\\
 
-\begin{center}
-  \begin{tabular}{l|c|c}
-    Model type & Max difference &  Average difference\\
-    \hline
-    Constant & 0.5 &  0.5 \\
-    Inflow speed &  0.5 &  0.5 \\
-    Viscosity-density &  0.5  &  0.5 \\
-  \end{tabular}
-\end{center}
+\begin{table}
+  \begin{center}
+    \begin{tabular}{l|c|c}
+      Model type & Max difference &  Average difference\\
+      \hline
+      Constant & 0.5 &  0.5 \\
+      Inflow speed &  0.5 &  0.5 \\
+      Viscosity-density &  0.5  &  0.5 \\
+    \end{tabular}
+  \end{center}
+  \caption{\label{tab:table-name} Your caption.}
+\end{table}
+
+\begin{figure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/pred}
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/pred.png}  
+  \end{subfigure}
+\end{figure}
 
 The effects of the usage of the pressure field can be seen in the variance of the results. The pressure field has the potential to make the models better but in some runs it can also make them worse. We believe this is the case because the pressure fields increases the complexity of the data but it also carries information about the simulation that can be useful for the networks.
-
-\\
 
 Based on our experiments, we can say that achieving good performance was the hardest for the constant model. We attribute that to the limited data with which it was trained --- only a single simulation. Contrary to the intuition, the more varied data is easier to predict, as it can be seen in the results for the inflow speed and viscosity-density models. We also believe, that a bigger test set can better estimate the performance of our models. This probably also contributes to the worse results for the constant models.
 
 \noindent\textbf{Recursive Application Performance:}
+With this evaluation case we want to see how our models handle recursive application. That is, the output of the network is used again as an input for the prediction of the next simulation frame.
+
+For each recursive evaluation we generate 40 frames of the corresponding simulation. We did not in any was post-processed the output of the networks before feeding it as an input. We calculate the discussed metrics for each of the predicted frames while comparing them to the corresponding real one.
+
+In our experiments, we performed several recursive evaluation for each simulation while starting at frames with different index. We wanted to see how a different starting point in the simulation can affect the frames predicted by the models.
+
+The viscosity-density and inflow speed models are evaluated with several simulations with different parameters. As it is unpracticed to give the results of the evaluation of each simulation, here we present only several of them. The showed results, however, are representative of the general performance of our models. For this section, We also limit ourselves only to models that do use the pressure field of the simulations.
+
+The constant model is evaluated with a single simulation --- the one it was trained with. [fig] presents the results of the recursive application. During the evaluation we noticed that the models can more accurately predict a simulation when the starting frame is further in the simulation. That is, its index relative to the first frame is higher. The plots for the constant model in [fig] illustrate this.
+
+For the inflow speed model we present the results from three different simulations in [fig]. We can see the same trend that predicting frames with smaller index is harder. We, however, like to note that the networks appear to be handling the parameters properly and adjust the predicted frames accordingly. [fig] presents the results of the viscosity-density model.
+
+We again do not explicitly give the correlation between the predicted and real frames. In all cases the correlation stayed very close to $1$ and varied in the range $[0.98, 0.99998]$. The CFD-metrics are summarized in [table]. 
+
 
 
 \section{Conclusion}\label{conclusion}
 
-
-
 \clearpage
 \bibliographystyle{splncs04}
 \bibliography{egbib}
+
+
+
+\begin{subappendices}
+\renewcommand{\thesection}{\Alph{section}}%
+
+\section{Networks architectures and hyperparameters}
+\emph{Here we give the exact details on the architectures of the used networks.}
+
+
+\end{subappendices}
+
+
 \end{document}
 
 %%% Local Variables:
