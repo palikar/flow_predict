@@ -244,6 +244,31 @@ We again do not explicitly give the correlation between the predicted and real f
 
 \section{Networks architectures and hyperparameters}
 \emph{Here we give the exact details on the architectures of the used networks.}
+The code for all of the models and experiments can be found at \url{https://github.com/palikar/flow_predict}.
+
+The architectures are almost entirely based on [pix2pix, 44]. Both the generator and the discriminator networks are comprised of two types of blocks of layers. We will denote a Convolution-BatchNorm-ReLU block with $k$ filters with $Ck$ and Convolution-BatchNorm-Dropout-ReLU with $k$ filters $CDk$. The dropout rate for each dropout layers is 50\%. All convolutions use $4\times4$ filters applied with a stride of $2$.
+
+\noindent\textbf{Generator Architecture:}
+The generator is an follows the encoder-decoder principle. All model types use 6 layer encoder and decoder. The model types differ only in the amount of filters that they have in the blocks. As we use the U-Net architecture, the there are also skip connections between each block $i$ in the encoder and the block $n-i$ in the decoder where $n$ is the total number of blocks in the network. The skip connections concatenate the results the both blocks $i$ and $i-i$.
+
+The concrete encoder-decoders for each model type are as follows:
+\begin{itemize}
+\item[\cdot] Constant model:\newline
+  \emph{Encoder}: \texttt{C32-C64-C128-C256-C256-C256}\newline
+  \emph{Decoder}: \texttt{CD256-C512-C512-C256-C128-C64}
+\item[\cdot] Inflow speed model:\newline
+  \emph{Encoder}: \texttt{C48-C96-C192-C384-C384-C384}\newline
+  \emph{Decoder}: \texttt{CD384-C768-C768-C384-C192-C96}
+\item[\cdot] Viscosity-Density model:\newline
+  \emph{Encoder}: \texttt{C64-C128-C256-C512-C512-C512} \newline
+  \emph{Decoder}: \texttt{CD512-C1024-C1024-C512-C256-C128}
+\end{itemize}
+
+The ReLUs in the encoders are leaky (slope of $0.2$) and those in the decoders are not. At the end of each decoder there is also a convolution layer that maps to the final channel count of the output. This final convolution is followed by a $\tanh$-function.
+
+\noindent\textbf{Discriminator Architecture:}
+We adopt the $70\times70$ variant of the decoder form [pix2pix]. The architecture is:\newline
+\texttt{C64-C128-C256-C512}
 
 
 \end{subappendices}
