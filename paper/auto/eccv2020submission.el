@@ -22,7 +22,8 @@
     "comment"
     "amsmath"
     "amssymb"
-    "color")
+    "color"
+    "float")
    (TeX-add-symbols
     '("refapp" 1)
     '("reftab" 1)

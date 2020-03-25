@@ -6,7 +6,7 @@
 \usepackage{comment}
 \usepackage{amsmath,amssymb}
 \usepackage{color}
-
+\usepackage{float}
 \newcommand{\reffig}[1]{\hyperref[#1]{Figure \ref*{#1}}}
 \newcommand{\refsec}[1]{\hyperref[#1]{Section \ref*{#1}}}
 \newcommand{\reftab}[1]{\hyperref[#1]{Table \ref*{#1}}}
@@ -185,19 +185,9 @@ As mentioned before, we have two evaluation strategies for the models. The first
 
 [Table] summarizes the results of the evaluation with the average and maximal difference metrics.
 
+The effects of the usage of the pressure field can be seen in the variance of the results. The pressure field has the potential to make the models better but in some runs it can also make them worse. We believe this is the case because the pressure fields increases the complexity of the data but it also carries information about the simulation that can be useful for the networks.
 
-\begin{table}
-  \begin{center}
-    \begin{tabular}{l|c|c}
-      Model type & Max difference &  Average difference\\
-      \hline
-      Constant & 0.5 &  0.5 \\
-      Inflow speed &  0.5 &  0.5 \\
-      Viscosity-density &  0.5  &  0.5 \\
-    \end{tabular}
-  \end{center}
-  \caption{\label{tab:table-name} Your caption.}
-\end{table}
+Based on our experiments, we can say that achieving good performance was the hardest for the constant model. We attribute that to the limited data with which it was trained --- only a single simulation. Contrary to the intuition, the more varied data is easier to predict, as it can be seen in the results for the inflow speed and viscosity-density models. We also believe, that a bigger test set can better estimate the performance of our models. This probably also contributes to the worse results for the constant models.
 
 \begin{figure}  
 
@@ -266,9 +256,18 @@ As mentioned before, we have two evaluation strategies for the models. The first
   \caption{Each image haw tow halves and the upper one shows the ground truth simulation frame. The lower half is the prediction of the model. In the left column, the images are from the x-velocity fie4ld of the simulation and in the right --- form the y-velocity field.}
 \end{figure}
 
-The effects of the usage of the pressure field can be seen in the variance of the results. The pressure field has the potential to make the models better but in some runs it can also make them worse. We believe this is the case because the pressure fields increases the complexity of the data but it also carries information about the simulation that can be useful for the networks.
-
-Based on our experiments, we can say that achieving good performance was the hardest for the constant model. We attribute that to the limited data with which it was trained --- only a single simulation. Contrary to the intuition, the more varied data is easier to predict, as it can be seen in the results for the inflow speed and viscosity-density models. We also believe, that a bigger test set can better estimate the performance of our models. This probably also contributes to the worse results for the constant models.
+\begin{table}
+  \begin{center}
+    \begin{tabular}{l|c|c}
+      Model type & Max difference &  Average difference\\
+      \hline
+      Constant & 0.5 &  0.5 \\
+      Inflow speed &  0.5 &  0.5 \\
+      Viscosity-density &  0.5  &  0.5 \\
+    \end{tabular}
+  \end{center}
+  \caption{\label{tab:table-name} Your caption.}
+\end{table}
 
 \noindent\textbf{Recursive Application Performance:}
 With this evaluation case we want to see how our models handle recursive application. That is, the output of the network is used again as an input for the prediction of the next simulation frame.
@@ -283,20 +282,11 @@ The constant model is evaluated with a single simulation --- the one it was trai
 
 For the inflow speed model we present the results from three different simulations in [fig]. We can see the same trend that predicting frames with smaller index is harder. We, however, like to note that the networks appear to be handling the parameters properly and adjust the predicted frames accordingly. [fig] presents the results of the viscosity-density model.
 
-We again do not explicitly give the correlation between the predicted and real frames. In all cases the correlation stayed very close to $1$ and varied in the range $[0.98, 0.99998]$. The CFD-metrics are summarized in [table]. 
+We noticed that across all model types, for some of the predicted frames, certain visual artifacts can occur. In some cases those are in the form of a pattern that spans across the image. This pattern seem to be recognized by the models as not part of the flow and does not disrupt the structure of the flow. Other artifacts, however, can look much more like features of the fluid flow. In this case, the network will develop them as it develops the real flow. These artifacts accumulate with each predicted frame and become apparent after around the 10.\@ frame. In our experiments we managed to minimize the artifacts by making the networks bigger but we never could mitigate them completely.
 
-\section{Conclusion}\label{conclusion}
+We again do not explicitly give the correlation between the predicted and real frames. In all cases the correlation stayed very close to $1$ and varied in the range $[0.98, 0.99998]$. The CFD-metrics are summarized in [table].
 
-The results presented in this paper suggest that solving a numerical task trough image-to-image translation is can be a viable approach. We showed how conditional GANs can be used to learn the image representations of the solutions of a fluid simulation according to the Navier-Stokes equations. We built several models that can generalize different parts of the parameters of the simulations and gave concrete numbers that quantify the results.
-
-We see our work as a preliminary research and we believe that the approach can be further developed and investigated. Strategies for improving the models that were considered but not implemented include:
-\begin{itemize}
-\item[$\cdot$] using a LSTM layer in the networks --- our models have the limitation that during training they don't know about the artifact on the images caused by themselves. We think a LSTM layer can mitigate this problem.
-\item[$\cdot$] preprocessing the input for and postprocessing the output of the networks --- morphological operations like opening and closing can also be used to minimize the artifacts in the predicted frames.
-\item[$\cdot$] further investigation of the effects of using RGB-images instead of grayscale ones.
-\end{itemize}
-
-\begin{figure}
+\begin{figure}[H]
   \begin{subfigure}{.5\textwidth}
     \centering
     \includegraphics[width=1\linewidth]{imgs/sims/constant/x_step_1}  
@@ -332,7 +322,6 @@ We see our work as a preliminary research and we believe that the approach can b
     \centering
     \includegraphics[width=1\linewidth]{imgs/sims/constant/y_step_15}  
   \end{subfigure}
-
   
   \begin{subfigure}{.5\textwidth}
     \centering
@@ -354,6 +343,76 @@ We see our work as a preliminary research and we believe that the approach can b
 
   \caption{These frames are generated by the constant model. The artifacts become apparent after the 10.\@ one.}
 \end{figure}
+
+\begin{figure}[H]
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/x_step_1}  
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/y_step_1}  
+  \end{subfigure}
+
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/x_step_5}  
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/y_step_5}  
+  \end{subfigure}
+
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/x_step_10}  
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/y_step_10}  
+  \end{subfigure}
+  
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/x_step_15}  
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/y_step_15}  
+  \end{subfigure}
+
+  
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/x_step_20}  
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/y_step_20}  
+  \end{subfigure}
+
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/x_step_25}  
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/y_step_25}  
+  \end{subfigure}
+
+  \caption{Example frames generated by the viscosity-density model. The parameters for this particular simulation are $\nu=4.17647, \rho = 0.001, g=1.4$}
+\end{figure}
+
+\section{Conclusion}\label{conclusion}
+
+The results presented in this paper suggest that solving a numerical task trough image-to-image translation is can be a viable approach. We showed how conditional GANs can be used to learn the image representations of the solutions of a fluid simulation according to the Navier-Stokes equations. We built several models that can generalize different parts of the parameters of the simulations and gave concrete numbers that quantify the results.
+
+We see our work as a preliminary research and we believe that the approach can be further developed and investigated. Strategies for improving the models that were considered but not implemented include:
+\begin{itemize}
+\item[$\cdot$] using a LSTM layer in the networks --- our models have the limitation that during training they don't know about the artifact on the images caused by themselves. We think a LSTM layer can mitigate this problem.
+\item[$\cdot$] preprocessing the input for and postprocessing the output of the networks --- morphological operations like opening and closing can also be used to minimize the artifacts in the predicted frames.
+\item[$\cdot$] further investigation of the effects of using RGB-images instead of grayscale ones.
+\end{itemize}
 
 
 \clearpage
