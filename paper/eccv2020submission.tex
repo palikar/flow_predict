@@ -237,8 +237,6 @@ We again do not explicitly give the correlation between the predicted and real f
 \bibliographystyle{splncs04}
 \bibliography{egbib}
 
-
-
 \begin{subappendices}
 \renewcommand{\thesection}{\Alph{section}}%
 
@@ -270,6 +268,9 @@ The ReLUs in the encoders are leaky (slope of $0.2$) and those in the decoders a
 We adopt the $70\times70$ variant of the decoder form [pix2pix]. The architecture is:\newline
 \texttt{C64-C128-C256-C512}
 
+This configuration results in a receptive field of $70\times70$. This means that for each $70\times70$ region of the input, the discriminator tries to guess if the region is from a real image or from a generated one.
+
+All of the ReLUs are leaky (slope of $0.2$). Also, a final convolution is applied after the last layers that produced the a dimensional output of the discriminator. A sigmoid function is applied after the convolution.
 
 \end{subappendices}
 
