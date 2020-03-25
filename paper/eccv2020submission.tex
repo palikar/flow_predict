@@ -199,15 +199,71 @@ As mentioned before, we have two evaluation strategies for the models. The first
   \caption{\label{tab:table-name} Your caption.}
 \end{table}
 
-\begin{figure}
+\begin{figure}  
+
   \begin{subfigure}{.5\textwidth}
     \centering
-    \includegraphics[width=1\linewidth]{imgs/pred}
+    \includegraphics[width=1\linewidth]{imgs/single_constant_x}
+
+  \end{subfigure}  
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/single_constant_y}  
+
+  \end{subfigure}
+  \begin{center}
+    Constant model
+  \end{center}
+  
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/single_speed_x_1}  
   \end{subfigure}
   \begin{subfigure}{.5\textwidth}
     \centering
-    \includegraphics[width=1\linewidth]{imgs/pred.png}  
+    \includegraphics[width=1\linewidth]{imgs/single_speed_y_1}  
   \end{subfigure}
+
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/single_speed_x_2}  
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/single_speed_y_2}  
+  \end{subfigure}
+  
+  \begin{center}
+    Images form the inflow speed model. The upper two are from simulation with $g=1.3$ and the lower ones form simulation with $g=0.1$
+  \end{center}
+
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    % \caption{Fluid model, x-velocity fields}
+      \includegraphics[width=1\linewidth]{imgs/single_fluid_x_1}  
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    % \caption{Fluid model, y-velocity fields}
+    \includegraphics[width=1\linewidth]{imgs/single_fluid_y_1}  
+  \end{subfigure}
+
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    % \caption{Fluid model, x-velocity fields}
+    \includegraphics[width=1\linewidth]{imgs/single_fluid_x_2}  
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    % \caption{Fluid model, y-velocity fields}
+    \includegraphics[width=1\linewidth]{imgs/single_fluid_y_2}
+  \end{subfigure}
+
+  \begin{center}
+  Images form the viscosity-density model. The upper two are from simulation with $\nu=1.3, \rho=2.3$ and the lower ones form simulation with $\nu=1.3, \rho=2.3$
+  \end{center}
+
+  \caption{Each image haw tow halves and the upper one shows the ground truth simulation frame. The lower half is the prediction of the model. In the left column, the images are from the x-velocity fie4ld of the simulation and in the right --- form the y-velocity field.}
 \end{figure}
 
 The effects of the usage of the pressure field can be seen in the variance of the results. The pressure field has the potential to make the models better but in some runs it can also make them worse. We believe this is the case because the pressure fields increases the complexity of the data but it also carries information about the simulation that can be useful for the networks.
@@ -239,6 +295,65 @@ We see our work as a preliminary research and we believe that the approach can b
 \item[$\cdot$] preprocessing the input for and postprocessing the output of the networks --- morphological operations like opening and closing can also be used to minimize the artifacts in the predicted frames.
 \item[$\cdot$] further investigation of the effects of using RGB-images instead of grayscale ones.
 \end{itemize}
+
+\begin{figure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/x_step_1}  
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/y_step_1}  
+  \end{subfigure}
+
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/x_step_5}  
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/y_step_5}  
+  \end{subfigure}
+
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/x_step_10}  
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/y_step_10}  
+  \end{subfigure}
+  
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/x_step_15}  
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/y_step_15}  
+  \end{subfigure}
+
+  
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/x_step_20}  
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/y_step_20}  
+  \end{subfigure}
+
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/x_step_25}  
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/y_step_25}  
+  \end{subfigure}
+
+  \caption{These frames are generated by the constant model. The artifacts become apparent after the 10.\@ one.}
+\end{figure}
 
 
 \clearpage
