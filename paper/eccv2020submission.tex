@@ -13,45 +13,17 @@
 \newcommand{\refapp}[1]{\hyperref[#1]{Appendix \ref*{#1}}}
 \DeclareMathOperator*{\argminA}{arg\,min}
 
-% INITIAL SUBMISSION - The following two lines are NOT commented
-% CAMERA READY - Comment OUT the following two lines
-% \usepackage{ruler}
-% \usepackage[width=122mm,left=12mm,paperwidth=146mm,height=193mm,top=12mm,paperheight=217mm]{geometry}
-
 \begin{document}
-% \renewcommand\thelinenumber{\color[rgb]{0.2,0.5,0.8}\normalfont\sffamily\scriptsize\arabic{linenumber}\color[rgb]{0,0,0}}
-% \renewcommand\makeLineNumber {\hss\thelinenumber\ \hspace{6mm} \rlap{\hskip\textwidth\ \hspace{6.5mm}\thelinenumber}}
-% \linenumbers
+
 \pagestyle{headings}
 \mainmatter
 \def\ECCVSubNumber{100}
-
 \title{Towards Bringing Together Numerical Methods for Partial Differential Equation and Image Processing}
-
-% INITIAL SUBMISSION
-\begin{comment}
+\author{Stanislav Arnaudov, Markus Hoffmann}
 \titlerunning{Towards Bringing Together Numerical Methods for Partial Differential Equation and Deep Neural Networks}
 \authorrunning{Stanislav Arnaudov, Markus Hoffmann}
-\author{Stanislav Arnaudov, Markus Hoffmann}
 \institute{Karlsruhe Institute of Technology,\\Kaiserstrasse 12,76131 Karlsruhe, Germany\\ \url{http://www.kit.edu/english/}}
-\end{comment}
-%******************
 
-% CAMERA READY SUBMISSION
-% \begin{comment}
-\titlerunning{Abbreviated paper title}
-% If the paper title is too long for the running head, you can set
-% an abbreviated paper title here
-%
-\author{Stanislav Arnaudoc, Markus Hoffmann }
-%
-\authorrunning{F. Author et al.}
-% First names are abbreviated in the running head.
-% If there are more than two authors, 'et al.' is used.
-%
-\institute{Karlsruhe Institute of Technology,\\Kaiserstrasse 12,76131 Karlsruhe, Germany\\ \url{http://www.kit.edu/english/}}
-% \end{comment}
-%******************
 \maketitle
 
 \begin{abstract}
@@ -61,30 +33,30 @@ A central problem in the field of Computational Fluid Dynamics (CFD) is to effic
 
 
 \section{Introduction}\label{introduction}
-Computational Fluid Dynamics (CFD) is a field that deals with performing simulations of fluid flows. The task usually consists of setting certain initial conditions in a defined space and solving a large mathematical problem for each timestep of the simulation. Two central points of interest in CFD are the processing time needed for a simulation and the accuracy of the results. It is clear that low processing time and high accuracy are desired but often a certain trade off has to be made. With our research we want to propose an innovative method for quickly inspecting the results of a simulation while keeping the accuracy high enough for them to make sense.
+Computational Fluid Dynamics (CFD) is a field that deals with performing simulations of fluid flows. The task usually consists of setting certain initial conditions in a defined space and solving a large mathematical problem for each timestep of the simulation. Two central points of interest in CFD are the processing time needed for simulation and the accuracy of the results. It is clear that low processing time and high accuracy are desired but often a certain trade-off has to be made. With our research, we want to propose an innovative method for quickly inspecting the results of a simulation while keeping the accuracy high enough for them to make sense.
 
-We've concentrated our study on 2D simulations of an incompressible fluid flow around an object in a channel according to the Navier-Stokes equations. This setup has three adjustable parameters --- the inflow speed, the viscosity and the density of the fluid. The solutions of the simulation are three separate fields over the input space --- two velocity fields in $x$ and $y$ directions and a pressure field. These can be conveniently visualized as images over the input space. We are mainly interested in those image representations of the timeteps of the simulation. We call the image representations of the timesteps ``frames'' of the simulation. The sequence of this frames show how the flow develops over the course of the simulation.
+We've concentrated our study on 2D simulations of incompressible fluid flow around an object in a channel according to the Navier-Stokes equations. This setup has three adjustable parameters --- the inflow speed, the viscosity and the density of the fluid. The solutions of the simulation are three separate fields over the input space --- two velocity fields in $x$ and $y$ directions and a pressure field. These can be conveniently visualized as images over the input space. We are mainly interested in those image representations of the timesteps of the simulation. We call the image representations of the timesteps ``frames'' of the simulation. The sequence of these frames shows how the flow develops throughout the simulation.
 
-Classical methods for performing such simulations are based on partial differential equations (PDEs) solvers. The simulation setup is first formalized as a mathematical model in the form of a time dependent differential equation. In itself this equation is then transformed and brought into a suitable for solving form. A common technique is the finite difference method (FDM). This can provide accurate results at the cost of large computational time. The generated results are in form of raw numbers representing the velocities and pressure fields which have to be visualized separately. Our method aims to generate straight the visualizations while needing much lower computational time.
+Classical methods for performing such simulations are based on partial differential equations (PDEs) solvers. The simulation setup is first formalized as a mathematical model in the form of a time-dependent differential equation. In itself, this equation is then transformed and brought into a suitable for solving form. A common technique is the finite difference method (FDM). This can provide accurate results at the cost of large computational time. The generated results are in the form of raw numbers representing the velocities and pressure fields which have to be visualized separately. Our method aims to generate straight the visualizations while needing much lower computational time.
 
-In recent years there has been a large interest in neural networks and their capabilities. Convolutional Neural Networks (CNNs) in particular have been successfully applied in a wide variety of contexts and having proven to be a valuable tools. One of the major fields where the performance of CNNs is clearly recognized is image processing. A lot of research has shown how CNNs can achieve state-of-the-art performance in tasks like image classification, image segmentation of image-to-image mapping. With our research we try to tie CFD and CNNs together and show how image processing approaches can be applied to performing numerical simulations.
+In recent years there has been a large interest in neural networks and their capabilities. Convolutional Neural Networks (CNNs) in particular have been successfully applied in a wide variety of contexts and have proven to be a valuable tool. One of the major fields where the performance of CNNs is recognized is image processing. A lot of research has shown how CNNs can achieve state-of-the-art performance in tasks like image classification, image segmentation of image-to-image mapping. With our research, we try to tie CFD and CNNs together and show how image processing approaches can be applied to performing numerical simulations.
 
-In our research we want to investigate how a CNN can be used in order generate an image of the simulation in interest. We build models that take an image from the previous timestep as an input and transform it into an image for the next timestep. The built CNNs can also take certain parameters of the simulation and transform the image in accordance with these parameters. With this approach we are trying to transform the numerical task of calculating a timestep of a simulation into an image processing task.
+In our work, we want to investigate how CNN can be used to generate an image of the simulation in interest. We build models that take an image from the previous timestep as an input and transform it into an image for the next timestep. The built CNNs can also take certain parameters of the simulation and transform the image in accordance with these parameters. With this approach, we are trying to transform the numerical task of calculating a timestep of simulation into an image processing task.
 
-We try to apply the approach of [pix2pix] in our work. In recent years GAN show impressive results in image generation. Conditional GANs (cGANs) extend this capabilities of the generator network and allow it to learn image-to-image translation tasks. We wanted to show that conditional GANs can be used in the context of numerical simulations. In this case, the generation of a frame of a simulation is conditioned on the previous frame of the same simulation.
+We try to apply the approach of [pix2pix] in our work. In recent years GANs show impressive results in image generation. Conditional GANs (cGANs) extend these capabilities of the generator network and allow it to learn image-to-image translation tasks. We wanted to show that conditional GANs can be used in the context of numerical simulations. In this case, the generation of a frame of a simulation is conditioned on the previous frame of the same simulation.
 
-The goal of our research is to see to what extend the described approach is viable. We achieve that by investigating how a cGANs generalizes the different parameters of the investigated simulation. Two subsets of the parameters are defined --- fluid parameters (viscosity and density) and inflow speed of the fluid. For each of these two subsets we train a separate models and evaluate their performance in different use cases. A baseline model that does not take parameters into account is also built. We give more details on the models in section \refsec{methodology}.
+The goal of our research is to see to what extent the described approach is viable. We achieve that by investigating how a cGANs generalizes the different parameters of the investigated simulation. Two subsets of the parameters are defined --- fluid parameters (viscosity and density) and the inflow speed of the fluid. For each of these two subsets, we train separate models and evaluate their performance in different use cases. A baseline model that does not take parameters into account is also built. We give more details on the models in section \refsec{methodology}.
 
-The built models are evaluated from two points of view. Firstly, as the output of the network is meant for a human observer, we evaluate the generated images based on their perceived fidelity. Secondly, as the networks tries to model a numerical task, we also compare the real and generated images in an objective manner by measuring the actual differences between them.
+The built models are evaluated from two points of view. Firstly, as the output of the network is meant for a human observer, we evaluate the generated images based on their perceived fidelity. Secondly, as the networks try to model a numerical task, we also compare the real and generated images objectively by measuring the actual differences between them.
 
-Because of the nature of our task, two evaluation cases are given. On the one side, we want to see how the networks perform while predicting individual images. That is, a network performs a single simulation timestep and the results of that are evaluated. On the other side, we also want to see how the inaccuracies in the predicted images can accumulate over time. Hence also evaluate the models by recursive application where the output of the network is used again as an input for certain amount of timesteps. More details about the evaluations are given in \refsec{eval}.
+Because of the nature of our task, two evaluation cases are given. On the one side, we want to see how the networks perform while predicting individual images. That is, a network performs a single simulation timestep and the results of that are evaluated. On the other side, we also want to see how the inaccuracies in the predicted images can accumulate over time. Hence also evaluate the models by recursive application where the output of the network is used again as an input for a certain amount of timesteps. More details about the evaluations are given in \refsec{eval}.
 
-Lastly, we briefly want to motivate why we propose exactly this approach. Images represent a well defined input space as every pixel can take limited range of values --- $[0, 255]$. This makes the handling of data in image form convenient. Our assumption was that a neural network can process the information in this from more easily. Furthermore, convolutional neural networks are well established models for preforming image processing tasks. We were interested how a numerical task can be turn into an image processing task as in certain situations, the image result has the priority. We also think that the image processing can be done much quicker in a more optimal way. Those considerations urged us to conduct the research presented in this paper.
+Lastly, we briefly want to motivate why we propose exactly this approach. Images represent a well-defined input space as every pixel can take a limited range of values --- $[0, 255]$. This makes the handling of data in image form convenient. We assumed that a neural network can process the information in this form more easily. Furthermore, convolutional neural networks are well-established models for performing image processing tasks. We were interested in how a numerical task can be turned into an image processing task as in certain situations, the image result has the priority. We also think that the image processing can be done much quicker in a more optimal way. Those considerations urged us to conduct the research presented in this paper.
 
 \section{Related Work}\label{related_work}
 
 \section{Methodology}\label{methodology}
-The task is to build a network that can predict the next frame of the simulation based on the previous one. Each frame represents a timestep of the simulation and consists of a three channel image. Two of the channels encode the velocity fields in both directions and the third channel is the pressure field of the fluid. We were interested in how the usage of the pressure field affects the performance of the built models. Therefore, for each model two variants are trained --- one that uses the pressure field and one that does not.
+The task is to build a network that can predict the next frame of the simulation based on the previous one. Each frame represents a time step of the simulation and consists of a three-channel image. Two of the channels encode the velocity fields in both directions and the third channel is the pressure field of the fluid. We were interested in how the usage of the pressure field affects the performance of the built models. Therefore, for each model two variants are trained --- one that uses the pressure field and one that does not.
 
 We did not construct a single holistic model that can handle all of the simulation's parameters. Our efforts were concentrated on building a couple of smaller ones that take into account subsets of the parameters. The studied models are:
 \begin{list}{$\circ$}{}
@@ -92,14 +64,14 @@ We did not construct a single holistic model that can handle all of the simulati
 \item[$\cdot$] A fluid inflow speed model --- the model receives the inflow speed of the fluid as an extra input. It is trained with data from several simulations with different inflow speeds.
 \item[$\cdot$] A viscosity and density model --- the model receives the viscosity and density of the fluid as extra inputs.
 \end{list}
-By evaluating each models we want to see how a network can generalize each of the parameter subsets and to what extent
+By evaluating each model we want to see how a network can generalize each of the parameter subsets and to what extent
 
 \subsection{Simulation Setup and Data generation}
-\emph{To study the performance of conditional GANs on generating frames of the concrete simulation we generated the training data ourselves. In what follows we give details about the process.} The training data was generated by performing numerous simulations of an incompressible fluid flow around a rectangular object in a channel. The simulations were modeled according to the Navier-Stokes equations for incompressible flow. Because we are interested in the image representations of the simulations, we are dealing only with the 2D case. There are several boundary conditions that describe the simulation setup:
+\emph{To study the performance of conditional GANs on generating frames of the concrete simulation we generated the training data ourselves. In what follows we give details about the process.} The training data was generated by performing numerous simulations of incompressible fluid flow around a rectangular object in a channel. The simulations were modeled according to the Navier-Stokes equations for incompressible flow. Because we are interested in the image representations of the simulations, we are dealing only with the 2D case. Several boundary conditions describe the simulation setup:
 \begin{list}{$\circ$}{}
 \item[$\cdot$] Inflow condition on the left side of the channel
 \item[$\cdot$] Outflow condition on the right side of the channel
-\item[$\cdot$] No slip condition on bottom and top side of the channel as well as the sides of the object.
+\item[$\cdot$] No-slip condition on the bottom and top side of the channel as well as the sides of the object.
 \end{list}
 The simulation setup has three separate adjustable parameters --- inflow speed $g$, fluid density $\rho$ and fluid viscosity $\nu$.
 \\
@@ -107,21 +79,21 @@ We generated three sets of simulations for training the three kinds of models.
 \begin{list}{$\circ$}{}
 \item[$\cdot$] constant: a single simulation with \ldots.
 \item[$\cdot$] varying inflow speed: \ldots simulations with different inflow speed. The inflow speeds are in the range of \ldots with a step of \ldots.
-\item[$\cdot$] varying viscosity and density of the fluid: \ldots simulations all with different fluid viscosity and density. The viscosity was in the range of \ldots with a step of \ldots and the density was in the range of \ldots with a step of \ldots. We used the product of the two parameter ranges to perform simulations with all of the possible combinations between the two parameters.
+\item[$\cdot$] varying viscosity and density of the fluid: \ldots simulations all with different fluid viscosity and density. The viscosity was in the range of \ldots with a step of \ldots and the density was in the range of \ldots with a step of \ldots. We used the product of the two-parameter ranges to perform simulations with all of the possible combinations between the two parameters.
 \end{list}
 
-The choice of the concrete values for the parameters is deliberate. All of the values are chosen so that the Reynolds number of the simulations in the range of [90, 450]. This keeps the flow laminar while still making it interesting enough. We were interested whether the built models can predict the emerging Kármán vortex street behind the object in the channel. Thus the Reynolds numbers were chosen so that the effect can occur.
+The choice of concrete values for the parameters is deliberate. All of the values are chosen so that the Reynolds number of the simulations in the range of [90, 450]. This keeps the flow laminar while still making it interesting enough. We were interested whether the built models can predict the emerging Kármán vortex street behind the object in the channel. Thus the Reynolds numbers were chosen so that the effect can occur.
 
-The simulations were performed numerically by solving the differential equation describing the flow --- the Navier-Stokes equation. This was done with a numerical solver library --- \emph{HiFlow} [] ---  that works on the base of Finite element method. The solver supports parallelization with MPI and OpenMP and we used 12 MPI processes to run each simulation. For all of the simulations the timestep for of solver was set to $0.035$ seconds. This means the a single timestep of the simulations corresponds to a $0.035$ seconds of physical time.
+The simulations were performed numerically by solving the differential equation describing the flow --- the Navier-Stokes equation. This was done with a numerical solver library --- \emph{HiFlow} [] ---  that works on the base of the Finite element method. The solver supports parallelization with MPI and OpenMP and we used 12 MPI processes to run each simulation. For all of the simulations, the timestep for of solver was set to $0.035$ seconds. This means a single time step of the simulations corresponds to a $0.035$ seconds of physical time.
 
-The numerical solver on itself cannot be used to render the simulation results to images. For this reason we used \emph{ParaView} to load the simulation data and exported it as a sequence of images in PNG format. We opted out for using grayscale images as early experiments with RGB-images did not deliver satisfying results. We used the default ``Grayscale'' color preset of ParaView to visualize the results. Each frame of the simulation was exported as three separate grayscale images. The images were finally cropped to select a subset of the space that contains the object and the space behind it.
+The numerical solver on itself cannot be used to render the simulation results to images. For this reason, we used \emph{ParaView} to load the simulation data and exported it as a sequence of images in PNG format. We opted out for using grayscale images as early experiments with RGB-images did not deliver satisfying results. We used the default ``Grayscale'' color preset of ParaView to visualize the results. Each frame of the simulation was exported as three separate grayscale images. The images were finally cropped to select a subset of the space that contains the object and space behind it.
 
-Because the number of simulations in each set is different, we also generated different number of images per simulation based on the corresponding set. For the constant dataset, we rendered 1904 frames of the simulation (66 seconds of simulated physical time). For the inflow speed dataset --- overall 10050 frames coming from the 40 simulations (335 frames per simulation for 12 seconds of simulated physical time). For the viscosity-density model --- overall 104328 frames from 334 simulation (322 frames per simulation for 11 seconds of simulated physical time). Even though the simulation in the different datasets represent different time intervals, they are all long enough to develop the flow patterns that we are interested in.
+Because the number of simulations in each set is different, we also generated a different number of images per simulation based on the corresponding set. For the constant dataset, we rendered 1904 frames of the simulation (66 seconds of simulated physical time). For the inflow speed dataset --- overall 10050 frames coming from the 40 simulations (335 frames per simulation for 12 seconds of simulated physical time). For the viscosity-density model --- overall 104328 frames from 334 simulations (322 frames per simulation for 11 seconds of simulated physical time). Even though the simulations in the different datasets represent different time intervals, they are all long enough to develop the flow patterns that we are interested in.
 
-After all images were generated, a test-train split was created for each of the datasets The split for the inflow speed and viscosity-density sets were done manually. For the inflow speed set, we selected every fourth simulation to be part of the test set and for the viscosity-density set --- every 25th. All other simulations are used for training. The split for the constant dataset was done at random. All of the splits result in a 80\% of the data being used for training and the rest for testing. It is important to note that all of the images in the test sets come from simulations with parameters that are not found for the simulations in the training sets. This means that the datasets are designed in a way to see if the models can generalize the parameters of the simulations and predict simulations with parameters that are unseen during the training.
+After all of the images were generated, a test-train split was created for each of the datasets The split for the inflow speed and viscosity-density sets were done manually. For the inflow speed set, we selected every fourth simulation to be part of the test set and for the viscosity-density set --- every 25th. All other simulations are used for training. The split for the constant dataset was done at random. All of the splits result in  80\% of the data being used for training and the rest for testing. It is important to note that all of the images in the test sets come from simulations with parameters that are not found for the simulations in the training sets. This means that the datasets are designed in a way to see if the models can generalize the parameters of the simulations and predict simulations with parameters that are unseen during the training.
 
 \subsection{Training approach and networks details}
-We base our generative models almost entirely on [pix2pix]. We use the conditional GAN approach to train a generator network that can perform image-to-image translation. As explained in [], the traditional GAN method uses a random vector $z$ as in input to the generator network $G$ to generate output $y$, $G:z \rightarrow y$. Conditional GANs also feed an input image $x$ to the generator, $G: x,z \rightarrow y$. Pix2Pix suggests that in certain cases the usage of $z$ can be usefully but we decided not to include for out generator as we want a deterministic network.
+We base our generative models almost entirely on [pix2pix]. We use the conditional GAN approach to train a generator network that can perform image-to-image translation. As explained in [], the traditional GAN method uses a random vector $z$ as in input to the generator network $G$ to generate output $y$, $G:z \rightarrow y$. Conditional GANs also feed an input image $x$ to the generator, $G: x,z \rightarrow y$. Pix2Pix suggests that in certain cases the usage of $z$ can be usefully but we decided not to include for our generator as we want a deterministic network.
 
 We adopt the objective for the discriminator network as we modify it slightly by leaving out the random vector $z$.
 \begin{equation}
@@ -139,43 +111,42 @@ G^* = \argminA_G \max_D \mathcal{L}_{cGAN}  + \lambda \mathcal{L}_{L1} (G)
 \end{equation}
 For all of the models we used $\lambda = 100$.
 
-\noindent\textbf{Networks Architectures:} For our generator we use the U-Net variant proposed in pix2pix. It is a standard encoder-decoder model that skip connections between parts of the encoder and the decoder. We also experimented with ResNet based generator but the results were not satisfactory. The network uses blocks of layers of the from convolution-normalization-ReLu. The encoder-decoder first downsamples the input till a bottleneck layer is reached and what follows is a upsampling to the original size of the input image.
+\noindent\textbf{Networks Architectures:} For our generator we use the U-Net variant proposed in pix2pix. It is a standard encoder-decoder model that skip connections between parts of the encoder and the decoder. We also experimented with ResNet based generator but the results were not satisfactory. The network uses blocks of layers of the from convolution-normalization-ReLu. The encoder-decoder first downsamples the input till a bottleneck layer is reached and what follows is an upsampling to the original size of the input image.
 
-For the discriminator we follow the method of pix2pix and we use their PatchGAN.\@ This is a convolutional network that examines only patches of the input. It tires to guess if each patch is from real or generated image. We use patches of size $70\times 70$ pixels.
+For the discriminator, we follow the method of pix2pix and we use their PatchGAN.\@ This is a convolutional network that examines only patches of the input. It tries to guess if each patch is from a real or generated image. We use patches of size $256\times 256$ pixels.
 
-\noindent\textbf{Training details:} We train the described three models with the generated datasets. When loading the images in memory, we first resize them to $1024\times 256$. We then apply random crops as well as add random noise to each channel of the images. We do this to force the generator to learn actual features of the simulation and make over-fitting harder. Before the input images are fed into the networks, we also multiply them with a mask of the object in the channel. This is an image that has zero value in the area where the object is located and one for every other location. The multiplication with the mask results in an input image with values of zero in the are of the object. The object mask itself is also given as an input to the generator network.
+\noindent\textbf{Training details:} We train the described three models with the generated datasets. When loading the images in memory, we first resize them to $1024\times 256$. We then apply random crops as well as add random noise to each channel of the images. We do this to force the generator to learn the actual features of the simulation and make over-fitting harder. Before the input images are fed into the networks, we also multiply them with a mask of the object in the channel. This is an image that has zero value in the area where the object is located and one for every other location. The multiplication with the mask results in an input image with values of zero in the area of the object. The object mask itself is also given as an input to the generator network.
 
-Two of the models also take certain simulation parameters as inputs. In all cases the parameters are real values. In order for the network to be able to use them as part of the input, we transform these values in a constant single channel images with a value equal to the one of the parameter. This means that for each simulation parameter there is an extra channel in the for the generator network. Thus, depending on the model being trained, the network can take anywhere between 3 (velocity fields and object mask) and 6 (velocity and pressure fields, object mask and two parameter channels) channel input. The output of the generator, however, can either be 2 or 3 channel image depending on whether the pressure field is used or not.
+Two of the models also take certain simulation parameters as inputs. In all cases, the parameters are real values. In order for the network to be able to use them as part of the input, we transform these values in constant single-channel images with a value equal to one of the parameters. This means that for each simulation parameter there is an extra channel in the for the generator network. Thus, depending on the model being trained, the network can take anywhere between 3 (velocity fields and object mask) and 6 (velocity and pressure fields, object mask and two parameter channels) channel input. The output of the generator, however, can either be 2 or 3 channel image depending on whether the pressure field is used or not.
 
-For the training procedure we follow the standard approach proposed by []. With each mini-batch we first optimize the discriminator and then the generator with the discussed objectives. We use Stochastic Gradient Descent [] with the Adam optimizer with a learning rate of $0.0002$ and momentum parameters $\beta_1=0.9$ and $\beta_2=0.999$.
+For the training procedure, we follow the standard approach proposed by []. With each mini-batch, we first optimize the discriminator and then the generator with the discussed objectives. We use Stochastic Gradient Descent [] with the Adam optimizer with a learning rate of $0.0002$ and momentum parameters $\beta_1=0.9$ and $\beta_2=0.999$.
 
 The used batch size for the constant and inflow speed models was set to 3 and for the viscosity-density models to 4. Those are relatively small numbers for batch sizes but [] suggests that the UNet architecture benefits from small batches in image-to-image translation problems. Our experiments confirmed this.
 
 Because of the differences in the amount of data available for training each model type, suitable epoch numbers were chosen for each of them. The constant models were trained for 45 epochs, the inflow speed models for 30 epochs and the viscosity-density models for 10 epochs.
 
-All of the models were trained and evaluated on a single Nvidia GTX 980Ti GPU.\@ The implementation of the models was done in the PyTorch python library for machine leaning.
+All of the models were trained and evaluated on a single Nvidia GTX 980Ti GPU.\@ The implementation of the models was done in the PyTorch python library for machine learning.
 
 \section{Evaluation}\label{eval}
-
 \noindent\textbf{Evaluation Metrics:} When it comes to the evaluation, we have two separate views of the results generated by the models.
 
-On one hand, we are dealing with image data that is meant to be perceived by human observer. This implies that full accuracy is not essential and therefore we place the importance on the perceived qualities of the results. This makes sense as in our case a human is concerned with the general development of the simulation over time. Under those consideration have chose appropriate metrics to compare the predicted simulation frames with the real ones. In this aspect, the first of the metrics that we have chose is Peak Signal to Noise Ratio (PSNR). It is related top the mean secured error (MSE) and it's given by
+On one hand, we are dealing with image data that is meant to be perceived by a human observer. This implies that full accuracy is not essential and therefore we place the importance on the perceived qualities of the results. This makes sense as in our case a human is concerned with the general development of the simulation over time. Under those considerations have chosen appropriate metrics to compare the predicted simulation frames with the real ones. In this aspect, the first of the metrics is Peak Signal to Noise Ratio (PSNR). It is related to the mean secured error (MSE) and it's given by
 \begin{equation}
 PSNR = 10 \cdot \log_{10}\left(\frac{255^2}{MSE}\right)
 \end{equation}
-PSNR is measured in decibel (dB) and it is a common metric used to evaluate lossy compression algorithms. It measures the difference between original and reconstructed image and considers the fidelity of the reconstruction. This makes the metric suitable in our case. Typical PSNR values of lossy image and video compression  algorithms are between $30$ and $50$ dB.
+PSNR is measured in decibel (dB) and it is a common metric used to evaluate lossy compression algorithms. It measures the difference between the original and reconstructed images and considers the fidelity of the reconstruction. This makes the metric suitable in our case. Typical PSNR values of lossy image and video compression algorithms are between $30$ and $50$ dB.
 
-When considering the perceived image quality, we also have decided to use correlation to compare the predicted and the real simulation frames. We think that if the predicted images differ only in a factor from the real ones, the models can accurately capture the relative difference between the pixels of the target image. For this reason we opted for also evaluating the results through correlation.
+When considering the perceived image quality, we also have decided to use correlation to compare the predicted and the real simulation frames. We think that if the predicted images differ only in a factor from the real ones, the models can accurately capture the relative difference between the pixels of the target image. For this reason, we opted for also evaluating the results through correlation.
 
-On the other hand, as we are dealing with a numerical task, we also wanted to evaluate the results in a more object manner. Classical solvers are evaluated in terms of the actual differences between the real and generated result and not the perceived differences. For those reasons, we have chosen two more metrics --- average difference and maximal differences. We calculated them based on differences between the corresponding pixels of the predicted and the real simulation frame. Both metrics are then averaged across the test set and are given in absolute values. The evaluation with these metrics should represent how well our models perform the simulation in the context of a CFD system.
+On the other hand, as we are dealing with a numerical task, we also wanted to evaluate the results more objectively. Classical solvers are evaluated in terms of the actual differences between the real and generated result and not the perceived differences. For those reasons, we have chosen two more metrics --- average difference and maximal differences. We calculated them based on differences between the corresponding pixels of the predicted and the real simulation frame. Both metrics are then averaged across the test set and are given in perceptual values. The evaluation with these metrics should represent how well our models perform the simulation in the context of a CFD system.
 
 \noindent\textbf{Details Evaluation:}
-\emph{In this subsection we want to give several details on the training and evaluating approach}
+\emph{In this subsection, we want to give several details on the training and evaluating approach}
 \begin{itemize}
 \item[$\cdot$] All models were trained from scratch and no pretraining or transfer-learning was undertaken.
 \item[$\cdot$] For each model, the whole training and evaluating procedure was done ten times with different seeds for the random number generators of our python scripts. We report the results of each run and give them in a form of error plots or explicitly give the variance of all runs.
-\item[$\cdot$] All of the reported results of for the individual runs are averaged across the simulation frames in the training sets.
-\item[$\cdot$] While performing the experiments, we did not tweak the hyper parameters of the models excessively. We did, however, tried several sets of hyper parameters until the models achieved satisfactory results. The exact hyper parameters are given in []
+\item[$\cdot$] All of the reported results for the individual runs are averaged across the simulation frames in the training sets.
+\item[$\cdot$] While performing the experiments, we did not tweak the hyperparameters of the models excessively. We did, however, tried several sets of hyperparameters until the models achieved satisfactory results. The exact hyperparameters are given in \refapp{app1}.
 \end{itemize}
 
 \noindent\textbf{Single Image Performance:}
@@ -185,9 +156,9 @@ As mentioned before, we have two evaluation strategies for the models. The first
 
 [Table] summarizes the results of the evaluation with the average and maximal difference metrics.
 
-The effects of the usage of the pressure field can be seen in the variance of the results. The pressure field has the potential to make the models better but in some runs it can also make them worse. We believe this is the case because the pressure fields increases the complexity of the data but it also carries information about the simulation that can be useful for the networks.
+The effects of the usage of the pressure field can be seen in the variance of the results. The pressure field has the potential to make the models better but in some runs, it can also make them worse. We believe this is the case because the pressure fields increase the complexity of the data but it also carries information about the simulation that can be useful for the networks.
 
-Based on our experiments, we can say that achieving good performance was the hardest for the constant model. We attribute that to the limited data with which it was trained --- only a single simulation. Contrary to the intuition, the more varied data is easier to predict, as it can be seen in the results for the inflow speed and viscosity-density models. We also believe, that a bigger test set can better estimate the performance of our models. This probably also contributes to the worse results for the constant models.
+Based on our experiments, we can say that achieving good performance was the hardest for the constant model. We attribute that to the limited data with which it was trained --- only a single simulation. Contrary to the intuition, the more varied data is easier to predict, as it can be seen in the results for the inflow speed and viscosity-density models. We also believe that a bigger test set can better estimate the performance of our models. This probably also contributes to the worse results for the constant models.
 
 \begin{figure}  
 
@@ -258,33 +229,58 @@ Based on our experiments, we can say that achieving good performance was the har
 
 \begin{table}
   \begin{center}
-    \begin{tabular}{l|c|c}
-      Model type & Max difference &  Average difference\\
+    \begin{tabular}{lcc|cc}
       \hline
-      Constant & 0.5 &  0.5 \\
-      Inflow speed &  0.5 &  0.5 \\
-      Viscosity-density &  0.5  &  0.5 \\
+      \hline
+      Model type & \multicolumn{2}{c|}{\underline{Max difference}}  &  \multicolumn{2}{c}{\underline{Average difference}}\\
+      \multicolumn{3}{c|}{}&&\\
+                 & With pr. & without pr.  &  With pr.& without pr.\\
+      \hline
+      Constant          &  14.6(3.89)&44.0(3.1e+02)&0.599(0.0818)&0.721(0.294)  \\
+
+      Inflow speed      &  32.2(0.297)&45.7(1.47)&0.546(0.00217)&0.929(0.00533) \\
+
+      Viscosity-density &  57.0(1.8e+03)&14.7(7.04)&13.8(1.8e+02)&0.374(0.00824) \\
     \end{tabular}
   \end{center}
   \caption{\label{tab:table-name} Your caption.}
 \end{table}
 
 \noindent\textbf{Recursive Application Performance:}
-With this evaluation case we want to see how our models handle recursive application. That is, the output of the network is used again as an input for the prediction of the next simulation frame.
+With this evaluation case, we want to see how our models handle recursive application. That is, the output of the network is used again as an input for the prediction of the next simulation frame.
 
-For each recursive evaluation we generate 40 frames of the corresponding simulation. We did not in any was post-processed the output of the networks before feeding it as an input. We calculate the discussed metrics for each of the predicted frames while comparing them to the corresponding real one.
+For each recursive evaluation, we generate 40 frames of the corresponding simulation. We did not in any was post-processed the output of the networks before feeding it as an input. We calculate the discussed metrics for each of the predicted frames while comparing them to the corresponding real one.
 
-In our experiments, we performed several recursive evaluation for each simulation while starting at frames with different index. We wanted to see how a different starting point in the simulation can affect the frames predicted by the models.
+In our experiments, we performed several recursive evaluations for each simulation while starting at frames with different indexes. We wanted to see how a different starting point in the simulation can affect the frames predicted by the models.
 
 The viscosity-density and inflow speed models are evaluated with several simulations with different parameters. As it is unpracticed to give the results of the evaluation of each simulation, here we present only several of them. The showed results, however, are representative of the general performance of our models. For this section, We also limit ourselves only to models that do use the pressure field of the simulations.
 
-The constant model is evaluated with a single simulation --- the one it was trained with. [fig] presents the results of the recursive application. During the evaluation we noticed that the models can more accurately predict a simulation when the starting frame is further in the simulation. That is, its index relative to the first frame is higher. The plots for the constant model in [fig] illustrate this.
+The constant model is evaluated with a single simulation --- the one it was trained with. [fig] presents the results of the recursive application. During the evaluation, we noticed that the models can more accurately predict a simulation when the starting frame is further in the simulation. That is, its index relative to the first frame is higher. The plots for the constant model in [fig] illustrate this.
 
-For the inflow speed model we present the results from three different simulations in [fig]. We can see the same trend that predicting frames with smaller index is harder. We, however, like to note that the networks appear to be handling the parameters properly and adjust the predicted frames accordingly. [fig] presents the results of the viscosity-density model.
+For the inflow speed model, we present the results from three different simulations in [fig]. We can see the same trend that predicting frames with smaller index is harder. We, however, like to note that the networks appear to be handling the parameters properly and adjust the predicted frames accordingly. [fig] presents the results of the viscosity-density model.
 
-We noticed that across all model types, for some of the predicted frames, certain visual artifacts can occur. In some cases those are in the form of a pattern that spans across the image. This pattern seem to be recognized by the models as not part of the flow and does not disrupt the structure of the flow. Other artifacts, however, can look much more like features of the fluid flow. In this case, the network will develop them as it develops the real flow. These artifacts accumulate with each predicted frame and become apparent after around the 10.\@ frame. In our experiments we managed to minimize the artifacts by making the networks bigger but we never could mitigate them completely.
+We noticed that across all model types, for some of the predicted frames, certain visual artifacts can occur. In some cases, those are in the form of a pattern that spans across the image. This pattern seems to be recognized by the models as not part of the flow and does not disrupt the structure of the flow. Other artifacts, however, can look much more like features of the fluid flow. In this case, the network will develop them as it develops the real flow. These artifacts accumulate with each predicted frame and become apparent after around the 10.\@ frame. In our experiments, we managed to minimize the artifacts by making the networks bigger but we never could mitigate them completely.
 
-We again do not explicitly give the correlation between the predicted and real frames. In all cases the correlation stayed very close to $1$ and varied in the range $[0.98, 0.99998]$. The CFD-metrics are summarized in [table].
+We again do not explicitly give the correlation between the predicted and real frames. In all cases, the correlation stayed very close to $1$ and varied in the range $[0.98, 0.99998]$. The CFD-metrics are summarized in [table].
+
+\begin{table}
+  \begin{center}
+    \begin{tabular}{lcc|cc}
+      \hline
+      \hline
+      Model type & \multicolumn{2}{c|}{\underline{Max difference}}  &  \multicolumn{2}{c}{\underline{Average difference}}\\
+      \multicolumn{3}{c|}{}&&\\
+                 & With pr. & without pr.  &  With pr.& without pr.\\
+      \hline
+      Constant          &  14.6(3.89)&44.0(3.1e+02)&0.599(0.0818)&0.721(0.294)  \\
+
+      Inflow speed      &  32.2(0.297)&45.7(1.47)&0.546(0.00217)&0.929(0.00533) \\
+
+      Viscosity-density &  57.0(1.8e+03)&14.7(7.04)&13.8(1.8e+02)&0.374(0.00824) \\
+    \end{tabular}
+  \end{center}
+  \caption{\label{tab:table-name} Your caption.}
+\end{table}
 
 \begin{figure}[H]
   \begin{subfigure}{.5\textwidth}
@@ -404,16 +400,14 @@ We again do not explicitly give the correlation between the predicted and real f
 \end{figure}
 
 \section{Conclusion}\label{conclusion}
-
 The results presented in this paper suggest that solving a numerical task trough image-to-image translation is can be a viable approach. We showed how conditional GANs can be used to learn the image representations of the solutions of a fluid simulation according to the Navier-Stokes equations. We built several models that can generalize different parts of the parameters of the simulations and gave concrete numbers that quantify the results.
 
-We see our work as a preliminary research and we believe that the approach can be further developed and investigated. Strategies for improving the models that were considered but not implemented include:
+We see our work as preliminary research and we believe that the approach can be further developed and investigated. Strategies for improving the models that were considered but not implemented include:
 \begin{itemize}
-\item[$\cdot$] using a LSTM layer in the networks --- our models have the limitation that during training they don't know about the artifact on the images caused by themselves. We think a LSTM layer can mitigate this problem.
+\item[$\cdot$] using an LSTM [] layer in the networks --- our models have the limitation that during training they don't know about the artifact on the images caused by themselves. We think an LSTM layer can mitigate this problem.
 \item[$\cdot$] preprocessing the input for and postprocessing the output of the networks --- morphological operations like opening and closing can also be used to minimize the artifacts in the predicted frames.
-\item[$\cdot$] further investigation of the effects of using RGB-images instead of grayscale ones.
+\item[$\cdot$] further investigation of the effects of using RGB-images instead of grayscale ones. 
 \end{itemize}
-
 
 \clearpage
 \bibliographystyle{splncs04}
@@ -423,13 +417,13 @@ We see our work as a preliminary research and we believe that the approach can b
 \renewcommand{\thesection}{\Alph{section}}%
 
 \section{Networks architectures and hyperparameters}
-\emph{Here we give the exact details on the architectures of the used networks.}
-The code for all of the models and experiments can be found at \url{https://github.com/palikar/flow_predict}.
+\label{app1}
+\emph{Here we give the exact details on the architectures of the used networks.} The code for all of the models and experiments can be found at \url{https://github.com/palikar/flow_predict}.
 
-The architectures are almost entirely based on [pix2pix, 44]. Both the generator and the discriminator networks are comprised of two types of blocks of layers. We will denote a Convolution-BatchNorm-ReLU block with $k$ filters with $Ck$ and Convolution-BatchNorm-Dropout-ReLU with $k$ filters $CDk$. The dropout rate for each dropout layers is 50\%. All convolutions use $4\times4$ filters applied with a stride of $2$.
+The architectures are almost entirely based on [pix2pix, 44]. Both the generator and the discriminator networks are comprised of two types of blocks of layers. We will denote a Convolution-BatchNorm-ReLU block with $k$ filters with $Ck$ and Convolution-BatchNorm-Dropout-ReLU with $k$ filters $CDk$. The dropout rate for each dropout layer is 50\%. All convolutions use $4\times4$ filters applied with a stride of $2$.
 
 \noindent\textbf{Generator Architecture:}
-The generator is an follows the encoder-decoder principle. All model types use 6 layer encoder and decoder. The model types differ only in the amount of filters that they have in the blocks. As we use the U-Net architecture, the there are also skip connections between each block $i$ in the encoder and the block $n-i$ in the decoder where $n$ is the total number of blocks in the network. The skip connections concatenate the results the both blocks $i$ and $i-i$.
+The generator is an follows the encoder-decoder principle. All model types use 6 layer encoder and decoder. The model types differ only in the number of filters that they have in the blocks. As we use the U-Net architecture, there are also skip connections between each block $i$ in the encoder and the block $n-i$ in the decoder where $n$ is the total number of blocks in the network. The skip connections concatenate the results both blocks $i$ and $i-i$.
 
 The concrete encoder-decoders for each model type are as follows:
 \begin{itemize}
@@ -444,7 +438,7 @@ The concrete encoder-decoders for each model type are as follows:
   \emph{Decoder}: \texttt{CD512-C1024-C1024-C512-C256-C128}
 \end{itemize}
 
-The ReLUs in the encoders are leaky (slope of $0.2$) and those in the decoders are not. At the end of each decoder there is also a convolution layer that maps to the final channel count of the output. This final convolution is followed by a $\tanh$-function.
+The ReLUs in the encoders are leaky (slope of $0.2$) and those in the decoders are not. At the end of each decoder, there is also a convolution layer that maps to the final channel count of the output. This final convolution is followed by a $\tanh$-function.
 
 \noindent\textbf{Discriminator Architecture:}
 We adopt the $70\times70$ variant of the decoder form [pix2pix]. The architecture is:\newline
@@ -452,8 +446,7 @@ We adopt the $70\times70$ variant of the decoder form [pix2pix]. The architectur
 
 This configuration results in a receptive field of $70\times70$. This means that for each $70\times70$ region of the input, the discriminator tries to guess if the region is from a real image or from a generated one.
 
-All of the ReLUs are leaky (slope of $0.2$). Also, a final convolution is applied after the last layers that produced the a dimensional output of the discriminator. A sigmoid function is applied after the convolution.
-
+All of the ReLUs are leaky (slope of $0.2$). Also, a final convolution is applied after the last layers that produced the one-dimensional output of the discriminator. A sigmoid function is applied after the convolution.
 \end{subappendices}
 
 
