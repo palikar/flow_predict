@@ -79,7 +79,7 @@ class Evaluator:
 
     def recusive_application_performance(self, net, dataset, split_point, samples=20):
         print('===> Evaluating performance of recursive application')
-
+        
         path = os.path.join(config['output_dir'], self.output_name, 'recursive')
         mkdir(path)
 

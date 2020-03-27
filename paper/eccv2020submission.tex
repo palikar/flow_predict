@@ -45,7 +45,7 @@ In our work, we want to investigate how CNN can be used to generate an image of 
 
 We try to apply the approach of [pix2pix] in our work. In recent years GANs show impressive results in image generation. Conditional GANs (cGANs) extend these capabilities of the generator network and allow it to learn image-to-image translation tasks. We wanted to show that conditional GANs can be used in the context of numerical simulations. In this case, the generation of a frame of a simulation is conditioned on the previous frame of the same simulation.
 
-The goal of our research is to see to what extent the described approach is viable. We achieve that by investigating how a cGANs generalizes the different parameters of the investigated simulation. Two subsets of the parameters are defined --- fluid parameters (viscosity and density) and the inflow speed of the fluid. For each of these two subsets, we train separate models and evaluate their performance in different use cases. A baseline model that does not take parameters into account is also built. We give more details on the models in section \refsec{methodology}.
+The goal of our research is to see to what extent the described approach is viable. We achieve that by investigating how a cGANs generalizes the different parameters of the investigated simulation. Two subsets of the parameters are defined --- fluid parameters (viscosity and density) and the inflow speed of the fluid. For each of these two subsets, we train separate models and evaluate their performance in different use cases. A baseline model that does not take parameters into account is also built. We give more details on the models in \refsec{methodology}.
 
 The built models are evaluated from two points of view. Firstly, as the output of the network is meant for a human observer, we evaluate the generated images based on their perceived fidelity. Secondly, as the networks try to model a numerical task, we also compare the real and generated images objectively by measuring the actual differences between them.
 
@@ -74,7 +74,7 @@ By evaluating each model we want to see how a network can generalize each of the
 \item[$\cdot$] No-slip condition on the bottom and top side of the channel as well as the sides of the object.
 \end{list}
 The simulation setup has three separate adjustable parameters --- inflow speed $g$, fluid density $\rho$ and fluid viscosity $\nu$.
-\\
+
 We generated three sets of simulations for training the three kinds of models.
 \begin{list}{$\circ$}{}
 \item[$\cdot$] constant: a single simulation with \ldots.
@@ -253,7 +253,7 @@ For each recursive evaluation, we generate 40 frames of the corresponding simula
 
 In our experiments, we performed several recursive evaluations for each simulation while starting at frames with different indexes. We wanted to see how a different starting point in the simulation can affect the frames predicted by the models.
 
-The viscosity-density and inflow speed models are evaluated with several simulations with different parameters. As it is unpracticed to give the results of the evaluation of each simulation, here we present only several of them. The showed results, however, are representative of the general performance of our models. For this section, We also limit ourselves only to models that do use the pressure field of the simulations.
+The viscosity-density and inflow speed models are evaluated with several simulations with different parameters. As it is unpracticed to give the results of the evaluation of each simulation, here we present only several of them. The showed results, however, are representative of the general performance of our models. For this section, we also limit ourselves only to models that do use the pressure field of the simulations.
 
 The constant model is evaluated with a single simulation --- the one it was trained with. [fig] presents the results of the recursive application. During the evaluation, we noticed that the models can more accurately predict a simulation when the starting frame is further in the simulation. That is, its index relative to the first frame is higher. The plots for the constant model in [fig] illustrate this.
 
@@ -404,7 +404,7 @@ The results presented in this paper suggest that solving a numerical task trough
 
 We see our work as preliminary research and we believe that the approach can be further developed and investigated. Strategies for improving the models that were considered but not implemented include:
 \begin{itemize}
-\item[$\cdot$] using an LSTM [] layer in the networks --- our models have the limitation that during training they don't know about the artifact on the images caused by themselves. We think an LSTM layer can mitigate this problem.
+\item[$\cdot$] using an LSTM~\cite{lstm} layer in the networks --- our models have the limitation that during training they don't know about the artifact on the images caused by themselves. We think an LSTM layer can mitigate this problem.
 \item[$\cdot$] preprocessing the input for and postprocessing the output of the networks --- morphological operations like opening and closing can also be used to minimize the artifacts in the predicted frames.
 \item[$\cdot$] further investigation of the effects of using RGB-images instead of grayscale ones. 
 \end{itemize}
@@ -420,7 +420,7 @@ We see our work as preliminary research and we believe that the approach can be 
 \label{app1}
 \emph{Here we give the exact details on the architectures of the used networks.} The code for all of the models and experiments can be found at \url{https://github.com/palikar/flow_predict}.
 
-The architectures are almost entirely based on [pix2pix, 44]. Both the generator and the discriminator networks are comprised of two types of blocks of layers. We will denote a Convolution-BatchNorm-ReLU block with $k$ filters with $Ck$ and Convolution-BatchNorm-Dropout-ReLU with $k$ filters $CDk$. The dropout rate for each dropout layer is 50\%. All convolutions use $4\times4$ filters applied with a stride of $2$.
+The architectures are almost entirely based on~\cite{pix2pix} and [44]. Both the generator and the discriminator networks are comprised of two types of blocks of layers. We will denote a Convolution-BatchNorm-ReLU block with $k$ filters with $Ck$ and Convolution-BatchNorm-Dropout-ReLU with $k$ filters $CDk$. The dropout rate for each dropout layer is 50\%. All convolutions use $4\times4$ filters applied with a stride of $2$.
 
 \noindent\textbf{Generator Architecture:}
 The generator is an follows the encoder-decoder principle. All model types use 6 layer encoder and decoder. The model types differ only in the number of filters that they have in the blocks. As we use the U-Net architecture, there are also skip connections between each block $i$ in the encoder and the block $n-i$ in the decoder where $n$ is the total number of blocks in the network. The skip connections concatenate the results both blocks $i$ and $i-i$.
@@ -444,7 +444,7 @@ The ReLUs in the encoders are leaky (slope of $0.2$) and those in the decoders a
 We adopt the $70\times70$ variant of the decoder form [pix2pix]. The architecture is:\newline
 \texttt{C64-C128-C256-C512}
 
-This configuration results in a receptive field of $70\times70$. This means that for each $70\times70$ region of the input, the discriminator tries to guess if the region is from a real image or from a generated one.
+This configuration results in a receptive field of $256\times256$. This means that for each $256\times256$ region of the input, the discriminator tries to guess if the region is from a real image or from a generated one.
 
 All of the ReLUs are leaky (slope of $0.2$). Also, a final convolution is applied after the last layers that produced the one-dimensional output of the discriminator. A sigmoid function is applied after the convolution.
 \end{subappendices}
