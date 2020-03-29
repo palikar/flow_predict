@@ -162,6 +162,38 @@ The effects of the usage of the pressure field can be seen in the variance of th
 Based on our experiments, we can say that achieving good performance was the hardest for the constant model. We attribute that to the limited data with which it was trained --- only a single simulation. Contrary to the intuition, the more varied data is easier to predict, as it can be seen in the results for the inflow speed and viscosity-density models. We also believe that a bigger test set can better estimate the performance of our models. This probably also contributes to the worse results for the constant models.
 
 \begin{figure}
+  \begin{subfigure}{.3\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/charts/single_const_psnr}
+  \end{subfigure}
+  \begin{subfigure}{.3\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/charts/single_speed_psnr}
+  \end{subfigure}
+  \begin{subfigure}{.3\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/charts/single_fluid_psnr}
+  \end{subfigure}
+  \caption{The evaluation samples for the constant model show how inconsistent its performance can be. We assume this is due to the limited data that the consent model uses. In contrast to that, we see how the viscosity-density model achieves significantly higher average PSNR.\@ On the other hand, the usage of the pressure field decreases the performance of the viscosity-density model. The may be because of the overall complexity of the model. The pressure field only adds another component to it that makes it even more hard to train.}\label{fig:single_psnr}
+\end{figure}
+
+\begin{table}
+  \begin{center}
+    \begin{tabular}{lcc|cc}
+      \textbf{Model type} & \multicolumn{2}{c|}{\textbf{Max difference}}  &  \multicolumn{2}{c}{\textbf{Average difference}}\\
+      \hline 
+      \multicolumn{3}{c|}{}&&\\
+                 & \underline{With pr.} & \underline{without pr.}  &  \underline{With pr}.& \underline{without pr.}\\
+      
+      Constant           &14.56(1.97)&44.04(18.73)&0.60(0.29)&0.72(0.54)  \\
+      Inflow speed       &32.16(0.55)&45.68(1.21)&0.55(0.05)&0.93(0.07)   \\
+      Viscosity-density  &57.00(42.46)&14.70(2.65)&13.85(13.43)&0.37(0.09)\\
+    \end{tabular}
+  \end{center}
+  \caption{All of the given numbers are in percent. In the brackets we also give the standard deviation of the corresponding metric. }\label{tab:single}
+\end{table}
+
+\begin{figure}
 
   \begin{subfigure}{.5\textwidth}
     \centering
@@ -170,7 +202,6 @@ Based on our experiments, we can say that achieving good performance was the har
   \begin{subfigure}{.5\textwidth}
     \centering
     \includegraphics[width=1\linewidth]{imgs/single_constant_y}
-
   \end{subfigure}
   \begin{center}
     Constant model
@@ -193,75 +224,33 @@ Based on our experiments, we can say that achieving good performance was the har
     \centering
     \includegraphics[width=1\linewidth]{imgs/single_speed_y_2}
   \end{subfigure}
-
   \begin{center}
     Images form the inflow speed model. The upper two are from simulation with $g=1.3$ and the lower ones form simulation with $g=0.1$
   \end{center}
 
   \begin{subfigure}{.5\textwidth}
     \centering
-    % \caption{Fluid model, x-velocity fields}
-      \includegraphics[width=1\linewidth]{imgs/single_fluid_x_1}
+    \includegraphics[width=1\linewidth]{imgs/single_fluid_x_1}
   \end{subfigure}
   \begin{subfigure}{.5\textwidth}
     \centering
-    % \caption{Fluid model, y-velocity fields}
     \includegraphics[width=1\linewidth]{imgs/single_fluid_y_1}
   \end{subfigure}
 
   \begin{subfigure}{.5\textwidth}
     \centering
-    % \caption{Fluid model, x-velocity fields}
     \includegraphics[width=1\linewidth]{imgs/single_fluid_x_2}
   \end{subfigure}
   \begin{subfigure}{.5\textwidth}
     \centering
-    % \caption{Fluid model, y-velocity fields}
     \includegraphics[width=1\linewidth]{imgs/single_fluid_y_2}
   \end{subfigure}
-
   \begin{center}
   Images form the viscosity-density model. The upper two are from simulation with $\nu=1.3, \rho=2.3$ and the lower ones form simulation with $\nu=1.3, \rho=2.3$
   \end{center}
 
   \caption{Each image haw tow halves and the upper one shows the ground truth simulation frame. The lower half is the prediction of the model. In the left column, the images are from the x-velocity fie4ld of the simulation and in the right --- form the y-velocity field.}\label{fig:single_images}
 \end{figure}
-
-\begin{figure}
-  \begin{subfigure}{.3\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/charts/single_const_psnr}
-  \end{subfigure}
-  \begin{subfigure}{.3\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/charts/single_fluid_psnr}
-  \end{subfigure}
-  \begin{subfigure}{.3\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/charts/single_speed_psnr}
-  \end{subfigure}
-
-  \caption{}\label{fig:single_psnr}
-\end{figure}
-
-\begin{table}
-  \begin{center}
-    \begin{tabular}{lcc|cc}
-
-      \textbf{Model type} & \multicolumn{2}{c|}{\textbf{Max difference}}  &  \multicolumn{2}{c}{\textbf{Average difference}}\\
-      \hline 
-      \multicolumn{3}{c|}{}&&\\
-                 & \underline{With pr.} & \underline{without pr.}  &  \underline{With pr}.& \underline{without pr.}\\
-      
-      Constant          &  14.6(3.89)&44.0(3.1e+02)&0.599(0.0818)&0.721(0.294)  \\
-
-      Inflow speed      &  32.2(0.297)&45.7(1.47)&0.546(0.00217)&0.929(0.00533) \\
-
-      Viscosity-density &  57.0(1.8e+03)&14.7(7.04)&13.8(1.8e+02)&0.374(0.00824) \\
-    \end{tabular}
-  \end{center}
-  \caption{Your caption.}\label{tab:single}
-\end{table}
 
 \noindent\textbf{Recursive Application Performance:}
 With this evaluation case, we want to see how our models handle recursive application. That is, the output of the network is used again as an input for the prediction of the next simulation frame.
@@ -270,7 +259,7 @@ For each recursive evaluation, we generate 40 frames of the corresponding simula
 
 In our experiments, we performed several recursive evaluations for each simulation while starting at frames with different indexes. We wanted to see how a different starting point in the simulation can affect the frames predicted by the models.
 
-The viscosity-density and inflow speed models are evaluated with several simulations with different parameters. As it is impractical to give the results of the evaluation of each simulation, here we present only several of them. The showed results, however, are representative of the general performance of our models. For this section, we also limit ourselves only to models that do use the pressure field of the simulations.
+The viscosity-density and inflow speed models are evaluated with several simulations with different parameters. As it is impractical to give the results of the evaluation of each simulation, here we present only several of them. The showed results, however, are representative of the general performance of our models. For this section, we also limit ourselves only to models that do use the pressure field of the simulations. All of the given plots show the mean results for each frame across the evaluations of several models that differ only in the used seed during training. We also plot the standard divination across the evaluations.
 
 The constant model is evaluated with a single simulation --- the one it was trained with.~\reffig{fig:rec_const_psnr} presents the results of the recursive application. During the evaluation, we noticed that the models can more accurately predict a simulation when the starting frame is further in the simulation. That is, its index relative to the first frame is higher. The plots for the constant model in~\reffig{fig:rec_const_psnr} illustrate this.
 
@@ -285,7 +274,7 @@ For the inflow speed model, we present the results from two different simulation
     \centering
     \includegraphics[width=1\linewidth]{imgs/charts/constant_i190}
   \end{subfigure}  
-  \caption{}\label{fig:rec_const_psnr}
+  \caption{The simulation that starts at the 10.\@ frame exhibits unintuitive results. This happens because the PSNR is based on MSE and it can go up if the network produces a homogeneous black image. In this case the PSNR can get higher in the second of the predicted frames. This, however, does not meant that the visual fidelity of the frames is good.}\label{fig:rec_const_psnr}
 \end{figure}
 
 \begin{figure}
@@ -297,11 +286,9 @@ For the inflow speed model, we present the results from two different simulation
     \centering
     \includegraphics[width=1\linewidth]{imgs/charts/inflow_i1436}
   \end{subfigure}
-
   \begin{center}
-    Simulation
+    Recursive evaluations of the inflow speed model on simulation with $g=1.5$. To note is that this simulations was part of the training set. This can explain why the PSNR drops slightly faster on the next charts when it comes to the simulation starting at the 120.\@frame.
   \end{center}
-
   \begin{subfigure}{.5\textwidth}
     \centering
     \includegraphics[width=1\linewidth]{imgs/charts/inflow_39_s0}
@@ -310,12 +297,10 @@ For the inflow speed model, we present the results from two different simulation
     \centering
     \includegraphics[width=1\linewidth]{imgs/charts/inflow_39_s120}
   \end{subfigure}
-
   \begin{center}
-    Simulation
+    Recursive evaluations of the inflow speed model on simulation with $g=3.9358$.
   \end{center}
-  
-  \caption{}\label{fig:rec_speed_psnr}
+  \caption{In the evaluations of the inflow speed models, we consistently saw the same behavior as in the constant models. The simulations that at are started at a frame with smaller index are of a lower quality.}\label{fig:rec_speed_psnr}
 \end{figure}
 
 \begin{figure}
@@ -327,11 +312,9 @@ For the inflow speed model, we present the results from two different simulation
     \centering
     \includegraphics[width=1\linewidth]{imgs/charts/fluid_25_s120}
   \end{subfigure}
-
   \begin{center}
-    Simulation
+    Recursive evaluations of the viscosity-density model on simulation with $\rho=4.1764$ and $\nu=0.001023$.
   \end{center}
-
   \begin{subfigure}{.5\textwidth}
     \centering
     \includegraphics[width=1\linewidth]{imgs/charts/fluid_100_s0}
@@ -340,11 +323,9 @@ For the inflow speed model, we present the results from two different simulation
     \centering
     \includegraphics[width=1\linewidth]{imgs/charts/fluid_100_s120}
   \end{subfigure}
-
   \begin{center}
-    Simulation
+    Recursive evaluations of the viscosity-density model on simulation with $\rho=5.7647$ and $\nu=0.001517$.
   \end{center}
-
   \begin{subfigure}{.5\textwidth}
     \centering
     \includegraphics[width=1\linewidth]{imgs/charts/fluid_300_s0}
@@ -353,12 +334,10 @@ For the inflow speed model, we present the results from two different simulation
     \centering
     \includegraphics[width=1\linewidth]{imgs/charts/fluid_300_s120}
   \end{subfigure}
-
   \begin{center}
-    Simulation
-  \end{center}
-  
-  \caption{}\label{fig:rec_fluid_psnr}
+    Recursive evaluations of the viscosity-density model on simulation with $\rho=6.8235$ and $\nu=0.002876$.
+  \end{center}  
+  \caption{All of the simulations for the charts are from the test set of the viscosity-density model. The evaluations with starting frame of 0 are consistent with the results from the other models. The evaluations starting at frame 120 are, however, much more stable as indicated by the standard deviation. We again attribute that to the over all stability of the model due to the large amount of train data used to train the models of this type.}\label{fig:rec_fluid_psnr}
 \end{figure}
 
 We noticed that across all model types, for some of the predicted frames, certain visual artifacts can occur. In some cases, those are in the form of a pattern that spans across the image. This pattern seems to be recognized by the models as not part of the flow and does not disrupt the structure of the flow. Other artifacts, however, can look much more like features of the fluid flow. In this case, the network will develop them as it develops the real flow. These artifacts accumulate with each predicted frame and become apparent after around the 10.\@ frame. In our experiments, we managed to minimize the artifacts by making the networks bigger but we never could mitigate them completely.
@@ -382,7 +361,7 @@ We again do not explicitly give the correlation between the predicted and real f
       \emph{Frame 35}      &34.38(0.23) & 83.52(2.09)    &35.94(0.35) & 65.55(4.18)   \\      
     \end{tabular}
   \end{center}
-  \caption{Your caption.}\label{tab:recursive_inflow}
+  \caption{}\label{tab:recursive_inflow}
 \end{table}
 
 \begin{table}
@@ -580,3 +559,4 @@ All of the ReLUs are leaky (slope of $0.2$). Also, a final convolution is applie
 
 % LocalWords:  Convolutional timestep timesteps grayscale cGANs GAN
 % LocalWords:  preprocessing postprocessing hyperparameters HiFlow
+% LocalWords:  unintuitive

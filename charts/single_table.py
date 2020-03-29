@@ -29,36 +29,36 @@ def main():
     np_fluid_avrg = np.array([0.42235304314329736 , 0.5787415254237288 , 0.33393451463790447 , 0.30568432203389834 , 0.3313731041456016 , 0.3340954788386537 , 0.31267950693374424 ])
     np_fluid_max = np.array([16.124258474576273 , 14.990394260400619 , 13.283522534668721 , 19.36700442989214 , 11.396986710963457 , 11.501868842987145 , 16.20593278120185 ])
 
-    print("{:.3}({:.3})&{:.3}({:.3})&{:.3}({:.3})&{:.3}({:.3})".format(
+    print("{:.2f}({:.2f})&{:.2f}({:.2f})&{:.2f}({:.2f})&{:.2f}({:.2f})".format(
         np.mean(p_const_max),
-        np.var(p_const_max),
+        np.std(p_const_max),
         np.mean(np_const_max),
-        np.var(np_const_max),
+        np.std(np_const_max),
         np.mean(p_const_avrg),
-        np.var(p_const_avrg),
+        np.std(p_const_avrg),
         np.mean(np_const_avrg),
-        np.var(np_const_avrg)))
+        np.std(np_const_avrg)))
 
     
-    print("{:.3}({:.3})&{:.3}({:.3})&{:.3}({:.3})&{:.3}({:.3})".format(
+    print("{:.2f}({:.2f})&{:.2f}({:.2f})&{:.2f}({:.2f})&{:.2f}({:.2f})".format(
         np.mean(p_speed_max),
-        np.var(p_speed_max),
+        np.std(p_speed_max),
         np.mean(np_speed_max),
-        np.var(np_speed_max),
+        np.std(np_speed_max),
         np.mean(p_speed_avrg),
-        np.var(p_speed_avrg),
+        np.std(p_speed_avrg),
         np.mean(np_speed_avrg),
-        np.var(np_speed_avrg)))
+        np.std(np_speed_avrg)))
 
-    print("{:.3}({:.3})&{:.3}({:.3})&{:.3}({:.3})&{:.3}({:.3})".format(
+    print("{:.2f}({:.2f})&{:.2f}({:.2f})&{:.2f}({:.2f})&{:.2f}({:.2f})".format(
         np.mean(p_fluid_max),
-        np.var(p_fluid_max),
+        np.std(p_fluid_max),
         np.mean(np_fluid_max),
-        np.var(np_fluid_max),
+        np.std(np_fluid_max),
         np.mean(p_fluid_avrg),
-        np.var(p_fluid_avrg),
+        np.std(p_fluid_avrg),
         np.mean(np_fluid_avrg),
-        np.var(np_fluid_avrg)))
+        np.std(np_fluid_avrg)))
     
 
 if __name__ == '__main__':
