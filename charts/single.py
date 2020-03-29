@@ -6,6 +6,11 @@ import sys
 plt.style.use('ggplot')
 plt.rcParams.update({'figure.max_open_warning': 0})
 
+matplotlib.rc('xtick', labelsize=19)
+matplotlib.rc('ytick', labelsize=24)
+matplotlib.rcParams['xtick.labelsize'] = 32
+matplotlib.rcParams['ytick.labelsize'] = 32
+
 
 def constant_models():
 
@@ -22,9 +27,6 @@ def constant_models():
     labels.append('with pressure')
     labels.append('without pressure')
 
-    matplotlib.rc('xtick', labelsize=13)
-    matplotlib.rc('ytick', labelsize=17)
-
     plt.figure(figsize=(17, 10))
 
     x = [i for i in range(1, len(data.keys())+1)]
@@ -32,17 +34,17 @@ def constant_models():
     plt.boxplot(box_data, labels=labels)
 
     for (_, times), i  in zip(data.items(), x):
-        plt.scatter([i]*len(times), times, alpha=0.5, linewidths=None)
+        plt.scatter([i]*len(times), times,  s=[90]*len(times), alpha=0.5, linewidths=None)
 
 
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
 
-    plt.ylabel('PSNR', fontsize=16)
-    plt.title('Constant model (single image performance)', fontsize=17)
+    plt.ylabel('PSNR', fontsize=32)
+    plt.title('Constant model (single image performance)', fontsize=36)
 
     # plt.show()
-    plt.savefig('single_const_psnr.png')
+    plt.savefig('single_const_psnr.eps')
 
 
 def speed_models():
@@ -60,27 +62,26 @@ def speed_models():
     labels.append('with pressure')
     labels.append('without pressure')
 
-    matplotlib.rc('xtick', labelsize=13)
-    matplotlib.rc('ytick', labelsize=17)
-
     plt.figure(figsize=(17, 10))
 
     x = [i for i in range(1, len(data.keys())+1)]
 
+    
     plt.boxplot(box_data, labels=labels)
 
     for (_, times), i  in zip(data.items(), x):
-        plt.scatter([i]*len(times), times, alpha=0.5, linewidths=None)
+        plt.scatter([i]*len(times), times,  s=[90]*len(times), alpha=0.5, linewidths=None)
 
-
+    
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
 
-    plt.ylabel('PSNR', fontsize=17)
-    plt.title('Inflow speed model (single image performance)', fontsize=17)
+    plt.ylabel('PSNR', fontsize=32)
+    plt.title('Inflow speed model (single image performance)', fontsize=36)
 
     # plt.show()
-    plt.savefig('single_speed_psnr.png')
+
+    plt.savefig('single_speed_psnr.eps')
     
 
 def fluid_models():
@@ -99,28 +100,23 @@ def fluid_models():
     labels.append('with pressure')
     labels.append('without pressure')
 
-    matplotlib.rc('xtick', labelsize=13)
-    matplotlib.rc('ytick', labelsize=17)
-
     plt.figure(figsize=(17, 10))
 
     x = [i for i in range(1, len(data.keys())+1)]
 
-    plt.boxplot(box_data, labels=labels, fontsize=17)
+    plt.boxplot(box_data, labels=labels)
 
     for (_, times), i  in zip(data.items(), x):
-        plt.scatter([i]*len(times), times, alpha=0.5, linewidths=None)
+        plt.scatter([i]*len(times), times,  s=[90]*len(times), alpha=0.5, linewidths=None)
 
 
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
 
-    plt.ylabel('PSNR', fontsize=17)
-    plt.title('Viscosity-density model (single image performance)', fontsize=17)
+    plt.ylabel('PSNR', fontsize=32)
+    plt.title('Viscosity-density model (single image performance)', fontsize=36)
 
-    # plt.show()
-
-    plt.savefig('single_fluid_psnr.png')
+    plt.savefig('single_fluid_psnr.eps')
 
 
 

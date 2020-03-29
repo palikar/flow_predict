@@ -3,13 +3,13 @@
  (lambda ()
    (TeX-add-to-alist 'LaTeX-provided-package-options
                      '(("appendix" "title") ("hyperref" "pagebackref")))
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperref")
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperimage")
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperbaseurl")
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "nolinkurl")
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "url")
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "path")
    (add-to-list 'LaTeX-verbatim-macros-with-braces-local "href")
+   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "path")
+   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "url")
+   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "nolinkurl")
+   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperbaseurl")
+   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperimage")
+   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperref")
    (add-to-list 'LaTeX-verbatim-macros-with-delims-local "path")
    (TeX-run-style-hooks
     "latex2e"
@@ -29,14 +29,22 @@
     '("reftab" 1)
     '("refsec" 1)
     '("reffig" 1)
-    "argminA"
+    "thickhline"
     "ECCVSubNumber")
    (LaTeX-add-labels
     "introduction"
     "related_work"
     "methodology"
     "eval"
-    "tab:table-name"
+    "fig:single_images"
+    "fig:single_psnr"
+    "tab:single"
+    "fig:const_sim"
+    "fig:fluid_sim"
+    "tab:recursive"
+    "fig:rec_const_psnr"
+    "fig:rec_speed_psnr"
+    "fig:rec_fluid_psnr"
     "conclusion"
     "app1")
    (LaTeX-add-bibliographies
