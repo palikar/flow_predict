@@ -18,8 +18,8 @@ def constant_models():
     labels = []
     box_data = []
 
-    data['with'] = [42.4267183875451 , 43.78148944993617]
-    data['without'] = [37.73239422055144 , 42.99703106930973 , 43.02076006161946]
+    data['with'] = [42.4267183875451 , 43.78148944993617, 38.40345812572034 , 31.116301500139375 , 30.37560326297156 , 29.362363717887963 , 34.59130832566979 , 38.37602182790361 , 33.13829763767398 , 41.07864349729163]
+    data['without'] = [37.73239422055144 , 42.99703106930973 , 43.02076006161946, 42.380817879629305 , 33.832192800572635 , 37.29558487343366 , 35.618496045124644 , 40.663238902192695 , 37.53103078541188 , 29.66568572886583 , 38.50229110243776]
 
     box_data.append(data['with'])
     box_data.append(data['without'])
@@ -27,7 +27,7 @@ def constant_models():
     labels.append('with pressure')
     labels.append('without pressure')
 
-    plt.figure(figsize=(17, 10))
+    plt.figure(figsize=(12, 7))
 
     x = [i for i in range(1, len(data.keys())+1)]
 
@@ -40,8 +40,8 @@ def constant_models():
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
 
-    plt.ylabel('PSNR', fontsize=32)
-    plt.title('Constant model (single image performance)', fontsize=36)
+    plt.ylabel('PSNR', fontsize=36)
+    plt.title('Constant model', fontsize=36)
 
     # plt.show()
     plt.savefig('single_const_psnr.eps')
@@ -53,8 +53,9 @@ def speed_models():
     labels = []
     box_data = []
 
-    data['with'] = [32.70363132431171 , 32.37544378610233 , 33.22313390003679, 33.80816838419148 , 33.1802077172184 , 33.873630834872216 , 33.95285390084521 ,33.67447951182013 , 33.179886956867975 , 34.17147778053133]
-    data['without'] = [32.038006486935075 , 32.192804717704554 , 32.184300070511554, 32.48270450488618 , 32.311327037629844 , 32.19408204987984 , 32.35434794736937 , 32.15279210676768 , 32.04192581940871 , 32.10279251816919]
+    data['with'] = [33.97098612536543 , 33.09168803458099 , 33.92103725434269 , 33.358489909948055 , 33.965947654564765 , 32.914941686462726 , 33.229815073301175 , 32.452859691353765 , 32.991500322533646 , 34.54424296545302]
+    
+    data['without'] = [31.578030727496312, 31.634777717271934, 30.622411383150723, 31.947708632439785, 31.523502668755157, 31.32136801097808 , 31.247603430043284,31.821169342440722, 31.638146874797222 , 30.740445801233186]
 
     box_data.append(data['with'])
     box_data.append(data['without'])
@@ -62,7 +63,7 @@ def speed_models():
     labels.append('with pressure')
     labels.append('without pressure')
 
-    plt.figure(figsize=(17, 10))
+    plt.figure(figsize=(12, 7))
 
     x = [i for i in range(1, len(data.keys())+1)]
 
@@ -76,8 +77,8 @@ def speed_models():
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
 
-    plt.ylabel('PSNR', fontsize=32)
-    plt.title('Inflow speed model (single image performance)', fontsize=36)
+    plt.ylabel('PSNR', fontsize=36)
+    plt.title('Inflow speed model', fontsize=36)
 
     # plt.show()
 
@@ -90,9 +91,9 @@ def fluid_models():
     labels = []
     box_data = []
 
-    data['with'] = [40.21078091833494 , 41.00434320329602 , 40.051247189433234 , 40.80200386644962 , 42.235433361144615 , 39.74997269237842 , 41.39466838557988 , 42.59324688714353 , 41.08656559139025 , 39.13305476736238 , 44.14030779137574 , 37.84617269863215]
+    data['with'] = [41.00434320329602 ,40.80200386644962 , 42.235433361144615 , 39.74997269237842 , 41.39466838557988 , 42.59324688714353 , 41.08656559139025 , 39.13305476736238 , 44.14030779137574 , 37.84617269863215]
 
-    data['without'] = [44.75477512310624 , 45.09586318757287 , 47.97932840785287 , 43.976377566130566 , 43.42009224407885]
+    data['without'] = [44.75477512310624 , 45.09586318757287 , 47.97932840785287 , 43.976377566130566 , 43.42009224407885, 49.93111731579327 , 48.062160856770774 , 47.53947080459642 , 48.03952387801668 , 47.21545498004758 ]
 
     box_data.append(data['with'])
     box_data.append(data['without'])
@@ -100,7 +101,7 @@ def fluid_models():
     labels.append('with pressure')
     labels.append('without pressure')
 
-    plt.figure(figsize=(17, 10))
+    plt.figure(figsize=(12, 7))
 
     x = [i for i in range(1, len(data.keys())+1)]
 
@@ -113,8 +114,8 @@ def fluid_models():
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
 
-    plt.ylabel('PSNR', fontsize=32)
-    plt.title('Viscosity-density model (single image performance)', fontsize=36)
+    plt.ylabel('PSNR', fontsize=36)
+    plt.title('Viscosity-density model', fontsize=36)
 
     plt.savefig('single_fluid_psnr.eps')
 

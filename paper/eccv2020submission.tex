@@ -270,156 +270,11 @@ For each recursive evaluation, we generate 40 frames of the corresponding simula
 
 In our experiments, we performed several recursive evaluations for each simulation while starting at frames with different indexes. We wanted to see how a different starting point in the simulation can affect the frames predicted by the models.
 
-The viscosity-density and inflow speed models are evaluated with several simulations with different parameters. As it is unpracticed to give the results of the evaluation of each simulation, here we present only several of them. The showed results, however, are representative of the general performance of our models. For this section, we also limit ourselves only to models that do use the pressure field of the simulations.
+The viscosity-density and inflow speed models are evaluated with several simulations with different parameters. As it is impractical to give the results of the evaluation of each simulation, here we present only several of them. The showed results, however, are representative of the general performance of our models. For this section, we also limit ourselves only to models that do use the pressure field of the simulations.
 
-The constant model is evaluated with a single simulation --- the one it was trained with. \reffig{fig:rec_const_psnr} presents the results of the recursive application. During the evaluation, we noticed that the models can more accurately predict a simulation when the starting frame is further in the simulation. That is, its index relative to the first frame is higher. The plots for the constant model in \reffig{fig:rec_const_psnr} illustrate this.
+The constant model is evaluated with a single simulation --- the one it was trained with.~\reffig{fig:rec_const_psnr} presents the results of the recursive application. During the evaluation, we noticed that the models can more accurately predict a simulation when the starting frame is further in the simulation. That is, its index relative to the first frame is higher. The plots for the constant model in~\reffig{fig:rec_const_psnr} illustrate this.
 
-
-For the inflow speed model, we present the results from two different simulations in \reffig{fig:rec_speed_psnr}. We can see the same trend that predicting frames with smaller index is harder. We, however, like to note that the networks appear to be handling the parameters properly and adjust the predicted frames accordingly.\reffig{fig:rec_fluid_psnr} presents two simulations of the viscosity-density model.
-
-We noticed that across all model types, for some of the predicted frames, certain visual artifacts can occur. In some cases, those are in the form of a pattern that spans across the image. This pattern seems to be recognized by the models as not part of the flow and does not disrupt the structure of the flow. Other artifacts, however, can look much more like features of the fluid flow. In this case, the network will develop them as it develops the real flow. These artifacts accumulate with each predicted frame and become apparent after around the 10.\@ frame. In our experiments, we managed to minimize the artifacts by making the networks bigger but we never could mitigate them completely.
-
-We again do not explicitly give the correlation between the predicted and real frames. In all cases, the correlation stayed very close to $1$ and varied in the range $[0.98, 0.99998]$. The CFD-metrics are summarized in [].
-
-\begin{figure}[H]
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/constant/x_step_1}
-  \end{subfigure}
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/constant/y_step_1}
-  \end{subfigure}
-
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/constant/x_step_5}
-  \end{subfigure}
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/constant/y_step_5}
-  \end{subfigure}
-
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/constant/x_step_10}
-  \end{subfigure}
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/constant/y_step_10}
-  \end{subfigure}
-
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/constant/x_step_15}
-  \end{subfigure}
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/constant/y_step_15}
-  \end{subfigure}
-
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/constant/x_step_20}
-  \end{subfigure}
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/constant/y_step_20}
-  \end{subfigure}
-
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/constant/x_step_25}
-  \end{subfigure}
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/constant/y_step_25}
-  \end{subfigure}
-
-  \caption{These frames are generated by the constant model. The artifacts become apparent after the 10.\@ one.}\label{fig:const_sim}
-\end{figure}
-
-\begin{figure}[H]
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/fluid/x_step_1}
-  \end{subfigure}
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/fluid/y_step_1}
-  \end{subfigure}
-
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/fluid/x_step_5}
-  \end{subfigure}
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/fluid/y_step_5}
-  \end{subfigure}
-
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/fluid/x_step_10}
-  \end{subfigure}
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/fluid/y_step_10}
-  \end{subfigure}
-
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/fluid/x_step_15}
-  \end{subfigure}
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/fluid/y_step_15}
-  \end{subfigure}
-
-
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/fluid/x_step_20}
-  \end{subfigure}
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/fluid/y_step_20}
-  \end{subfigure}
-
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/fluid/x_step_25}
-  \end{subfigure}
-  \begin{subfigure}{.5\textwidth}
-    \centering
-    \includegraphics[width=1\linewidth]{imgs/sims/fluid/y_step_25}
-  \end{subfigure}
-
-  \caption{Example frames generated by the viscosity-density model. The parameters for this particular simulation are $\nu=4.17647, \rho = 0.001, g=1.4$}\label{fig:fluid_sim}
-\end{figure}
-
-\begin{table}
-  \begin{center}
-    \begin{tabular}{l|cc|cc}
-      \textbf{Frame} & \multicolumn{2}{c|} {\shortstack{\textbf{Simulation}\\$\nu=4.17647, \rho = 0.001, g=1.4$}}  &  \multicolumn{2}{c}{\shortstack{\textbf{Simulation}\\$\nu=4.17647, \rho = 0.001, g=1.4$}}\\
-      \hline 
-                     &\multicolumn{2}{c|}{} &&\\
-                     & {Max difference} & {Average difference}  &  {Max difference} & {Average difference}\\
-      \emph{Frame 1}       &35    &35     &35    &35\\
-      \emph{Frame 5}       &35    &35     &35    &35\\
-      \emph{Frame 10}      &35    &35     &35    &35\\
-      \emph{Frame 15}      &35    &35     &35    &35\\
-      \emph{Frame 20}      &35    &35     &35    &35\\
-      \emph{Frame 25}      &35    &35     &35    &35\\
-      \emph{Frame 30}      &35    &35     &35    &35\\
-      \emph{Frame 35}      &35    &35     &35    &35\\
-      \emph{Frame 40}      &35    &35     &35    &35\\
-      
-      
-    \end{tabular}
-  \end{center}
-  \caption{Your caption.}\label{tab:recursive}
-\end{table}
+For the inflow speed model, we present the results from two different simulations in~\reffig{fig:rec_speed_psnr}. We can see the same trend that predicting frames with smaller index is harder. We,x however, like to note that the networks appear to be handling the parameters properly and adjust the predicted frames accordingly.\reffig{fig:rec_fluid_psnr} presents two simulations of the viscosity-density model.
 
 \begin{figure}
   \begin{subfigure}{.5\textwidth}
@@ -506,17 +361,176 @@ We again do not explicitly give the correlation between the predicted and real f
   \caption{}\label{fig:rec_fluid_psnr}
 \end{figure}
 
+We noticed that across all model types, for some of the predicted frames, certain visual artifacts can occur. In some cases, those are in the form of a pattern that spans across the image. This pattern seems to be recognized by the models as not part of the flow and does not disrupt the structure of the flow. Other artifacts, however, can look much more like features of the fluid flow. In this case, the network will develop them as it develops the real flow. These artifacts accumulate with each predicted frame and become apparent after around the 10.\@ frame. In our experiments, we managed to minimize the artifacts by making the networks bigger but we never could mitigate them completely.
+
+We again do not explicitly give the correlation between the predicted and real frames. In all cases, the correlation stayed very close to $1$ and varied in the range $[0.98, 0.99998]$. The difference-metrics are summarized in~\reftab{tab:recursive_inflow} and~\reftab{tab:recursive_fluid}.
+
+\begin{table}
+  \begin{center}
+    \begin{tabular}{l|cc|cc}
+      \textbf{Frame} & \multicolumn{2}{c|} {\shortstack{\textbf{Simulation 8}\\$\nu=4.17647, \rho = 0.001, g=1.4$}}  &  \multicolumn{2}{c}{\shortstack{\textbf{Simulation 39}\\$\nu=4.17647, \rho = 0.001, g=1.4$}}\\
+      \hline 
+                     &\multicolumn{2}{c|}{} & &\\
+                     & {Average difference} & {Max difference}  &  {Max difference} & {Average difference}\\
+      \emph{Frame 1}       &34.27(0.02) & 52.72(0.40)    &35.91(0.02) & 51.76(0.38)   \\
+      \emph{Frame 5}       &33.86(0.11) & 60.41(1.62)    &35.84(0.10) & 53.13(0.54)   \\
+      \emph{Frame 10}      &33.99(0.17) & 66.04(2.16)    &36.01(0.15) & 54.59(1.14)   \\
+      \emph{Frame 15}      &33.80(0.20) & 76.40(3.67)    &35.91(0.20) & 58.90(1.97)   \\
+      \emph{Frame 20}      &34.27(0.22) & 75.39(3.07)    &35.89(0.24) & 62.60(2.94)   \\
+      \emph{Frame 25}      &33.91(0.22) & 83.45(3.06)    &35.93(0.28) & 61.07(2.60)   \\
+      \emph{Frame 30}      &34.13(0.24) & 79.15(2.20)    &35.73(0.33) & 66.69(4.21)   \\
+      \emph{Frame 35}      &34.38(0.23) & 83.52(2.09)    &35.94(0.35) & 65.55(4.18)   \\      
+    \end{tabular}
+  \end{center}
+  \caption{Your caption.}\label{tab:recursive_inflow}
+\end{table}
+
+\begin{table}
+  \begin{center}
+    \begin{tabular}{l|cc|cc}
+      \textbf{Frame} & \multicolumn{2}{c|} {\shortstack{\textbf{Simulation 8}\\$\nu=4.17647, \rho = 0.001, g=1.4$}}  &  \multicolumn{2}{c}{\shortstack{\textbf{Simulation 39}\\$\nu=4.17647, \rho = 0.001, g=1.4$}}\\
+      \hline 
+                     &\multicolumn{2}{c|}{} & &\\
+                     & {Average difference} & {Max difference}  &  {Max difference} & {Average difference}\\
+      \emph{Frame 1}       &35.87(0.03) & 52.04(0.38)           &35.27(0.00) & 52.16(1.45)   \\
+      \emph{Frame 5}       &36.33(0.16) & 54.48(0.89)           &35.27(0.02) & 54.23(3.28)   \\
+      \emph{Frame 10}      &35.75(0.24) & 55.87(1.57)           &35.28(0.04) & 54.89(3.31)   \\
+      \emph{Frame 15}      &35.77(0.30) & 58.47(2.10)           &35.29(0.06) & 55.67(2.79)   \\
+      \emph{Frame 20}      &35.66(0.32) & 59.87(2.54)           &35.30(0.09) & 56.59(2.05)   \\
+      \emph{Frame 25}      &35.63(0.37) & 60.86(2.54)           &35.32(0.11) & 57.54(2.48)   \\
+      \emph{Frame 30}      &35.64(0.40) & 61.16(3.37)           &35.34(0.13) & 58.30(3.05)   \\
+      \emph{Frame 35}      &35.78(0.39) & 63.11(1.57)           &35.36(0.15) & 59.17(3.42)   \\      
+    \end{tabular}
+  \end{center}
+  \caption{Your caption.}\label{tab:recursive_fluid}
+\end{table}
 
 \section{Conclusion}\label{conclusion}
 The results presented in this paper suggest that solving a numerical task trough image-to-image translation is can be a viable approach. We showed how conditional GANs can be used to learn the image representations of the solutions of a fluid simulation according to the Navier-Stokes equations. We built several models that can generalize different parts of the parameters of the simulations and gave concrete numbers that quantify the results.
-
 We see our work as preliminary research and we believe that the approach can be further developed and investigated. Strategies for improving the models that were considered but not implemented include:
 \begin{itemize}
 \item[$\cdot$] using an LSTM~\cite{lstm} layer in the networks --- our models have the limitation that during training they don't know about the artifact on the images caused by themselves. We think an LSTM layer can mitigate this problem.
 \item[$\cdot$] preprocessing the input for and postprocessing the output of the networks --- morphological operations like opening and closing can also be used to minimize the artifacts in the predicted frames.
 \item[$\cdot$] further investigation of the effects of using RGB-images instead of grayscale ones.
 \end{itemize}
+\clearpage
+\begin{figure}[H]
+  \vspace*{-2.5cm}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/x_step_1}
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/y_step_1}
+  \end{subfigure}
 
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/x_step_5}
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/y_step_5}
+  \end{subfigure}
+
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/x_step_10}
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/y_step_10}
+  \end{subfigure}
+
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/x_step_15}
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/y_step_15}
+  \end{subfigure}
+
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/x_step_20}
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/y_step_20}
+  \end{subfigure}
+
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/x_step_25}
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/constant/y_step_25}
+  \end{subfigure}
+
+  \caption{These frames are generated by the constant model. The artifacts become apparent after the 10.\@ one.}\label{fig:const_sim}
+\end{figure}
+\vspace*{-1cm}
+\begin{figure}[H]
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/x_step_1}
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/y_step_1}
+  \end{subfigure}
+
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/x_step_5}
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/y_step_5}
+  \end{subfigure}
+
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/x_step_10}
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/y_step_10}
+  \end{subfigure}
+
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/x_step_15}
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/y_step_15}
+  \end{subfigure}
+
+
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/x_step_20}
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/y_step_20}
+  \end{subfigure}
+
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/x_step_25}
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \includegraphics[width=1\linewidth]{imgs/sims/fluid/y_step_25}
+  \end{subfigure}
+
+  \caption{Example frames generated by the viscosity-density model. The parameters for this particular simulation are $\nu=4.17647, \rho = 0.001, g=1.4$}\label{fig:fluid_sim}
+\end{figure}
 \clearpage
 \bibliographystyle{splncs04}
 \bibliography{egbib}

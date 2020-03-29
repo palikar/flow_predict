@@ -39,13 +39,14 @@
     "fig:single_images"
     "fig:single_psnr"
     "tab:single"
-    "fig:const_sim"
-    "fig:fluid_sim"
-    "tab:recursive"
     "fig:rec_const_psnr"
     "fig:rec_speed_psnr"
     "fig:rec_fluid_psnr"
+    "tab:recursive_inflow"
+    "tab:recursive_fluid"
     "conclusion"
+    "fig:const_sim"
+    "fig:fluid_sim"
     "app1")
    (LaTeX-add-bibliographies
     "egbib"))
