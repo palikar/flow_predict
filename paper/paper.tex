@@ -93,7 +93,7 @@ We generated three sets of simulations for training the three kinds of models.
 
 The choice of concrete values for the parameters is deliberate. All of the values are chosen so that the Reynolds number~\cite{trinh2010critical} of the simulations in the range of $[90, 450]$. This keeps the flow laminar while still making it interesting enough. We were interested whether the built models can predict the emerging \emph{Kármán vortex street}~\cite{karaman1911} behind the object in the channel. Thus the Reynolds numbers were chosen so that the effect can occur.
 
-The simulations were performed numerically by solving the differential equation describing the flow --- the Navier-Stokes equation. This was done with a numerical solver library --- \emph{HiFlow}~\cite{gawlok2017} ---  that works on the base of the Finite element method~\cite{strang2008analysis}. The solver supports parallelization with \emph{MPI}~\cite{mpi} and \emph{Open}MP~\cite{dagum1998openmp} and we used 12 MPI processes to run each simulation. For all of the simulations, the timestep for of solver was set to $0.035$ seconds. This means a single time step of the simulations corresponds to a $0.035$ seconds of physical time.
+The simulations were performed numerically by solving the differential equation describing the flow --- the Navier-Stokes equation. This was done with a numerical solver library --- \emph{HiFlow}~\cite{gawlok2017} ---  that works on the base of the Finite element method~\cite{strang2008analysis}. The solver supports parallelization with \emph{MPI}~\cite{mpi} and \emph{OpenMP}~\cite{dagum1998openmp} and we used 12 MPI processes to run each simulation. For all of the simulations, the timestep for of solver was set to $0.035$ seconds. This means a single time step of the simulations corresponds to a $0.035$ seconds of physical time.
 
 The numerical solver on itself cannot be used to render the simulation results to images. For this reason, we used \emph{ParaView}~\cite{ahrens2005} to load the simulation data and exported it as a sequence of images in \emph{PNG} format. We opted out for using grayscale images as early experiments with RGB-images did not deliver satisfying results. We used the default ``Grayscale'' color preset of ParaView to visualize the results. Each frame of the simulation was exported as three separate grayscale images. Finally, the images were cropped to select a subset of the space that contains the object and space behind it.
 
@@ -200,13 +200,15 @@ Based on our experiments, we can say that achieving good performance was the har
 \end{table}
 
 \begin{figure}
-
+  
   \begin{subfigure}{.5\textwidth}
     \centering
+    \large{x-velocity}
     \includegraphics[width=1\linewidth]{imgs/single_constant_x}
   \end{subfigure}
   \begin{subfigure}{.5\textwidth}
     \centering
+    \large{y-velocity}
     \includegraphics[width=1\linewidth]{imgs/single_constant_y}
   \end{subfigure}
   \begin{center}
@@ -215,44 +217,44 @@ Based on our experiments, we can say that achieving good performance was the har
 
   \begin{subfigure}{.5\textwidth}
     \centering
-    \includegraphics[width=1\linewidth]{imgs/single_speed_x_1}
+    \includegraphics[width=1\linewidth]{imgs/x_recursive_0_speed_8}
   \end{subfigure}
   \begin{subfigure}{.5\textwidth}
     \centering
-    \includegraphics[width=1\linewidth]{imgs/single_speed_y_1}
+    \includegraphics[width=1\linewidth]{imgs/y_recursive_0_speed_8}
   \end{subfigure}
 
   \begin{subfigure}{.5\textwidth}
     \centering
-    \includegraphics[width=1\linewidth]{imgs/single_speed_x_2}
+    \includegraphics[width=1\linewidth]{imgs/x_recursive_0_speed_39}
   \end{subfigure}
   \begin{subfigure}{.5\textwidth}
     \centering
-    \includegraphics[width=1\linewidth]{imgs/single_speed_y_2}
+    \includegraphics[width=1\linewidth]{imgs/y_recursive_0_speed_39}
   \end{subfigure}
   \begin{center}
-    Images form the inflow speed model. The upper two are from simulation with $g=1.3$ and the lower ones form simulation with $g=0.1$
+    Images form the inflow speed model. The upper two are from simulation with $g=1.9487$ and the lower ones form simulation with $g=3.9358$
   \end{center}
 
   \begin{subfigure}{.5\textwidth}
     \centering
-    \includegraphics[width=1\linewidth]{imgs/single_fluid_x_1}
+    \includegraphics[width=1\linewidth]{imgs/x_recursive_0_fluid_25}
   \end{subfigure}
   \begin{subfigure}{.5\textwidth}
     \centering
-    \includegraphics[width=1\linewidth]{imgs/single_fluid_y_1}
+    \includegraphics[width=1\linewidth]{imgs/y_recursive_0_fluid_25}
   \end{subfigure}
 
   \begin{subfigure}{.5\textwidth}
     \centering
-    \includegraphics[width=1\linewidth]{imgs/single_fluid_x_2}
+    \includegraphics[width=1\linewidth]{imgs/x_recursive_0_fluid_300}
   \end{subfigure}
   \begin{subfigure}{.5\textwidth}
     \centering
-    \includegraphics[width=1\linewidth]{imgs/single_fluid_y_2}
+    \includegraphics[width=1\linewidth]{imgs/y_recursive_0_fluid_300}
   \end{subfigure}
   \begin{center}
-  Images form the viscosity-density model. The upper two are from simulation with $\nu=1.3, \rho=2.3$ and the lower ones form simulation with $\nu=1.3, \rho=2.3$
+  Images form the viscosity-density model. The upper two are from simulation with $\rho=4.1764, \nu=0.001023$ and the lower ones form simulation with $\rho=4.1764, \nu=0.001023$.
   \end{center}
 
   \caption{Each image haw tow halves and the upper one shows the ground truth simulation frame. The lower half is the prediction of the model. In the left column, the images are from the x-velocity fie4ld of the simulation and in the right --- form the y-velocity field.}\label{fig:single_images}
@@ -271,7 +273,9 @@ The constant model is evaluated with a single simulation --- the one it was trai
 
 For the inflow speed model, we present the results from two different simulations in~\reffig{fig:rec_speed_psnr}. We can see the same trend that predicting frames with smaller index is harder. We, however, like to note that the networks appear to be handling the parameters properly and adjust the predicted frames accordingly.\reffig{fig:rec_fluid_psnr} presents two simulations of the viscosity-density model.
 
-\begin{figure}
+
+\begin{figure}[H]
+  \vspace*{-4cm}
   \begin{subfigure}{.5\textwidth}
     \centering
     \includegraphics[width=1\linewidth]{imgs/charts/constant_i10}
@@ -282,8 +286,8 @@ For the inflow speed model, we present the results from two different simulation
   \end{subfigure}  
   \caption{The simulation that starts at the 10.\@ frame exhibits unintuitive results. This happens because the PSNR is based on MSE and it can go up if the network produces a homogeneous black image. In this case the PSNR can get higher in the second of the predicted frames. This, however, does not meant that the visual fidelity of the frames is good.}\label{fig:rec_const_psnr}
 \end{figure}
-
-\begin{figure}
+\vspace*{-1cm}
+\begin{figure}[H]
   \begin{subfigure}{.5\textwidth}
     \centering
     \includegraphics[width=1\linewidth]{imgs/charts/inflow_i10}
@@ -293,7 +297,7 @@ For the inflow speed model, we present the results from two different simulation
     \includegraphics[width=1\linewidth]{imgs/charts/inflow_i1436}
   \end{subfigure}
   \begin{center}
-    Recursive evaluations of the inflow speed model on simulation with $g=1.5$. To note is that this simulations was part of the training set. This can explain why the PSNR drops slightly faster on the next charts when it comes to the simulation starting at the 120.\@frame.
+    Recursive evaluations of the inflow speed model on simulation with $g=1.5$. To note is that this simulations was part of the training set. This can explain why the PSNR drops slightly faster on the next charts when it comes to the simulation starting at the 120. \@frame.
   \end{center}
   \begin{subfigure}{.5\textwidth}
     \centering
@@ -308,8 +312,8 @@ For the inflow speed model, we present the results from two different simulation
   \end{center}
   \caption{In the evaluations of the inflow speed models, we consistently saw the same behavior as in the constant models. The simulations that at are started at a frame with smaller index are of a lower quality.}\label{fig:rec_speed_psnr}
 \end{figure}
-
-\begin{figure}
+\vspace*{-1cm}
+\begin{figure}[H]
   \begin{subfigure}{.5\textwidth}
     \centering
     \includegraphics[width=1\linewidth]{imgs/charts/fluid_25_s0}
@@ -396,6 +400,8 @@ We again do not explicitly give the correlation between the predicted and real f
   \caption{For the viscosity-density model the average differences are again stable across the frames of the predicted simulations. The maximum differences grow as the predictions get more inaccurate and more artefacts appear in the predicted frames.}\label{tab:recursive_fluid}
 \end{table}
 
+\noindent\textbf{Performance:} All of the models were evaluated on an Nvidia GTX 980Ti GPU.\@In all cases, the forward propagation of a single simulation frame took between 5 and 20 ms (milliseconds). In comparison, during the data generation, HiFlow needed between 1000 and 1500 ms for a single simulation timestep while using 12 MPI processes. This does not include the time needed for rendering the results of the simulation. To note is that this is not a one-to-one comparison as HiFlow runs on the CPU and uses MPI and OpenMP for parallelization. We, however, think that the results show the potential of our approach when it comes to performance.
+
 \section{Conclusion}\label{conclusion}
 The results presented in this paper suggest that solving a numerical task trough image-to-image translation can be a viable approach. We showed how conditional GANs can be used to learn the image representations of the solutions of a fluid simulation according to the Navier-Stokes equations. We built several models that can generalize different parts of the parameters of the simulations and gave concrete numbers that quantify the results. Even though the accuracy of the results is not high enough for the predicted simulations to be considered ``true'', the visual quality of the images allows a human observer to see the general development of the fluid flow.
 
@@ -405,15 +411,16 @@ We believe that out approach can be extended to other simulation types as well. 
 \item[$\cdot$] preprocessing the input for and postprocessing the output of the networks --- morphological operations like opening and closing can also be used to minimize the artifacts in the predicted frames.
 \item[$\cdot$] further investigation of the effects of using RGB-images instead of grayscale ones.
 \end{itemize}
-\clearpage
 \begin{figure}[H]
-  \vspace*{-2.5cm}
+  \vspace*{-4.5cm}
   \begin{subfigure}{.5\textwidth}
     \centering
+    \large{x-velocity}
     \includegraphics[width=1\linewidth]{imgs/sims/constant/x_step_1}
   \end{subfigure}
   \begin{subfigure}{.5\textwidth}
     \centering
+    \large{y-velocity}
     \includegraphics[width=1\linewidth]{imgs/sims/constant/y_step_1}
   \end{subfigure}
 
@@ -468,10 +475,12 @@ We believe that out approach can be extended to other simulation types as well. 
 \begin{figure}[H]
   \begin{subfigure}{.5\textwidth}
     \centering
+    \large{x-velocity}
     \includegraphics[width=1\linewidth]{imgs/sims/fluid/x_step_1}
   \end{subfigure}
   \begin{subfigure}{.5\textwidth}
     \centering
+    \large{y-velocity}
     \includegraphics[width=1\linewidth]{imgs/sims/fluid/y_step_1}
   \end{subfigure}
 
