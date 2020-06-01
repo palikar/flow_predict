@@ -69,6 +69,7 @@ Die andere Architektur war UNet. Hier gibt's auch diese Residual-Verbindungen zw
 
 Wieder anhand von Experimenten, Unet braucht weniger Speicher, wird schneller trainiert und allgemein liefert bessere Ergebnisse in einem geringeren Zeitraum. Deswegen haben wir unsere Untersuchungen darauf konzentriert.
 
+
 ** Data usage
 Der nächste Punkt bei den Modellen ist bzgl. der verwendeten Daten. 
 
