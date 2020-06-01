@@ -1,0 +1,100 @@
+#+OPTIONS: ':t *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline author:t
+#+OPTIONS: broken-links:nil c:nil creator:nil d:(not "LOGBOOK")
+#+OPTIONS: date:t e:t email:nil f:t inline:t num:t p:nil pri:nil
+#+OPTIONS: prop:nil stat:t tags:t tasks:t tex:t timestamp:t title:t
+#+OPTIONS: toc:nil todo:t |:t
+
+#+TITLE: What should be said
+#+DATE: <2020-05-31 Sun>
+#+AUTHOR: Stanislav Arnaudov
+#+EMAIL: stanislav.arn@gmail.com
+#+LANGUAGE: en
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+#+CREATOR: Emacs 26.1 (Org mode 9.2.1)
+
+
+* Einleitung
+ 
+Hallo, ich bin Stsnislav und heute präsentiere ich mein finalen Vortrag für Praxis der Forschung. Selbstverständlich bin ich schon mit meinem Projekt [fertig] durch und jetzt erkläre ich wozu beim Projekt geht und was die Ergebnisse gewesen sind.
+
+** Grund Idee
+Ganz am Anfang, wenn ich die grobe grundlegende Idee des Projekts wiedergeben soll: wir haben es versucht, Machine-Learning und Bild-Verarbeitung Methoden bei Computatinal Fluid Dynamics (CFD)  anzuwenden. Ein bisschen konkreter, wir wollen untersuchen, in wie fern können Depp Neural Networks (DNNs) beim Durchführen und Visualisieren einer Strömung-Simulation angewandt werden.
+
+*** Machine Learning
+
+*** CDF
+
+# Strömung in einem Kanal mit NN vorhersagen.
+
+
+* Forschungsprojekt
+
+Um zu erklären, was genau das Projekt enthält, werden wir diese drei Fragen beantworten - was, warum und wie es gemacht wurde. Und obwohl die Antworten einigermaßen zusammenhängen, verseuchen wir da ganze Schrittweise zu Behandeln.
+
+** Was
+ Also erstmals "was?" - in ganz einfachen Wörtern, wir wollen die Strömung in einem Kanal um ein Objekt vorhersagen. Und zwar mit einem neuronalen Netz gegeben eine ungewöhnliche Repräsentation vom Raum. Ich sage mehr dazu später, jetzt stellen wir das Problem eine bisschen anschaulicher vor. Wir haben die Folgenden Situation, ein Kanal und ein Objekt in der Mitte. Wir haben uns auf 2D  Fall beschränkt. An einer Seite hier gibt's eine Einfließ-Bedingung, also da kommt die Flüssigkeit rein und an der anderen Seite fließt die aus. Mit dieser Einstellung haben wir auch eigne Parameter für die Simulation, nämlich Einfließgeschwindigkeit, Viskosität und Dichte vom Fluid. Diese sind also die Zahlen die das eine konkrete Instanz vom Problem so zu sagen bestimmen. Das Ziel dann ist, die Simulation durchzuführen und die Geschwindigkeit und Druck in jedem Punkt vom Raum zu bestimmen für eine gewisse Zahl von Zeitschritten. Also die Lösungen für jeden Zeitschritt zu bestimmen. Beim Anwendungsfall, den wir betrachten, wollen wir nicht explizit die Roh-Daten für die Lösungen, sondern eine Bildrepresentation davon. Also, Bilder, die durch verschiedene Pixel-Farben, verschiedene Werte vom Lösungsraum kodiert. Pro Zeitschritt haben wir drei Solche Bilder - [...]. Wie schon erwähnt, wir wollen dies mit einem NN erreichen und untersuchen, ob dies möglich ist, falls ja - inwiefern (also die Ergebnisse Quantifizieren) und welche Techniken dafür notwendig sind.
+
+** Warum
+ Jetzt erklären wir das "warum?" - Normalerweise das ganze wird mit einem numerischen Solver zu lösen. Die Visualisierung vom Ergebnissen kommt als ein separater Schritt. Schematisch können wir das ganze so darstellen. Am Anfang ist das Problem selbst, das gewisse Parameter besitzt. Dann kommt der Solver, der Zahlen als Ergebnisse für jeden Zeitschritt ausrechnet und dann kommt die Visualisierung (auch ein Tool), die die letztendliche Bilder erzeugt. Offensichtlich diese Pipeline stellt eine kompliziertes System, wo das Workflow nicht trivial ist, für jede Phase gibt's verschiedene Parameters und die notwendige Rechnerleistung nicht zu übersehen ist. Zu bemerken ist, dass wir nur in den Bildergebnisse interniert sind. Also, als Menschen, die das Simulation nur "sehen" wollen, machen für uns Zahlen kaum Sinn. Natürlich gibt's Fälle wo die Zahlen gebraucht sind das wichtigste Ergebnisse, aber für unsere Forschung, haben wir uns fokussiert, die Bilder hier möglichst schnell und effektiv zu generieren. Und zwar, unser Ziel ist die ganze Pipeline hier mit einem Netz zu Ersetzen.
+  + Alle aufgeben sind gelernt
+  + Ergebnisse müssen nicht absolut exakt sein
+  + NNs können ziemlich schnell ein Bild abarbeiten und ein neues Erzeugen
+  + NNs sind gut beim Image-Processing etabliert
+  + Die Bilder repräsentieren ein guter Eingaberaum für ein Netz
+  + Können NNs beim numerischen Aufgaben sinnvoll benutzt werden?
+  
+** Wie
+Letztendlich können wir unser Ansatz genauer erklären (also die "wie?" Frage beantworten). 
+
+Hier gehen wir kurz durch die Schritten, die erledigt werden müssten, damit wir unsere Ziele erreichen könnten.
+
+*** Daten Erzeugung
+
+*Date sets*: 
+
+Als grundsätzlich unsere Forschung ein Maschine Learning Projekt ist, brauchen wir zunächst fertige Daten, mit denen wir ein Modell trainieren können. Diese haben wir mit der standarten Pipeline erzeugt. Das beschriebenen Problem (also die Strömung im Kanal) wird durch die so genannte Navier-Stokes Gleichungen beschreiben. Das heißt, für jeden Zeitschritt muss eine Differentialgleichung gelöst werden um mit der Lösung anzukommen. Dies wurde mit HiFlow3 gemacht, was ein Bibliothek für numerische Probleme ist. Die Lösungen wurden dann als Bilder mit ParaView visualisiert. Für die Visualizierung haben wir uns Graustufenbilder gewählt. Frühe Experimente haben gezeigt, dass das Trainiren mit Farbige Bilder (also drei Kanale pro Bild) wesentlich schwierige ist.
+
+Die benutzte Modell-Gleichung für die Datenerugung zeigt uns welches Problem das Netz selbst quasi kodieren muss um die Daten vorherzusagen.
+
+Es wurde gesagt, dass die Simulation drei Parameter besitzt. Wir haben uns entschieden nicht ein holistisches Netz zu entwickeln, das alle drei Parameter behandeln kann, sondern drei kleineren, die das Problem schrittweise eingehen. Diese sind
+- konstantes Modell - es werden gar keine Parameter betrachtet. Baseline Modell
+- Geschwindigkeit Modell - ...
+- Viskosität-Dichte Modell - ...
+
+Dementsprechend haben wir uns auch drei Sets von Simualtionsbilder erzeugt wo verschiedenen Parameter variiert wurden. Also zum Beispiel für das erste Modell gibts nur eine Simulation mit festen Parametern und für das Zweite gibst eine Reihe von Simulationen mit verschiedenen Einfließ-Geschwindigkeiten.
+
+*Parameter Wahl* : Die Wahl von Parametern für die Simulationen ist nicht zufällig gewesen. Wir haben die Reynoldszahl der Strömung betrachtet. Diese Zahl bestimmt die Art der Strömung und zeigt ob die Laminat, Turbulent oder etwas dazwischen ist. Die Simulationensparamter wurden so gewählt, dass die Reynoldszahl im Bereich [90, 450] liegt. Diese Bedeutet, dass die Strömung nicht turbulent ist, aber gewisse interessante Wirbelstrukturen sind sichtbar.
+
+*Test train split*: Die Datensätze wurden gesplittet in Training-Set und Test-Set. Wichtig hier zu sagen, dass im Test-Sets gab's Simulationen mit Reynoldszahl, die für keine Simulationen in Training-Set zu finden ist. Also die Daten sind so gestaltet, so dass wir wirklich sehen können, ob das Netz die Parameter generalisieren und ungesehene Simulationen vorhersagen kann.
+
+*** Netze Architektur und Funktionsweise
+Hier erklären wir was genau und wir die Netze die Ergebnisse ausrechnen.
+
+Erstmals es soll klar sein, dass die Netze ein Lösungsbild der Simulation erzeugen unter Verwendung vom Bild vom vorherigen Zeitschritt. Das heißt, ganz am Anfang, gehen wir von einem Schon fertigen Bild aus. Das Netz rechnet also aus, ein Zeitschritt bei der Simulation, wo die Eingabe und die Ausgabe Bilder sind. Wir sagen nämlich Bilder, weil wie schon gesagt, pro Zeitschritt drei Felder die das Raum beschreiben gibt - die Geschwindigkeit der Flüssigkeit in die beiden Richtungen und auch den Druck-Feld.
+
+Da aber zwei von den Modellen auch Simulationsparameter betrachten können, ist für sie die Netzeingabe ein bisschen erweitert. Die Parameter sind reelle Zahlen und die müssen mit dem Netzen irgendwie passend integriert werden. Das was bei uns gut funktioniert hat, ist extra Bild-Kanale mit konstantem Wert bei der Eingabe zu nehmen. Also ein (für die Geschwindigkeit) oder zwei (Dichte und Viskosität) Felder mit dem Wert von dem entsprechenden Parameter als extra Eingabe für das Netz. Die Ausgabe für diese Netze bleibt aber unverändert.
+
+Kurz zu der Architektur von den Netzen. Unser Ansatz zu Bild-zu-Bild Abbildung ist auf pix2pix basiert. Pix2Pix ist ein Paper, das ein allgemeines Image-to-Image Translatio Rahmenwerk vorstellt. Unsere Netze sind im Prinzip ein Versuch, dieser Ansatz im Kontext von Simulationen anzuwenden. 
+
+Der Ansatz heißt "Conditional Generative Adversarial Nets" und verwendetet zwei Netze -- Diskriminator und Generator. Der Generator erzeugt ein Bild gegeben ein andres Bild als Eingabe und der Diskriminator versucht zu raten ob das generierte Bild ein echtes Bild ist. Die Netze sind zusammen trainiert und sind so zusagen in einem Kampf miteinander. Also der Genrator soll Bilder erzeugen, die den Diskriminator austricksen müssen. Die Loss-Funktion vom Generator enthält den Diskriminator und damit die Loss-Funktion selbst wird gelernt. Das heißt, dass System lernt "von sich selbst" sowohl die wichtige Features von der Eingabe als auch eine passende Loss-Funktion während des Trainig-Prozesses. 
+
+Für den Generator haben wir die U-Net Architektur verwendet. Wir haben es auch ResNet zu trainieren aber damit war der Aufwand ziemlich größer und die Ergebnisse schlechter. Der Diskriminator war derjenige, der im originalen Paper von pix2pix vorgeschlagen wurde.
+
+
+
+* Evaluation
+
+** Visuelle Genauigkeit
+
+
+** Numerische Genauigkeit
+
+
+
+
+
+
+
+
+#  LocalWords:  Solver Zeitschritt Zeitschritten Anwendungsfall
