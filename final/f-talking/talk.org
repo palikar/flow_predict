@@ -104,34 +104,81 @@ Für den Generator haben wir die UNet Architektur verwendet. Wir haben es auch R
 
 * Evaluation
 
+Wenn die Modellen trainiert sind, kommt die Evaluierung. Und das erkläre ich gleich.
+
+** Modelle
+
+Verwendung von Druckfeld.
+
 ** Strategien
 
+Im Prinzip, hatten wir bei der Evaluierung zwei allgemeine Strategien oder Evaluierungsfälle. Diese sind individuelle Bild-Evaluierung und rekursive Evaluierung.
+
 *Individuelle Evaluierung*:
+Bei der individuellen Evaluierung geht es um Evaluieren von einer einzigen Auswertung des Netzes. Das heißt, es werden ausschließlich Bilder von den echten Simulationen als Eingabe verwendet und die Güte der Ausgabe wird über den Test-Set gemittelt.
+
+Wie wir "Güte" definieren sag ich später.
 
 *Rekursive Evaluierung*:
 
-
-** Visuelle Genauigkeit
-
-
-** Numerische Genauigkeit
+Die andere Weise auf die wir die Netze evaluieren ist rekursiv, also für ne gewisse Zahlt von Schritten, nehmen wir die Ausgabe vom Netz wider als Eingabe. Damit wollen wir sehen wie der Fehler bei den Bildern akkumuliert und was für Artefakte können wir erwarten wenn wir das Modell für eine fast echte Simulation anwenden.
 
 
+** Ergebnisse
+Jetzt können wir sagen die konkreten Metriken, die wir für die Evaluierung ausgewählt haben. Dafür haben aber zwei Sichten der Ergebnisse. Also einerseits wir vergleichen Bilder mit Bilder und zwar im Bezug auf wie ein Mensch die beiden Bilder wahrnimmt. Das heißt, wenn die Bilder ähnlich genug sind, betrachten wir die Ergebnisse als erfolgreich. Anderseits, wir betrachten Teilweise eine numerische Aufgabe. Deswegen machte es Sinn auch zu sagen wie weit sind "wirklich" die generierten Bilder von den echten. In diesem Fall reden wir über Metriken als mittlere und maximale Prozentuale Abweichung 
+
+*** Numerische Genauigkeit
+
+Zu diesem Aspekt der Evaluierung werde ich nicht super viel Zeit widmen. Wir werden aber die Zahlen hier in der Tabelle geben und eine kurze Bemerkung machen. Es geht um die individuelle Evaluierung und alle Zahlen sind über einige Modelle gemittelt. Sofort zu merken ist, die Mittlere Abweichung ist niedrig aber die Maximale hoch. Wenn wir zum. Beispiel hier auf dem Geschwindigkeit-Modell konzentrieren, die maximale Abweichung unter Verwendung vom Druckfeld ist rund 64 mal größer als die mittlere. Dies hinweist, dass die Netze können im Größen und Ganzen die richtige Bilder erzeugen, aber es gibt gewisse Stellen oder Bereichen wo der Fehler im Bild groß ist.
+
+Dies ist konsistent mit diesen Beispiel-Bilder die vorhergesagt sind. Man sieht die Struktur ist die richtige, aber es gibt auch diesen Muster über den Raum. Wir haben es versucht solchen Muster mit verschiedenen Techniken zu vermeiden, also zum Beispiel die Daten zum Trainieren zu verauschen oder auf Random-Crops zu trainieren. Im großen Teil diese mildern den Effekt ab aber es komplett zu vermeiden war nicht möglich. 
+
+[Bilder von Artefakten] 
+
+*** Visuelle Genauigkeit
+
+Wie gesagt aber, die wahrgenommene Qualität ist uns wichtiger und diese erlaubt uns besser Modelle vergleichen
+
+Unsere erste versuch diese Ähnlichkeit zu messen ist mit der statistischen Korrelation zwischen den Pixelwerten. Also wenn wir alle Pixel von zwei Bildens so zu Sagen ausrollen und die beiden Reihen vergleichen, was die Korrelations dazwischen ist. Es hat sich aber herausgestellt, dass dies uns nicht super viel Information geben kann. Bei faste allen Experimenten, war die Korrelation zwischen den vorhergesagten und den echten Bildern nahezu 1.
+
+Wenn wir hier ein Beispiel Bild anschauen, kann man sehen was ich meine. Oben ist das Zielbild und unten ist das was ein Netz generiert hat. Die Bilder sehen fast identisch aus was die hoche Korrelation entspricht. Dafür gibts zwei Grunde. Erstens das Netz macht tatsächlich eine gute Vorhersage also die trainierte Modelle erledigen was wir wollen. Es ist aber auch war, das die Korrelation zwischen zwei nacheinander Folgenden Bilder sowieso hoch ist.
+
+Insgesamt ergibt sich deswegen, dass wir nicht die Korrelation zum Vergleich von verschiedenen Modellen ausnutzen können.
+
+Als eine besserer Metrik hat sich aber das PSNR gezeigt. PSNR heißt Peak Signal to Noise Ration und wird benutzt um die Genauigkeit von Kompressions-Algorithmen zu messen. Also zwei Bilder werden verglichen und wenn die ähnlich sind, ist der PSNR-Wert im Bereich 35-45 dB (Mess-Wert ist Dezibel). Mit dieser Metrik können wir tatsächlich die Güte von den Modellen mietender vergleichen.
+
+[plot]
+
+Für die Individuelle Evaluierung ist dies hier auf diesen Plots gemacht. Einige Bemerkungen dazu:
+
++ das konstante Modell ist ziemlich inkonsistent mit den Ergebnissen. Die Verwendung des Druck-Feldes macht einen kleinen Unterschied aber nicht wirklich signifikant. Hauptsächlich beeinflusst dies die Varietät also das Modell kann besser als auch schlechter werden. Diese ist unsere Meinung nach wegen der limitierten Datenmenge für dieses Modell. 
+
++ Der Druckfeld verbessert anderseits das Geschwindigkeit-Modell. Dabei ist das PSNR ziemlich höher wenn dies mit betrachtet wird. Genau das Gegenteil ist aber beim Viskosität-Dichte Modell zu sehen. KUrz dazu, ich glaub es ist naheliegend zu vermuten, dass der Druckfeld die Komplexität des Trainieren-Problem erhöht. Unter Umständen dies kann sowohl gut als auch schlecht sein, weil in komplexeren Daten man mehrere quasi Relationen finden kann. Anderseits wenn die Daten zu komplex sind, werden die weniger modellierbar so zu sagen.
+
++ Trotz allem, das dritte Modell hier ist gar nicht schlecht im Sinn von Bildqualität. Also zum Beispiel diese sind ein paar Bilder generiert damit und die sehen ziemlich treu zum Original.
+
+[image]
 
 
+Wenn wir die Ergebnisse bei der rekursiven Anwendung anschauen, können wir etwas wichtigen bemerken. Diese Sind plots von der Rekursiven Anwendung von dem Geschwindigkeit-Modell für eine feste Simulation. Links ist ein Plot wo die Simulation von der ersten Index angefangen wurde und recht von Index 120. Also das 120. Bild in der Simulation wurde als "seed"-Bild für das Netz genommen. Zu Bemerken ist wie klein die Skala hier links ist und wie da gewisse Anomalie zu sehen ist. Also erstmals ist das PSNR super klein und dann ein bisschen größer. Die Bilder zeigen, dass von diesen Simulationen (also start index 0) nichts benutzbar ist und man kann kaum was Verstehen.
 
+[plot]
 
+Es hat sich gezeigt, dass es einen großen Unterschied macht, welches Bild als erstes für das Netz verwendet wird. Also ob das Bild von ein bisschen nach vorn in der Simulation ist oder vom Anfang. Alle Ergebnisse (wie die hier) zeigen, dass es schwierig für die Netze ist, mit Bilder von einer sich nicht-entwickelten Simulation umzugehen. Das ganze kann viele Ursachen haben. Meine Vermutung ist aber, dass es viel weniger Bilder in den Test-Sets gibt, wo die
+Simulation an seiner Anfang ist. Also die Bilder zeigen in meinten Fällen eine Simulation, die weiterentwickelt ist.
 
-
-#  LocalWords:  Solver Zeitschritt Zeitschritten Anwendungsfall
-#  LocalWords:  Anwendungsfällen durchzugehen Bildergebnisse
-#  LocalWords:  Graustufenbilder inkompressibele Simualtionsbilder
-#  LocalWords:  Simulationensparamter Lösungsbild Diskriminator
-#  LocalWords:  Simulationsparameter
-
+Ansonsten, die schönen Ergebnisse zeigen einen konsistenten Verlauf nach unten. Für 40 Rekursive Evaluierungen erreichen wir PSNR von 15, was schlecht genug ist um die generierten Bilder nicht zu Trauen. In fast allen Fällen senken die Warte exponentiell und ab und zu habe ich Netze gesehen, die das negative Wachstum linear halten können und die sind eher Ausnahmen.
 
 ** Performance
 
 
+
 * Schluss
 Damit bin ich zum Ende. Ich bedanke mich für die Aufmerksamkeit.
+#  LocalWords:  Solver Zeitschritt Zeitschritten Anwendungsfall
+#  LocalWords:  Anwendungsfällen durchzugehen Bildergebnisse
+#  LocalWords:  Graustufenbilder inkompressibele Simualtionsbilder
+#  LocalWords:  Simulationensparamter Lösungsbild Diskriminator
+#  LocalWords:  Simulationsparameter Evaluierungsfälle
+
+
