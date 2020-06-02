@@ -34,7 +34,7 @@ Um zu erklären, was genau das Projekt enthält, werden wir diese drei Fragen be
 da ganze Schrittweise durchzugehen.
 
 ** Was
-Also erstmals "was?" - in ganz einfachen Wörtern, wir wollen die Strömung in einem Kanal um ein Objekt vorhersagen. Und zwar mit einem neuronalen Netz gegeben eine ungewöhnliche Repräsentation vom Raum. Ich sage mehr dazu später, jetzt stellen wir das Problem eine bisschen anschaulicher vor. 
+Also erstmals "was?" - in ganz einfachen Wörtern, wir wollen die Strömung in einem Kanal um ein Objekt vorhersagen. Und zwar mit einem neuronalen Netz gegeben eine ungewöhnliche Repräsentation vom Raum. Ich sage mehr dazu später, jetzt stellen wir das Problem ein bisschen anschaulicher vor. 
 
 Wir haben die Folgenden Situation, ein Kanal und ein Objekt in der Mitte. Wir beschränken uns auf dem 2D Fall. An einer Seite hier gibt's eine Einfließ-Bedingung, also da kommt die Flüssigkeit rein und an der anderen Seite fließt die aus. Mit dieser Einstellung haben wir auch eigne Parameter für die Simulation, nämlich Einfließgeschwindigkeit, Viskosität und Dichte vom Fluid. Diese sind also die Zahlen die das eine konkrete Instanz vom Problem so zu sagen bestimmen.
 
@@ -50,9 +50,9 @@ Und falls ja - inwiefern (also die Ergebnisse Quantifizieren)
 
 ** Warum
 
- Jetzt kommen wir zu das "warum?" - Normalerweise wird eine solche Simulation wird mit einem numerischen Solver gelöst werden. Die Visualisierung vom Ergebnissen kommt dann als ein separater Schritt. Schematisch können wir das ganze so darstellen.
+Jetzt kommen wir zu das "warum?" -  Normalerweise wird eine solche Simulation wird mit einem numerischen Solver gelöst werden. Die Visualisierung vom Ergebnissen kommt dann als ein separater Schritt. Schematisch können wir das ganze so darstellen.
 
- Am Anfang ist selbst das Problem, das gewisse Parameter besitzt. Dann kommt der Solver, der reelle Zahlen als Ergebnisse für jeden Zeitschritt ausrechnet und dann kommt die Visualisierung (was auch ein Tool), die die letztendliche Bilder erzeugt. Offensichtlich diese Pipeline stellt eine kompliziertes System, wo das Workflow nicht trivial ist, für jede Phase es verschiedene Parameters gibt und die notwendige Rechnerleistung nicht zu übersehen ist.
+Am Anfang ist selbst das Problem, das gewisse Parameter besitzt. Dann kommt der Solver, der reelle Zahlen als Ergebnisse für jeden Zeitschritt ausrechnet und dann kommt die Visualisierung (was auch ein Tool), die die letztendliche Bilder erzeugt. Offensichtlich diese Pipeline stellt eine kompliziertes System, wo das Workflow nicht trivial ist, für jede Phase es verschiedene Parameters gibt und die notwendige Rechnerleistung nicht zu übersehen ist.
 
 Zu bemerken ist, dass wir nur an den Bildergebnisse interessiert sind. Also, als Menschen, die das Simulation nur "sehen" wollen, machen für uns Zahlen kaum Sinn. Natürlich gibt's Fälle wo die Zahlen gebraucht sind das wichtigste Ergebnisse ausmachen, aber für unsere Forschung, haben wir uns fokussiert, die Bilder hier möglichst schnell und effektiv zu generieren. Unser Ziel ist also diese ganze Pipeline hier mit einem Netz zu Ersetzen.
 
@@ -70,7 +70,7 @@ Letztendlich können wir unser Ansatz genauer erklären (also die "wie?" Frage b
 
 *Data sets*: 
 
-Als grundsätzlich unsere Forschung ein Maschine Learning Projekt ist, brauchen wir zunächst fertige Daten, mit denen wir Modelle trainieren können. Diese haben wir mit der gezeigten Pipeline erzeugt. Das beschriebenen Problem (also die Strömung im Kanal) wird durch die so genannte Navier-Stokes Gleichungen beschreiben. Das heißt, für jeden Zeitschritt muss eine Partielle Differentialgleichung (PDE) gelöst werden um mit der Lösung anzukommen. Dies wurde mit HiFlow3 gemacht, was ein Bibliothek Lösen von PDEs. Die Lösungen wurden dann als Bilder mit ParaView (ein Visualisierung-Tookkit) visualisiert. 
+Als grundsätzlich unsere Forschung ein Maschine Learning Projekt ist, brauchen wir zunächst fertige Daten, mit denen wir Modelle trainieren können. Diese haben wir mit der gezeigten Pipeline erzeugt. Das beschriebenen Problem (also die Strömung im Kanal) wird durch die so genannte Navier-Stokes Gleichungen beschreiben. Das heißt, für jeden Zeitschritt muss eine Partielle Differentialgleichung (PDE) gelöst werden um mit der Lösung anzukommen. Dies wurde mit HiFlow3 gemacht, was ein Bibliothek Lösen von PDEs. Die Lösungen wurden dann als Bilder mit ParaView (ein Visualisierung-Tookkit) visualisiert.
 
 Für die Visualisierung haben wir uns Graustufenbilder gewählt. Frühe Experimente haben gezeigt, dass das Trainieren mit Farbige Bilder (also drei Kanale pro Bild) wesentlich schwierige ist.
 
@@ -101,7 +101,15 @@ Der Ansatz heißt "Conditional Generative Adversarial Nets" und verwendetet zwei
 
 Für den Generator haben wir die UNet Architektur verwendet. Wir haben es auch ResNet zum Trainieren experimentiert aber damit war der Aufwand ziemlich größer und die Ergebnisse schlechter. Der Diskriminator ist derjenige, der im originalen Paper von Pix2Pix vorgeschlagen wurde und der heißt PatchGAN. Das ist ein Netz, das die Eingabe als Patches betrachtet und macht die Entscheidung quasi pro Patch ob dies von einem echten oder erzeugten Bild kommt.
 
+
 * Evaluation
+
+** Strategien
+
+*Individuelle Evaluierung*:
+
+*Rekursive Evaluierung*:
+
 
 ** Visuelle Genauigkeit
 
@@ -121,4 +129,9 @@ Für den Generator haben wir die UNet Architektur verwendet. Wir haben es auch R
 #  LocalWords:  Simulationensparamter Lösungsbild Diskriminator
 #  LocalWords:  Simulationsparameter
 
+
 ** Performance
+
+
+* Schluss
+Damit bin ich zum Ende. Ich bedanke mich für die Aufmerksamkeit.

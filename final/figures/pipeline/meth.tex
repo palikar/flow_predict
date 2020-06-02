@@ -1,0 +1,76 @@
+\documentclass{standalone}
+
+
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{tkz-euclide}
+
+\pgfplotsset{compat=1.6}
+
+\usetikzlibrary{positioning,calc}
+\usetikzlibrary{arrows} 
+\usetikzlibrary{patterns} 
+\usetikzlibrary{shapes}
+\usetikzlibrary{decorations.pathmorphing}
+
+\begin{document}
+
+\tikzset{
+  cascaded/.style = {
+    general shadow = {
+      shadow scale = 1,
+      shadow xshift = -2ex,
+      shadow yshift = 2ex,
+      draw,
+      thick,
+      fill = white},
+    general shadow = {
+      shadow scale = 1,
+      shadow xshift = -1ex,
+      shadow yshift = 1ex,
+      draw,
+      thick,
+      fill = white},
+    fill = white, 
+    draw,
+    thick,
+    minimum width = 2.5cm,
+    minimum height = 1.3cm},
+  squarednode/.style={rectangle, draw=green!60, fill=green!5, very thick, minimum width = 2.5cm, minimum height = 1.3cm}
+}
+
+
+\def\BeforeLight{2}
+\begin{tikzpicture}
+  % \draw[step=1cm, gray!20!white, very thin] (-5,-5) grid (5,5);
+
+  
+  % \node[draw, minimum height=1cm, minimum width=3cm] at (0, 3) (n_1) {Numerical Problem};
+  \node[draw,ellipse,minimum width = 0.6cm, minimum height = 1.6cm, thick] at (0, 3) (problem) {\shortstack{Numerical\\Problem}};
+  \node[draw,ellipse,minimum width = 0.6cm, minimum height = 1.6cm, thick] at (0, 0) (solution) {\shortstack{Raw Solution\\Data}};
+
+  \node[cascaded] at (0.3,-3) (images) {Images};
+
+  \node[draw,minimum width = 0.6cm, minimum height = 0.8cm, thick] at (2.0, 1.5) (solver) {\shortstack{CFD\slash PDE\\Solver}};
+  \node[draw,minimum width = 0.6cm, minimum height = 0.8cm, thick] at (2.5, -1.5) (visu) {\shortstack{Visualization\\Tool}};
+  
+  \draw[->, shorten >=3pt, shorten <=3pt, thick ] (problem) edge (solution);
+  \draw[->, shorten >=3pt, shorten <=3pt, thick ] (solution) edge (0, -2);
+
+  \draw[-, dashed, shorten >=3pt, shorten <=3pt, thick ] (0.0, 1.5) edge (solver);
+  \draw[-, dashed, shorten >=3pt, shorten <=3pt, thick ] (0.0, -1.5) edge (visu);
+
+  \node[draw=green!60, fill=green!5, very thick, minimum width = 0.6cm, minimum height = 0.6cm] at (2, 4) (params_1) {\shortstack{Simulation\\Parameters}};
+  \node[draw=green!60, fill=green!5, very thick, minimum width = 0.6cm, minimum height = 0.6cm] at (3.5, 2.3) (params_2) {\shortstack{Solver\\Parameters}};
+  \node[draw=green!60, fill=green!5, very thick, minimum width = 0.6cm, minimum height = 0.6cm] at (3.5, -0.7) (params_3) {\shortstack{Visualization\\Parameters}};
+
+
+\end{tikzpicture}
+
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

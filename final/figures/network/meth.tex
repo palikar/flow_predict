@@ -1,0 +1,66 @@
+\documentclass{standalone}
+
+
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{tkz-euclide}
+
+\pgfplotsset{compat=1.6}
+
+\usetikzlibrary{positioning,calc}
+\usetikzlibrary{arrows} 
+\usetikzlibrary{patterns} 
+\usetikzlibrary{shapes}
+\usetikzlibrary{decorations.pathmorphing}
+
+\begin{document}
+
+\tikzset{
+  cascaded/.style = {
+    general shadow = {
+      shadow scale = 1,
+      shadow xshift = -2ex,
+      shadow yshift = 2ex,
+      draw,
+      thick,
+      fill = white},
+    general shadow = {
+      shadow scale = 1,
+      shadow xshift = -1ex,
+      shadow yshift = 1ex,
+      draw,
+      thick,
+      fill = white},
+    fill = white, 
+    draw,
+    thick,
+    minimum width = 2.5cm,
+    minimum height = 1.3cm},
+  squarednode/.style={rectangle, draw=green!60, fill=green!5, very thick, minimum width = 2.5cm, minimum height = 1.3cm}
+}
+
+
+\def\BeforeLight{2}
+\begin{tikzpicture}
+
+  
+  \node[draw,minimum width = 2.5cm, minimum height = 1.3cm, thick] at (0,3) (img) {\shortstack{Initial\\Image}};
+  \node [cloud, draw,cloud puffs=10,cloud puff arc=120, aspect=2, inner ysep=1em, thick] (net) at (0, 0) {Network};
+  \node[cascaded] at (0.3, -3) (images) {Images};
+
+
+  \node[draw=green!60, fill=green!5, very thick, minimum width = 0.6cm, minimum height = 0.6cm] at (1.7, 3.5) (params_1) {\shortstack{Simulation\\Parameters}};
+  
+  \draw[->, shorten >=3pt, shorten <=3pt, thick ] (img) edge (net);
+  \draw[->, shorten >=3pt, shorten <=3pt, thick ] (net) edge (0, -2);
+  \draw[->, shorten >=3pt, shorten <=3pt, thick] (0, -1.5) -- (2, -1.5) -- (2, 2) -- (0, 2);
+
+\end{tikzpicture}
+
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
