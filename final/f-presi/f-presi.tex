@@ -28,7 +28,247 @@
 
 \begin{frame}
   \frametitle{Introduction}
+  \textbf{Basic idea:} Apply machine learning and image processing in computational fluid dynamics context
+
+  \begin{columns}[t]
+    \begin{column}{0.5\textwidth}
+
+      \begin{itemize}
+      \item Machine learning through deep neural networks
+      \item DNNs for image generation  
+      \end{itemize}
+      
+    \end{column}
+    \begin{column}{0.5\textwidth}
+
+      \begin{itemize}
+      \item Simulation of fluids through mathematical models
+      \item Differential equations
+      \item Specialized solvers for the equations
+      \end{itemize}
+      
+    \end{column}
+  \end{columns}
   
+\end{frame}
+
+\begin{frame}
+  \frametitle{Project}
+  \begin{itemize}
+  \item \textbf{What} we aimed to do?
+  \item \textbf{Why} is our research being done?
+  \item \textbf{How} were our goals achieved?
+  \end{itemize}
+\end{frame}
+
+\section{What}
+
+\begin{frame}
+  \frametitle{What}
+  \begin{itemize}
+  \item Predcit the flow around an object in a channel.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{What}
+  \begin{itemize}
+  \item Predcit the flow around an object in a channel.
+  \end{itemize}
+
+
+    \begin{columns}[t]
+    \begin{column}{0.5\textwidth}
+
+      \begin{itemize}
+      \item Inflow speed of the fluid
+      \item Viscosity and density of the fluid
+      \end{itemize}
+      
+    \end{column}
+    \begin{column}{0.5\textwidth}
+
+      \begin{itemize}
+      \item Velocity field (x\&y directions)
+      \item Pressure field
+      \end{itemize}
+      
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{What}
+  %Diagram of the network evaluation goes here
+\end{frame}
+
+\begin{frame}
+  \frametitle{What}
+  %Images of solutions go here go here
+\end{frame}
+
+\section{Why}
+
+\begin{frame}
+  \frametitle{Why}
+
+  \begin{columns}[t]
+    \begin{column}{0.5\textwidth}
+      
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+      \item lots of parameters to tweak
+      \item complicated workflow
+      \item computationally costly
+      \end{itemize}
+    \end{column}
+  \end{columns}  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Why}
+
+  \begin{columns}[t]
+    \begin{column}{0.5\textwidth}
+      
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+      \item DNNs are well established in image processing tasks
+      \item everything is learned during training
+      \item faster image generation
+      \end{itemize}
+    \end{column}
+  \end{columns}  
+\end{frame}
+
+
+\section{How}
+
+\begin{frame}
+  \frametitle{How}
+  \begin{itemize}
+  \item Machine Learning project
+    \begin{itemize}
+    \item Data used for training
+    \item Models architecture and training approach
+    \item Models evaluation
+    \end{itemize}
+  \item Not a single holistic model
+    \begin{itemize}
+    \item constant model
+    \item inflow speed model
+    \item viscosity-density model
+    \end{itemize}
+    
+  \end{itemize}
+\end{frame}
+
+\section{Data Generation}
+
+\begin{frame}
+  \frametitle{Data Generation}
+  \begin{itemize}
+  \item Process
+    \begin{itemize}
+    \item Large amount of simulations
+    \item Solving --- HiFlow3 as numerical solver
+    \item Rendering --- ParaView as visualization toolkit
+    \end{itemize}
+
+  \item Separate data sets for each model
+    \begin{itemize}
+    \item Single simulation for the constant model
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Data Generation}
+  \begin{itemize}
+  \item Parameters for the simulations
+    \begin{itemize}
+    \item Not chosen at random
+    \item \textit{Reynolds number} in [90, 450]
+    \item Non-trivial simulations
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Data Generation}
+  % images come here
+\end{frame}
+
+\begin{frame}
+  \frametitle{Data Generation}
+
+  \begin{itemize}
+  \item Test train splits
+    \begin{itemize}
+    \item 80\slash 20 split for all data sets
+    \item no common Reynolds numbers between the simulation in the train- and test-sets
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Networks Architectures}
+  \begin{itemize}
+  \item Real numbers handling
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Networks Architectures}
+  \begin{itemize}
+  \item Approach based on Pix2Pix
+    \begin{itemize}
+    \item General image-to-image translation framework
+    \item impressive results
+    \end{itemize}
+  \end{itemize}
+  % images goes here
+\end{frame}
+
+\begin{frame}
+  \frametitle{Networks Architectures}
+  \begin{itemize}
+  \item Approach based on Pix2Pix
+  \item Conditional GAN
+  \end{itemize}
+  % image of cGAN goes here
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Networks Architectures}
+  \begin{itemize}
+  \item Approach based on Pix2Pix
+  \item Conditional GAN
+  \item Generator Architecture
+    \begin{itemize}
+    \item UNet
+    \end{itemize}
+  \end{itemize}
+  % image of Unet goes here
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Networks Architectures}
+  \begin{itemize}
+  \item Approach based on Pix2Pix
+  \item Conditional GAN
+  \item Generator Architecture
+  \item Discriminator Architecture
+    \begin{itemize}
+    \item PatchGAN
+    \end{itemize}
+  \end{itemize}
+  % image of cGAN goes here
 \end{frame}
 
 \section{Conclusion}
