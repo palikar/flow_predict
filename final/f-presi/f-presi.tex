@@ -1,13 +1,17 @@
-\documentclass[18pt]{beamer}
+\documentclass[18pt, xcolor=table]{beamer}
+\usepackage{xcolor}
 \usepackage{templates/beamerthemekit}
 \usepackage[export]{adjustbox}
 \usepackage{tikz}
 \usepackage{url}
 \usepackage{amsmath}
+\usepackage[table]{xcolor}
+\usepackage{tabularx}
 \usepackage{marvosym} % \MVRIGHTarrow
 \usepackage{stmaryrd} % \shortrightarrow
 \usepackage{textcomp} % \textrightarrow
 \usepackage{svg}
+\usepackage{tabularx}
 
 \title[Project discussion]{Towards Bringing Together Numerical Methods for Partial Differential Equation and Deep Neural Networks}
 \subtitle{Project presentation, Supervisor - Markus Hoffmann}
@@ -29,7 +33,7 @@
 
 \begin{frame}[t]
   \frametitle{Introduction}
-  \textbf{Basic idea:} Apply machine learning and image processing in computational fluid dynamics context  
+  \textbf{Basic idea:} Apply machine learning and image processing in computational fluid dynamics context
 \end{frame}
 
 \begin{frame}[t]
@@ -41,14 +45,14 @@
 
       \begin{itemize}
       \item Machine learning through deep neural networks
-      \item DNNs for image generation  
+      \item DNNs for image generation
       \end{itemize}
-      
+
     \end{column}
     \begin{column}{0.5\textwidth}
-      
+
     \end{column}
-  \end{columns}  
+  \end{columns}
 \end{frame}
 
 \begin{frame}[t]
@@ -60,9 +64,9 @@
 
       \begin{itemize}
       \item Machine learning through deep neural networks
-      \item DNNs for image generation  
+      \item DNNs for image generation
       \end{itemize}
-      
+
     \end{column}
     \begin{column}{0.5\textwidth}
 
@@ -71,9 +75,9 @@
       \item Differential equations
       \item Specialized solvers for the equations
       \end{itemize}
-      
+
     \end{column}
-  \end{columns}  
+  \end{columns}
 \end{frame}
 
 \begin{frame}
@@ -102,12 +106,12 @@
   \begin{itemize}
   \item Predict the flow around an object in a channel.
   \end{itemize}
-  
+
   \begin{figure}[htb]
     \includegraphics[scale=0.24]{images/channel/flow_2}
     \caption{Simulation Setup}
   \end{figure}
-  
+
 \end{frame}
 
 \begin{frame}[t]
@@ -121,7 +125,7 @@
   \end{figure}
 
   \vspace{-1cm}
-  
+
   \begin{columns}[t]
     \begin{column}{0.5\textwidth}
       \begin{center}
@@ -132,7 +136,7 @@
       \item Inflow speed of the fluid
       \item Viscosity and density of the fluid
       \end{itemize}
-      
+
     \end{column}
     \begin{column}{0.5\textwidth}
       \begin{center}
@@ -144,7 +148,7 @@
       \item Velocity field (x\&y directions)
       \item Pressure field
       \end{itemize}
-      
+
     \end{column}
   \end{columns}
 
@@ -156,7 +160,7 @@
   \item Predict the flow around an object in a channel.
   \item Network Principle
   \end{itemize}
-  
+
 \end{frame}
 
 
@@ -167,11 +171,11 @@
   \item Predict the flow around an object in a channel.
   \item Network Principle
   \end{itemize}
-  
+
   \begin{figure}[htb]
     \includegraphics[scale=0.24]{images/models/pressure_optional}
   \end{figure}
-  
+
 \end{frame}
 
 \section{Why}
@@ -193,8 +197,8 @@
           \includegraphics[scale=0.2]{images/final/pipeline}
         \end{figure}
       \end{center}
-      
-      
+
+
     \end{column}
     \begin{column}{0.5\textwidth}
       \begin{itemize}
@@ -203,7 +207,7 @@
       \item computationally costly
       \end{itemize}
     \end{column}
-  \end{columns}  
+  \end{columns}
 \end{frame}
 
 \begin{frame}
@@ -218,7 +222,7 @@
           \includegraphics[scale=0.2]{images/final/net}
         \end{figure}
       \end{center}
-      
+
     \end{column}
     \begin{column}{0.5\textwidth}
       \begin{itemize}
@@ -227,7 +231,7 @@
       \item faster image generation
       \end{itemize}
     \end{column}
-  \end{columns}  
+  \end{columns}
 \end{frame}
 
 
@@ -253,12 +257,12 @@
   \frametitle{How}
   \begin{itemize}
   \item Machine Learning project
-  \item Not a single holistic model    
+  \item Not a single holistic model
   \begin{itemize}
     \item constant model
     \item inflow speed model
     \item viscosity-density model
-    \end{itemize}  
+    \end{itemize}
   \end{itemize}
 \end{frame}
 
@@ -320,7 +324,7 @@
       \caption{X velocity}
       \vspace{-0.2cm}
     \end{figure}
-    
+
     \begin{figure}[htb]
       \includegraphics[scale=0.2]{images/flows/flow_y}
       \vspace{-0.2cm}
@@ -366,7 +370,7 @@
   \begin{center}
     \begin{figure}[htb]
       \includegraphics[scale=0.23]{images/models/num_answer}
-    \end{figure}  
+    \end{figure}
   \end{center}
 \end{frame}
 
@@ -388,7 +392,7 @@
     \begin{figure}[htb]
       \includegraphics[scale=0.23]{images/pix2pix_example}
       \caption{Example image from the pix2pix paper}
-    \end{figure}  
+    \end{figure}
   \end{center}
 
   \footnotetext{Ting-Chun Wang, Ming-Yu Liu, Jun-Yan Zhu, Andrew Tao, Jan Kautz, and Bryan Catanzaro. ``High-resolution image synthesis and semantic manipulation with conditional gans.''}
@@ -404,9 +408,9 @@
     \begin{figure}[htb]
       \includegraphics[scale=0.33]{images/pix2pix_cgan}
       \caption{Training a cGAN}
-    \end{figure}  
+    \end{figure}
   \end{center}
-  
+
 \end{frame}
 
 
@@ -425,9 +429,9 @@
     \begin{figure}[htb]
       \includegraphics[scale=0.33]{images/nets/unet}
       \caption{The UNet architecture}
-    \end{figure}  
+    \end{figure}
   \end{center}
-  
+
 \end{frame}
 
 
@@ -442,7 +446,7 @@
     \item PatchGAN
     \end{itemize}
   \end{itemize}
-  
+
 \end{frame}
 
 \section{Evaluation}
@@ -497,7 +501,7 @@
     \item Numerical point of view
     \item Perceptual point of view
     \end{itemize}
-  \end{itemize}  
+  \end{itemize}
 \end{frame}
 
 \begin{frame}[t]
@@ -512,27 +516,53 @@
 \begin{frame}[t]
   \frametitle{Evaluation}
   \large{Numerical View}
-  \begin{table}
+  \vspace{1.5cm}
   \begin{center}
-    \begin{tabular}{lcc|cc}
-      \textbf{Model type} & \multicolumn{2}{c|}{\textbf{Max difference(\%) }}  &  \multicolumn{2}{c}{\textbf{Average difference(\%)}}\\
-      \hline 
-      \multicolumn{3}{c|}{}&&\\
-                 & \underline{Pressure} & \underline{No Pressure}  &  \underline{Pressure}.& \underline{No Pressure}\\
-      
-      Constant           & 14.56 & 44.04 & 0.60  & 0.72   \\
-      Inflow speed       & 32.16 & 45.68 & 0.55  & 0.93   \\
-      Viscosity-density  & 57.00 & 14.70 & 13.85 & 0.37   \\
-    \end{tabular}
+    \begin{table}
+      \rowcolors{2}{blue!15}{white}
+      \begin{tabular}{|c|c|c|}
+        \hline
+        \rowcolor{blue!50}
+        \textbf{Model}    & \textbf{Max diff.} & \textbf{Average diff.} \\
+        \hline
+        Constant          & 14.56 & 0.60  \\
+        Inflow speed      & 32.16 & 0.55  \\
+        Viscosity-density & 57.00 & 13.85 \\
+        \hline
+      \end{tabular}
+      \caption{All of the results are from models using the pressure field}
+    \end{table}
   \end{center}
-\end{table}
+
 \end{frame}
 
 \begin{frame}[t]
   \frametitle{Evaluation}
-  % Image with artifacts here
+  \large{Numerical View}
+  \vspace{1.5cm}
+  \begin{center}
+    \begin{table}
+      \rowcolors{2}{blue!15}{white}
+      \begin{tabular}{|c|c|c|}
+        \hline
+        \rowcolor{blue!50}
+        \textbf{Model}                       & \textbf{Max diff.} & \textbf{Average diff.} \\
+        \hline
+        \color{gray!!140}{Constant}          & \color{gray!!140}{14.56} & \color{gray!!140}{0.60}  \\
+        \rowcolor{gray!50}
+        \color{red}{Inflow speed}            & \color{red}{32.16} & \color{red}{0.55}  \\
+        \color{gray!!140}{Viscosity-density} & \color{gray!!140}{57.00} & \color{gray!!140}{13.85} \\
+        \hline
+      \end{tabular}
+      \caption{All of the results are from models using the pressure field}
+    \end{table}
+  \end{center}
 \end{frame}
 
+\begin{frame}[t]
+  \frametitle{Evaluation}
+  
+\end{frame}
 
 \begin{frame}[t]
   \frametitle{Evaluation}
@@ -541,16 +571,72 @@
   \item Correlation
   \item PSNR (Peak Signal to Noise Ration)
   \end{itemize}
-
 \end{frame}
 
 \begin{frame}[t]
   \frametitle{Evaluation}
   \large{Perceptual view}
+  \begin{itemize}
+  \item \textbf{Correlation}
+  \item PSNR (Peak Signal to Noise Ration)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Evaluation}
+  \large{Perceptual view}
+  \vspace{-0.5cm}
+  \begin{columns}[t]
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        \begin{figure}[htb]
+          \includegraphics[scale=0.17]{images/final/single_const_psnr}
+        \end{figure}
+      \end{center}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        \begin{figure}[htb]
+          \includegraphics[scale=0.17]{images/final/single_speed_psnr}
+        \end{figure}
+      \end{center}
+    \end{column}
+  \end{columns}
+
   \begin{center}
-  \includegraphics[scale=0.17]{images/final/single_const_psnr}
-  \includegraphics[scale=0.17]{images/final/single_speed_psnr}
-  \includegraphics[scale=0.17]{images/final/single_fluid_psnr}
+    \begin{figure}[htb]
+      \includegraphics[scale=0.17]{images/final/single_fluid_psnr}
+    \end{figure}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Evaluation}
+
+  \begin{center}
+    \begin{figure}[htb]
+      \includegraphics[scale=0.15]{images/flows/x_speed_good}
+      \vspace{-0.2cm}
+      \caption{Inflow speed model}
+    \end{figure}
+    \begin{figure}[htb]
+      \includegraphics[scale=0.15]{images/flows/y_fluid_good}
+      \vspace{-0.2cm}
+      \caption{Fluid model}
+    \end{figure}
+  \end{center}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Evaluation}
+
+  \begin{center}
+    \begin{figure}[htb]
+      \includegraphics[scale=0.17]{images/rec_plot/inflow_39_s0}
+      \includegraphics[scale=0.17]{images/rec_plot/inflow_39_s120}
+      \caption{Fluid model recursive results}
+    \end{figure}
   \end{center}
 
 \end{frame}
@@ -558,7 +644,22 @@
 
 \begin{frame}[t]
   \frametitle{Evaluation}
-  % Impressive image result here!
+
+  \begin{center}
+    \begin{figure}[htb]
+    \includegraphics[scale=0.15]{images/rec_flow/x_step_1}
+    \includegraphics[scale=0.15]{images/rec_flow/x_step_10}
+
+    \includegraphics[scale=0.15]{images/rec_flow/x_step_20}
+    \includegraphics[scale=0.15]{images/rec_flow/x_step_30}
+
+    \includegraphics[scale=0.15]{images/rec_flow/x_step_40}
+    \includegraphics[scale=0.15]{images/rec_flow/x_step_50}
+
+    \caption{Predicted simulation from the viscosity-density model}
+  \end{figure}
+  \end{center}
+
 \end{frame}
 
 
