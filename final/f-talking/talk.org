@@ -16,41 +16,39 @@
 
 * Einleitung
  
-Hallo, ich bin Stanislav und heute präsentiere ich mein finalen Vortrag für Praxis der Forschung. Selbstverständlich bin ich schon mit meinem Projekt [fertig] durch und jetzt erkläre ich wozu beim Projekt geht und was die Ergebnisse gewesen sind.
+Hallo, ich bin Stanislav und heute präsentiere ich unseren finalen Vortrag zu Praxis der Forschung. Selbstverständlich bin ich schon mit meinem Projekt durch und jetzt erkläre ich wozu beim Projekt geht und was die Ergebnisse gewesen sind.
 
 ** Grund Idee
-Ganz am Anfang, wenn ich die grobe grundlegende Idee des Projekts wiedergeben soll: wir haben es versucht, Machine-Learning und Bild-Verarbeitung Methoden bei Computatinal Fluid Dynamics (CFD)  anzuwenden. Ein bisschen konkreter, wir wollen untersuchen, in wie fern können Depp Neural Networks (DNNs) beim Durchführen und Visualisieren einer Strömung-Simulation angewandt werden.
+Ganz am Anfang, wenn ich die grobe grundlegende Idee des Projekts wiedergeben soll: wir haben es versucht, Machine-Learning und Bild-Verarbeitung Methoden bei Computatinal Fluid Dynamics (oder CFD) anzuwenden. Ein bisschen konkreter, wir wollen untersuchen, in wie fern können Deep Neural Networks (DNNs) beim Durchführen und Visualisieren einer Strömung-Simulation angewandt werden.
 
 *** Machine Learning
 Machine Learning und ins besondere DNNs werden heutzutage in ganz verschiedenen Anwendungsfällen verwendet. In den letzten Jahren ist es sogar möglich, Bilder mit DNNs zu generieren und unsere Arbeit ist in genau diese Richtung orientiert. Also mit DNNs gewisse Information (im Bildform) abarbeiten und anhand davon ein neues Bild erzeugen.
 
 *** CFD
-Auf der anderen Seite haben wir CFD. Bereich wo anhand von mathematischen Modellen (in meinten Fällen Differential Gleichungen) verschiedenen Simulationen von Flüssigkeiten durchgeführt werden. Hier werden spezielle Solvers verwendet, die unter Umständen ziemlich viel Rechnerleistung benötigen bezogen. Angesichts davon schlagen wir mit unserer Forschung eine alternative Strategie für Durchführen von Simulationen vor und zwar fokussieren wir uns auf Fällen, wo die visuelle Repräsentation den Ergebnissen auf dem Vordergrund steht.
+Auf der anderen Seite haben wir CFD. Bereich wo anhand von mathematischen Modellen (in meinten Fällen Differential Gleichungen) verschiedenen Simulationen von Flüssigkeiten durchgeführt werden. Hier werden spezielle Solvers verwendet, die unter Umständen ziemlich viel Rechnerleistung benötigen. Angesichts davon schlagen wir mit unserer Forschung eine alternative Strategie für das Durchführen von Simulationen vor und zwar fokussieren wir uns auf Fällen, wo die visuelle Repräsentation den Ergebnissen auf dem Vordergrund steht.
 
 
 * Forschungsprojekt 
 
-Um zu erklären, was genau das Projekt enthält, werden wir diese drei Fragen beantworten - "was", "warum" und "wie" es gemacht wurde. Und obwohl die Antworten einigermaßen zusammenhängen, verseuchen wir 
-da ganze Schrittweise durchzugehen.
+Um zu erklären, was genau das Forschungs-Projekt enthält, werden wir die folgenden drei Fragen beantworten - "was", "warum" und "wie" es gemacht wurde. Es ist war, das die Antworten einigermaßen zusammenhängen, aber verseuchen wir da ganze Schrittweise durchzugehen.
 
 ** Was
 Also erstmals "was?" - in ganz einfachen Wörtern, wir wollen die Strömung in einem Kanal um ein Objekt vorhersagen. Und zwar mit einem neuronalen Netz gegeben eine ungewöhnliche Repräsentation vom Raum. Ich sage mehr dazu später, jetzt stellen wir das Problem ein bisschen anschaulicher vor. 
 
 Wir haben die Folgenden Situation, ein Kanal und ein Objekt in der Mitte. Wir beschränken uns auf dem 2D Fall. An einer Seite hier gibt's eine Einfließ-Bedingung, also da kommt die Flüssigkeit rein und an der anderen Seite fließt die aus. Mit dieser Einstellung haben wir auch eigne Parameter für die Simulation, nämlich Einfließgeschwindigkeit, Viskosität und Dichte vom Fluid. Diese sind also die Zahlen die das eine konkrete Instanz vom Problem so zu sagen bestimmen.
 
-Das Ziel dann ist, die Simulation durchzuführen und die Geschwindigkeit und Druck in jedem Punkt vom Raum zu bestimmen für eine gewisse Zahl von Zeitschritten. Also die Lösungen für jeden Zeitschritt zu bestimmen. 
+Das Ziel dann ist, die Simulation durchzuführen und die Geschwindigkeit und den Druck in jedem Punkt vom Raum zu bestimmen für eine gewisse Zahl von Zeitschritten. Also die Lösungen für jeden Zeitschritt zu bestimmen. 
 
-Beim Anwendungsfall, den wir betrachten, wollen wir nicht explizit die Roh-Daten für die Lösungen, sondern eine visuelle Repräsentation davon. Also, Bilder, die durch verschiedene Pixel-Farben, verschiedene Werte vom Lösungsraum kodiert. Pro Zeitschritt haben wir drei Solche Bilder - zwei Geschwindigkeit-Felder (also in die zwei Richtungen) und ein Druck-Feld. 
+In unserem Anwendungsfall wollen wir nicht explizit die Roh-Daten für die Lösungen, sondern eine visuelle Repräsentation davon erzeugen. Also, spricht, Bilder, die durch verschiedene Pixel-Farben, verschiedene Werte vom Lösungsraum kodiert. Pro Zeitschritt haben wir drei Solche Bilder - zwei Geschwindigkeit-Felder (also in die zwei Richtungen) und ein Druck-Feld. 
 
-Wie schon erwähnt, wir wollen dies mit einem DNN vorhesagen, sprich also gegen die Bilder von einem Zeitschritt, die Bilder für den nächsten zu erzeugen. Natürlich möglichst genau. Das DNN soll auch in der Lage sein, die Parameter der Simulation betrachten und die Lösungen entsprechend anpassen. 
+Wie schon erwähnt, wir wollen dies mit einem DNN vorhesagen. Gegeben also die Bilder von einem Zeitschritt, die Bilder für den nächsten zu erzeugen. Natürlich möglichst genau. Das DNN soll auch in der Lage sein, die Parameter der Simulation betrachten und die Lösungen entsprechend anpassen. 
 
-Mit unserer Forschung wollen wir also untersuchen, ob dies möglich ist und ob ein Netz die Parameter die Simulation generalisieren kann und Simulationen mit ungesehen Parameter gut vorhersagen
-Und falls ja - inwiefern (also die Ergebnisse Quantifizieren)
+Mit unserer Forschung wollen wir also untersuchen, ob dies möglich ist und ob ein Netz die Parameter die Simulation generalisieren kann und Simulationen mit ungesehen Parameter gut vorhersagen. Und falls ja - inwiefern (also die Ergebnisse Quantifizieren)
 
 
 ** Warum
 
-Jetzt kommen wir zu das "warum?" -  Normalerweise wird eine solche Simulation wird mit einem numerischen Solver gelöst werden. Die Visualisierung vom Ergebnissen kommt dann als ein separater Schritt. Schematisch können wir das ganze so darstellen.
+Jetzt kommen wir zu das "warum?" -  Normalerweise wird eine solche Simulation wird mit einem numerischen Solver gelöst. Die Visualisierung vom Ergebnissen kommt dann als ein separater Schritt. Schematisch können wir das ganze so darstellen.
 
 Am Anfang ist selbst das Problem, das gewisse Parameter besitzt. Dann kommt der Solver, der reelle Zahlen als Ergebnisse für jeden Zeitschritt ausrechnet und dann kommt die Visualisierung (was auch ein Tool), die die letztendliche Bilder erzeugt. Offensichtlich diese Pipeline stellt eine kompliziertes System, wo das Workflow nicht trivial ist, für jede Phase es verschiedene Parameters gibt und die notwendige Rechnerleistung nicht zu übersehen ist.
 
@@ -58,7 +56,7 @@ Zu bemerken ist, dass wir nur an den Bildergebnisse interessiert sind. Also, als
 
 - Damit versuchen wir alle Aufgeben beim Trainiren zu lernen und nicht explizit zu modellieren.
 - Wir lassen uns sagen, dass die Ergebnisse nicht absolut exakt sein müssen als die Bilder für ein Mensch ziemlich gleich aussehen können ohne komplette Überlappung.
-- Das ganze System ist außerdem performanter als DNNs können sehr schnell Bilder abarbeiten und haben sich für solche Aufgaben etabliert. 
+- Das ganze System ist außerdem performanter weil DNNs sehr schnell Bilder abarbeiten können und sich für solche Aufgaben etabliert haben. 
 
 # + Die Bilder repräsentieren ein guter Eingaberaum für ein Netz
 
@@ -66,24 +64,25 @@ Zu bemerken ist, dass wir nur an den Bildergebnisse interessiert sind. Also, als
 ** Wie
 Letztendlich können wir unser Ansatz genauer erklären (also die "wie?" Frage beantworten). Hier gehen wir kurz durch die Schritten, die erledigt werden müssten, damit wir unsere Ziele erreichen könnten.
 
+
+Es wurde erwähnt, dass die Simulation drei Parameter besitzt. Wir haben aber uns entschieden nicht ein holistisches Netz zu entwickeln, das alle drei Parameter behandeln kann, sondern drei kleineren, die das Problem schrittweise eingehen. Diese sind
+- konstantes Modell - es werden gar keine Parameter betrachtet. Baseline Modell gedacht als Proof-of-Concept. Hier ist die Generalisierung nur in die Zeit. Also, lerne auf einem Teil einer Simulation, vorhersage den Rest.
+- Geschwindigkeit Modell - Netz, dass nur die Einfließ-Geschwindigkeit behandeln kann.
+- Viskosität-Dichte Modell - selbsterklärend, hier können die anderen zweit Parameter variiert werde.n
+
 *** Daten Erzeugung
 
 *Data sets*: 
 
-Als grundsätzlich unsere Forschung ein Maschine Learning Projekt ist, brauchen wir zunächst fertige Daten, mit denen wir Modelle trainieren können. Diese haben wir mit der gezeigten Pipeline erzeugt. Das beschriebenen Problem (also die Strömung im Kanal) wird durch die so genannte Navier-Stokes Gleichungen beschreiben. Das heißt, für jeden Zeitschritt muss eine Partielle Differentialgleichung (PDE) gelöst werden um mit der Lösung anzukommen. Dies wurde mit HiFlow3 gemacht, was ein Bibliothek Lösen von PDEs. Die Lösungen wurden dann als Bilder mit ParaView (ein Visualisierung-Tookkit) visualisiert.
+Als grundsätzlich unsere Forschung ein Maschine Learning Projekt ist, brauchen wir zunächst echte Daten, mit denen wir Modelle trainieren können. Diese haben wir mit der gezeigten Pipeline erzeugt. Das beschriebenen Problem (also die Strömung im Kanal) wird durch die so genannte Navier-Stokes Gleichungen beschreiben. Das heißt, für jeden Zeitschritt muss eine Partielle Differentialgleichung (PDE) gelöst werden um mit der Lösung anzukommen. Dies wurde mit HiFlow3 gemacht, was ein Bibliothek Lösen von PDEs. Die Lösungen wurden dann als Bilder mit ParaView (ein Visualisierung-Tookkit) visualisiert.
 
 Für die Visualisierung haben wir uns Graustufenbilder gewählt. Frühe Experimente haben gezeigt, dass das Trainieren mit Farbige Bilder (also drei Kanale pro Bild) wesentlich schwierige ist.
 
-Die benutzte Modell-Gleichung für die Daten-Erzeugung zeigt uns welches Problem das Netz selbst quasi kodieren muss um die Daten vorherzusagen. Wir sagen deswegen, dass unsere Netz spezifisch zu den Navier-Stokes Gleichungen für inkompressibele Fluid-Strömung ausrichtet
+Die benutzte Modell-Gleichung für die Daten-Erzeugung zeigt uns welches Problem das Netz selbst quasi kodieren muss um die Daten vorherzusagen. Wir sagen deswegen, dass unsere Netz sich spezifisch zu den Navier-Stokes Gleichungen für inkompressibele Fluid-Strömung ausrichtet.
 
-Es wurde erwähnt, dass die Simulation drei Parameter besitzt. Wir haben uns entschieden nicht ein holistisches Netz zu entwickeln, das alle drei Parameter behandeln kann, sondern drei kleineren, die das Problem schrittweise eingehen. Diese sind
-- konstantes Modell - es werden gar keine Parameter betrachtet. Baseline Modell gedacht als Proof-of-Concept. Hier ist die Generalisierung nur in die Zeit. Also, lerne auf einem Teil einer Simulation, vorhersage den Rest.
-- Geschwindigkeit Modell - Netz, dass nur die Einfließ-Geschwindigkeit behandeln kann.
-- Viskosität-Dichte Modell - selbsterklärend, hier können die anderen zweit Parameter variiert werden.
+Wir haben uns auch drei Sets von Simualtionsbilder erzeugt wo verschiedenen Parameter variiert wurden. Also zum Beispiel für das erste Modell gibt's nur eine Simulation mit festen Parametern und für das Zweite gibst eine Reihe von Simulationen mit verschiedenen Einfließ-Geschwindigkeiten.
 
-Dementsprechend haben wir uns auch drei Sets von Simualtionsbilder erzeugt wo verschiedenen Parameter variiert wurden. Also zum Beispiel für das erste Modell gibt's nur eine Simulation mit festen Parametern und für das Zweite gibst eine Reihe von Simulationen mit verschiedenen Einfließ-Geschwindigkeiten.
-
-*Parameter Wahl* : Die Wahl von Parametern für die Simulationen ist nicht zufällig gewesen. Wir haben die Reynoldszahl der Strömung betrachtet. Diese zahlt bestimmt die Art der Strömung und zeigt ob die Laminat, Turbulent oder etwas dazwischen ist. Die Simulationensparamter wurden so gewählt, dass die Reynoldszahl im Bereich von 90 bis 450 liegt. Diese Bedeutet, dass die Strömung nicht turbulent ist, aber gewisse interessante Wirbelstrukturen sind sichtbar (wie zum Beispiel die bekannte Karmansche Wirbelstraße hier). Die Idee hinter dieser Entscheidung ist zu sehen ob die Netze mit nicht-trivialen Simulationen umgehen können.
+*Parameter Wahl* : Die Wahl von Parametern für die Simulationen ist nicht zufällig gewesen. Wir haben die Reynoldszahl der Strömung betrachtet und diese bestimmt die Art der Strömung und zeigt ob die Laminar, Turbulent oder etwas dazwischen ist. Die Simulationensparamter wurden so gewählt, dass die Reynoldszahl im Bereich von 90 bis 450 liegt. Diese Bedeutet, dass die Strömung nicht turbulent ist, aber gewisse interessante Wirbelstrukturen sind sichtbar (wie zum Beispiel die bekannte Karmansche Wirbelstraße hier). Die Idee hinter dieser Entscheidung ist zu sehen ob die Netze mit nicht-trivialen Simulationen umgehen können.
 
 *Test train split*: Die Datensätze wurden gesplittet in Training-Set und Test-Set. Wichtig hier zu sagen, dass im Test-Sets gab's Simulationen mit Reynoldszahl, die für keine Simulationen in Training-Set zu finden ist. Also die Daten sind so gestaltet, so dass wir wirklich sehen können, ob das Netz die Parameter generalisieren und ungesehene Simulationen vorhersagen kann.
 
@@ -93,13 +92,14 @@ Hier widmen wir ein bisschen Zeit um zu sagen, wie genau unsere Netze aussehen.
 
 Erstmals es soll schon klar sein, dass die Netze ein Lösungsbild der Simulation erzeugen unter Verwendung vom Bild vom vorherigen Zeitschritt. Das heißt, ganz am Anfang, gehen wir von einem Schon fertigen Bild aus. Das Netz rechnet also aus, ein Zeitschritt bei der Simulation, wo die Eingabe und die Ausgabe Bilder sind. Wir sagen nämlich Bilder, weil wie schon gesagt, pro Zeitschritt drei Felder die das Raum beschreiben gibt - die Geschwindigkeit der Flüssigkeit in die beiden Richtungen und auch den Druck-Feld.
 
-Da aber zwei von den Modellen auch Simulationsparameter betrachten können, ist für sie die die Netz-Eingabe ein bisschen erweitert. Die Parameter sind reelle Zahlen und die müssen mit dem Netz irgendwie passend integriert werden. Das was bei uns gut funktioniert hat, ist extra Bild-Kanäle mit konstantem Wert bei der Eingabe zu nehmen. Also ein (für die Einfließ-Geschwindigkeit) oder zwei (Dichte und Viskosität) Felder mit dem Wert von dem entsprechenden Parameter als extra Eingabe für das Netz. Die Ausgabe für diese Netze bleibt aber unverändert.
+Da aber zwei von den Modellen auch Simulationsparameter betrachten können, ist für sie die die Netz-Eingabe ein bisschen erweitert. Die Parameter sind reelle Zahlen und die müssen mit dem Netz irgendwie passend integriert werden. Das was bei uns gut funktioniert hat, ist extra Bild-Kanäle mit konstantem Wert bei der Eingabe zu nehmen. Also ein (für die Einfließ-Geschwindigkeit) oder zwei (Dichte und Viskosität) Felder (oder Matrizen) mit dem Wert von dem entsprechenden Parameter als extra Eingabe für das Netz. Die Ausgabe für diese Netze bleibt aber unverändert.
 
 Kurz zu der Architektur von den Netzen. Unser Ansatz zu Bild-zu-Bild Abbildung ist auf pix2pix basiert. Pix2Pix ist ein Paper von 2015, das ein allgemeines Image-to-Image Translation Rahmenwerk vorstellt. Unsere Netze sind im Prinzip ein Versuch, dieser Ansatz im Kontext von Simulationen anzuwenden. 
 
-Der Ansatz heißt "Conditional Generative Adversarial Nets" und verwendetet zwei Netze -- Diskriminator und Generator. Der Generator erzeugt ein Bild gegeben ein anderes als Eingabe und der Diskriminator versucht zu raten ob das generierte Bild ein echtes Bild ist. Die Netze sind zusammen trainiert und sind so zusagen in einem Kampf miteinander. Also der Genrator soll Bilder erzeugen, die den Diskriminator austricksen müssen. Was interessant ist, ist,  dass Die Loss-Funktion vom Generator den Diskriminator enthält (also wenn wir den Diskriminator als Funktion versehen) und damit selbst die Loss-Funktion wird gelernt. Das heißt, dass System lernt "von sich selbst" sowohl die wichtige Features von der Eingabe als auch eine passende Loss-Funktion während des Trainig-Prozesses. 
+Der Ansatz heißt "Conditional Generative Adversarial Networks" und verwendetet zwei Netze -- Diskriminator und Generator. Der Generator erzeugt ein Bild gegeben ein anderes als Eingabe und der Diskriminator versucht zu raten ob das generierte Bild ein echtes Bild ist. Die Netze sind zusammen trainiert und sind so zusagen in einem Kampf miteinander. Also der Genrator soll Bilder erzeugen, die den Diskriminator austricksen müssen. Was interessant ist, ist,  dass Die Loss-Funktion vom Generator den Diskriminator enthält (also wenn wir den Diskriminator als Funktion versehen) und damit selbst die Loss-Funktion wird gelernt. Das heißt, dass System lernt "von sich selbst" sowohl die wichtige Features von der Eingabe als auch eine passende Loss-Funktion während des Trainig-Prozesses. 
 
 Für den Generator haben wir die UNet Architektur verwendet. Wir haben es auch ResNet zum Trainieren experimentiert aber damit war der Aufwand ziemlich größer und die Ergebnisse schlechter. Der Diskriminator ist derjenige, der im originalen Paper von Pix2Pix vorgeschlagen wurde und der heißt PatchGAN. Das ist ein Netz, das die Eingabe als Patches betrachtet und macht die Entscheidung quasi pro Patch ob dies von einem echten oder erzeugten Bild kommt.
+
 
 
 * Evaluation
@@ -108,7 +108,7 @@ Wenn die Modellen trainiert sind, kommt die Evaluierung. Und das erkläre ich gl
 
 ** Modelle
 
-Verwendung von Druckfeld.
+Erstens, wir wurden interessiert, ob der Druckfeld Unterschied bei der Leistung der Netzen macht. Deswegen haben wir pro Modell Typ, zwei Modellen trainiert - ein das den Druckfeld benutzt (bei der Ein- und Ausgabe) und ein das nicht. Bei der Evaluierung ob zwei solche Modelle sich wesentlich Unterscheiden.
 
 
 ** Strategien
@@ -116,31 +116,31 @@ Verwendung von Druckfeld.
 Im Prinzip, hatten wir bei der Evaluierung zwei allgemeine Strategien oder Evaluierungsfälle. Diese sind individuelle Bild-Evaluierung und rekursive Evaluierung.
 
 *Individuelle Evaluierung*:
-Bei der individuellen Evaluierung geht es um Evaluieren von einer einzigen Auswertung des Netzes. Das heißt, es werden ausschließlich Bilder von den echten Simulationen als Eingabe verwendet und die Güte der Ausgabe wird über den Test-Set gemittelt.
+Bei der individuellen Evaluierung geht es um Evaluieren von einer einzigen Auswertung des Netzes. Das heißt, es werden ausschließlich Bilder von den echten Simulationen als Eingabe verwendet und die Güte der Ausgabe wird über den gesamten Test-Set gemittelt.
 
 Wie wir "Güte" definieren sag ich später.
 
 *Rekursive Evaluierung*:
 
-Die andere Weise auf die wir die Netze evaluieren ist rekursiv, also für ne gewisse Zahlt von Schritten, nehmen wir die Ausgabe vom Netz wider als Eingabe. Damit wollen wir sehen wie der Fehler bei den Bildern akkumuliert und was für Artefakte können wir erwarten wenn wir das Modell für eine fast echte Simulation anwenden.
+Die andere Weise auf die wir die Netze evaluieren ist rekursiv, also für ne gewisse Zahl von Schritten (oder Zeitschritten), nehmen wir die Ausgabe vom Netz wieder als Eingabe. Damit wollen wir sehen, wie der Fehler sich bei den Bildern akkumuliert und was für Artefakte können wir erwarten wenn wir das Modell für eine fast echte Simulation anwenden.
 
 
 ** Ergebnisse
-Jetzt können wir sagen die konkreten Metriken, die wir für die Evaluierung ausgewählt haben. Dafür haben aber zwei Sichten der Ergebnisse. Also einerseits wir vergleichen Bilder mit Bilder und zwar im Bezug auf wie ein Mensch die beiden Bilder wahrnimmt. Das heißt, wenn die Bilder ähnlich genug sind, betrachten wir die Ergebnisse als erfolgreich. Anderseits, wir betrachten Teilweise eine numerische Aufgabe. Deswegen machte es Sinn auch zu sagen wie weit sind "wirklich" die generierten Bilder von den echten. In diesem Fall reden wir über Metriken als mittlere und maximale Prozentuale Abweichung 
+Die konkreten Metriken, die wir für die Evaluierung ausgewählt haben. Dafür haben aber zwei Sichten der Ergebnisse. Also einerseits wir vergleichen Bilder mit Bilder und zwar im Bezug auf wie ein Mensch die beiden Bilder wahrnimmt. Das heißt, wenn die Bilder ähnlich genug sind, betrachten wir die Ergebnisse als quasi erfolgreich. Anderseits ist unsere Aufgabe teilweise numerische. Deswegen machte es sich Sinn auch zu sagen wie weit sind "wirklich" die generierten Bilder von den echten. In diesem Fall reden wir über Metriken als mittlere und maximale Prozentuale Abweichung also objektive Differenz und nicht einfach wahrgenommene Differenz.
 
 *** Numerische Genauigkeit
 
-Zu diesem Aspekt der Evaluierung werde ich nicht super viel Zeit widmen. Wir werden aber die Zahlen hier in der Tabelle geben und eine kurze Bemerkung machen. Es geht um die individuelle Evaluierung und alle Zahlen sind über einige Modelle gemittelt. Sofort zu merken ist, die Mittlere Abweichung ist niedrig aber die Maximale hoch. Wenn wir zum. Beispiel hier auf dem Geschwindigkeit-Modell konzentrieren, die maximale Abweichung unter Verwendung vom Druckfeld ist rund 64 mal größer als die mittlere. Dies hinweist, dass die Netze können im Größen und Ganzen die richtige Bilder erzeugen, aber es gibt gewisse Stellen oder Bereichen wo der Fehler im Bild groß ist.
+Zu diesem Aspekt der Evaluierung werde ich nicht super viel Zeit widmen. Wir werden aber die Zahlen hier in der Tabelle geben und eine kurze Bemerkung machen. Es geht um die individuelle Evaluierung und alle Zahlen sind über einige Modelle gemittelt und wir betrachten nur Modelle, die den Druckfeld verwenden. Sofort zu merken ist, die Mittlere Abweichung ist niedrig aber die Maximale hoch. Wenn wir zum. Beispiel hier auf dem Geschwindigkeit-Modell konzentrieren, die maximale Abweichung unter Verwendung vom Druckfeld ist rund 64 mal größer als die mittlere. Dies hinweist, dass die Netze können im Größen und Ganzen die richtige Bilder erzeugen, es gibt aber jedoch gewisse Stellen oder Bereichen wo der Fehler im Bild groß ist.
 
-Dies ist konsistent mit diesen Beispiel-Bilder die vorhergesagt sind. Man sieht die Struktur ist die richtige, aber es gibt auch diesen Muster über den Raum. Wir haben es versucht solchen Muster mit verschiedenen Techniken zu vermeiden, also zum Beispiel die Daten zum Trainieren zu verauschen oder auf Random-Crops zu trainieren. Im großen Teil diese mildern den Effekt ab aber es komplett zu vermeiden war nicht möglich. 
+Dies ist konsistent mit diesen Beispiel-Bilder die vorhergesagt sind. Man sieht die Struktur ist die richtige, aber es gibt auch diesen Muster über den Raum. Wir haben es versucht solchen Muster mit verschiedenen Techniken zu vermeiden, also zum Beispiel die Daten zum Trainieren zu verauschen oder auf Random-Crops zu trainieren. Im großen Teil diese mildern den Effekt ab aber es komplett zu vermeiden in allen Fällen war es nicht möglich. 
 
-[Bilder von Artefakten] 
+[Bilder von Artefakten]
 
 *** Visuelle Genauigkeit
 
-Wie gesagt aber, die wahrgenommene Qualität ist uns wichtiger und diese erlaubt uns besser Modelle vergleichen
+Wie gesagt aber, die wahrgenommene Qualität ist uns wichtiger und diese erlaubt uns besser die Modelle vergleichen
 
-Unsere erste versuch diese Ähnlichkeit zu messen ist mit der statistischen Korrelation zwischen den Pixelwerten. Also wenn wir alle Pixel von zwei Bildens so zu Sagen ausrollen und die beiden Reihen vergleichen, was die Korrelations dazwischen ist. Es hat sich aber herausgestellt, dass dies uns nicht super viel Information geben kann. Bei faste allen Experimenten, war die Korrelation zwischen den vorhergesagten und den echten Bildern nahezu 1.
+Unser erster Versuch diese Ähnlichkeit zu messen war mit der statistischen Korrelation zwischen den Pixelwerten. Also wenn wir alle Pixel von zwei Bildens so zu Sagen ausrollen und die beiden Reihen vergleichen, was die Korrelations dazwischen ist. Es hat sich aber herausgestellt, dass dies uns nicht super viel Information geben kann. Bei faste allen Experimenten, war die Korrelation zwischen den vorhergesagten und den echten Bildern nahezu 1.
 
 Wenn wir hier ein Beispiel Bild anschauen, kann man sehen was ich meine. Oben ist das Zielbild und unten ist das was ein Netz generiert hat. Die Bilder sehen fast identisch aus was die hoche Korrelation entspricht. Dafür gibts zwei Grunde. Erstens das Netz macht tatsächlich eine gute Vorhersage also die trainierte Modelle erledigen was wir wollen. Es ist aber auch war, das die Korrelation zwischen zwei nacheinander Folgenden Bilder sowieso hoch ist.
 
