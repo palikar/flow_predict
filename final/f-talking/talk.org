@@ -33,9 +33,9 @@ Auf der anderen Seite haben wir CFD. Bereich wo anhand von mathematischen Modell
 Um zu erklären, was genau das Forschungs-Projekt enthält, werden wir die folgenden drei Fragen beantworten - "was", "warum" und "wie" es gemacht wurde. Es ist war, das die Antworten einigermaßen zusammenhängen, aber verseuchen wir da ganze Schrittweise durchzugehen.
 
 ** Was
-Also erstmals "was?" - in ganz einfachen Wörtern, wir wollen die Strömung in einem Kanal um ein Objekt vorhersagen. Und zwar mit einem neuronalen Netz gegeben eine ungewöhnliche Repräsentation vom Raum. Ich sage mehr dazu später, jetzt stellen wir das Problem ein bisschen anschaulicher vor. 
+Also erstmal "was?" - in ganz einfachen Wörtern, wir wollen die Strömung in einem Kanal um ein Objekt vorhersagen. Und zwar mit einem neuronalen Netz gegeben eine ungewöhnliche Repräsentation vom Raum. Ich sage mehr dazu später, jetzt stellen wir das Problem ein bisschen anschaulicher vor. 
 
-Wir haben die Folgenden Situation, ein Kanal und ein Objekt in der Mitte. Wir beschränken uns auf dem 2D Fall. An einer Seite hier gibt's eine Einfließ-Bedingung, also da kommt die Flüssigkeit rein und an der anderen Seite fließt die aus. Mit dieser Einstellung haben wir auch eigne Parameter für die Simulation, nämlich Einfließgeschwindigkeit, Viskosität und Dichte vom Fluid. Diese sind also die Zahlen die das eine konkrete Instanz vom Problem so zu sagen bestimmen.
+Wir haben die Folgenden Situation, ein Kanal und ein Objekt in der Mitte. Wir beschränken uns auf dem 2D Fall. An einer Seite hier gibt's eine Einfließ-Bedingung, also da kommt die Flüssigkeit rein und an der anderen Seite fließt die raus. Mit dieser Einstellung haben wir auch einige Parameter für die Simulation, nämlich Einfließgeschwindigkeit, Viskosität und Dichte vom Fluid. Diese sind also die Zahlen die das eine konkrete Instanz vom Problem so zu sagen bestimmen.
 
 Das Ziel dann ist, die Simulation durchzuführen und die Geschwindigkeit und den Druck in jedem Punkt vom Raum zu bestimmen für eine gewisse Zahl von Zeitschritten. Also die Lösungen für jeden Zeitschritt zu bestimmen. 
 
@@ -74,9 +74,9 @@ Es wurde erwähnt, dass die Simulation drei Parameter besitzt. Wir haben aber un
 
 *Data sets*: 
 
-Als grundsätzlich unsere Forschung ein Maschine Learning Projekt ist, brauchen wir zunächst echte Daten, mit denen wir Modelle trainieren können. Diese haben wir mit der gezeigten Pipeline erzeugt. Das beschriebenen Problem (also die Strömung im Kanal) wird durch die so genannte Navier-Stokes Gleichungen beschreiben. Das heißt, für jeden Zeitschritt muss eine Partielle Differentialgleichung (PDE) gelöst werden um mit der Lösung anzukommen. Dies wurde mit HiFlow3 gemacht, was ein Bibliothek Lösen von PDEs. Die Lösungen wurden dann als Bilder mit ParaView (ein Visualisierung-Tookkit) visualisiert.
+Als grundsätzlich unsere Forschung ein Maschine Learning Projekt ist, brauchen wir zunächst echte Daten, mit denen wir Modelle trainieren können. Diese haben wir mit der gezeigten Pipeline erzeugt. Das beschriebenen Problem (also die Strömung im Kanal) wird durch die so genannte Navier-Stokes Gleichungen beschreiben. Das heißt, es muss eine Partielle Differentialgleichung (PDE) gelöst werden um mit den Lösungen anzukommen. Dies wurde mit HiFlow3 gemacht, was ein Bibliothek zum Lösen von PDEs. Die Lösungen wurden dann als Bilder mit ParaView (ein Visualisierung-Tookkit) visualisiert.
 
-Für die Visualisierung haben wir uns Graustufenbilder gewählt. Frühe Experimente haben gezeigt, dass das Trainieren mit Farbige Bilder (also drei Kanale pro Bild) wesentlich schwierige ist.
+Für die Visualisierung haben wir uns Graustufenbilder gewählt. Frühe Experimente haben gezeigt, dass das Trainieren mit Farbige Bilder (also drei Kanale pro Bild) wesentlich schwieriger ist.
 
 Die benutzte Modell-Gleichung für die Daten-Erzeugung zeigt uns welches Problem das Netz selbst quasi kodieren muss um die Daten vorherzusagen. Wir sagen deswegen, dass unsere Netz sich spezifisch zu den Navier-Stokes Gleichungen für inkompressibele Fluid-Strömung ausrichtet.
 
@@ -84,7 +84,7 @@ Wir haben uns auch drei Sets von Simualtionsbilder erzeugt wo verschiedenen Para
 
 *Parameter Wahl* : Die Wahl von Parametern für die Simulationen ist nicht zufällig gewesen. Wir haben die Reynoldszahl der Strömung betrachtet und diese bestimmt die Art der Strömung und zeigt ob die Laminar, Turbulent oder etwas dazwischen ist. Die Simulationensparamter wurden so gewählt, dass die Reynoldszahl im Bereich von 90 bis 450 liegt. Diese Bedeutet, dass die Strömung nicht turbulent ist, aber gewisse interessante Wirbelstrukturen sind sichtbar (wie zum Beispiel die bekannte Karmansche Wirbelstraße hier). Die Idee hinter dieser Entscheidung ist zu sehen ob die Netze mit nicht-trivialen Simulationen umgehen können.
 
-*Test train split*: Die Datensätze wurden gesplittet in Training-Set und Test-Set. Wichtig hier zu sagen, dass im Test-Sets gab's Simulationen mit Reynoldszahl, die für keine Simulationen in Training-Set zu finden ist. Also die Daten sind so gestaltet, so dass wir wirklich sehen können, ob das Netz die Parameter generalisieren und ungesehene Simulationen vorhersagen kann.
+*Test train split*: Die Datensätze wurden gesplittet in Training-Set und Test-Set. Wichtig hier zu sagen, dass in den Test-Sets gab's Simulationen mit Reynoldszählen, die für keine Simulationen in Training-Set zu finden ist. Also die Daten sind so gestaltet, so dass wir wirklich sehen können, ob das Netz die Parameter generalisieren und ungesehene Simulationen vorhersagen kann.
 
 *** Netze Architektur und Funktionsweise
 # Hier erklären wir was genau und wie die Netze die Ergebnisse ausrechnen.
@@ -108,7 +108,7 @@ Wenn die Modellen trainiert sind, kommt die Evaluierung. Und das erkläre ich gl
 
 ** Modelle
 
-Erstens, wir wurden interessiert, ob der Druckfeld Unterschied bei der Leistung der Netzen macht. Deswegen haben wir pro Modell Typ, zwei Modellen trainiert - ein das den Druckfeld benutzt (bei der Ein- und Ausgabe) und ein das nicht. Bei der Evaluierung ob zwei solche Modelle sich wesentlich Unterscheiden.
+Erstens, wir wurden interessiert, ob der Druckfeld Unterschied bei der Leistung der Netzen macht. Deswegen haben wir pro Modell Typ, zwei Modellen trainiert - ein das den Druckfeld benutzt (bei der Ein- und Ausgabe) und ein das nicht. Mit der Evaluierung sehen wir dann, ob zwei solche Modelle sich wesentlich Unterscheiden.
 
 
 ** Strategien
@@ -140,7 +140,7 @@ Dies ist konsistent mit diesen Beispiel-Bilder die vorhergesagt sind. Man sieht 
 
 Wie gesagt aber, die wahrgenommene Qualität ist uns wichtiger und diese erlaubt uns besser die Modelle vergleichen
 
-Unser erster Versuch diese Ähnlichkeit zu messen war mit der statistischen Korrelation zwischen den Pixelwerten. Also wenn wir alle Pixel von zwei Bildens so zu Sagen ausrollen und die beiden Reihen vergleichen, was die Korrelations dazwischen ist. Es hat sich aber herausgestellt, dass dies uns nicht super viel Information geben kann. Bei faste allen Experimenten, war die Korrelation zwischen den vorhergesagten und den echten Bildern nahezu 1.
+Unser erster Versuch diese Ähnlichkeit zu messen war mit der statistischen Korrelation zwischen den Pixelwerten. Also wenn wir alle Pixel von zwei Bildens so zu Sagen ausrollen und die beiden Reihen vergleichen, was die Korrelations dazwischen ist. Es hat sich aber herausgestellt, dass dies uns nicht super viel Information geben kann. Bei fast allen Experimenten, war die Korrelation zwischen den vorhergesagten und den echten Bildern nahezu 1.
 
 Wenn wir hier ein Beispiel Bild anschauen, kann man sehen was ich meine. Oben ist das Zielbild und unten ist das was ein Netz generiert hat. Die Bilder sehen fast identisch aus was die hoche Korrelation entspricht. Dafür gibts zwei Grunde. Erstens das Netz macht tatsächlich eine gute Vorhersage also die trainierte Modelle erledigen was wir wollen. Es ist aber auch war, das die Korrelation zwischen zwei nacheinander Folgenden Bilder sowieso hoch ist.
 
@@ -154,24 +154,25 @@ Für die Individuelle Evaluierung ist dies hier auf diesen Plots gemacht. Einige
 
 + das konstante Modell ist ziemlich inkonsistent mit den Ergebnissen. Die Verwendung des Druck-Feldes macht einen kleinen Unterschied aber nicht wirklich signifikant. Hauptsächlich beeinflusst dies die Varietät also das Modell kann besser als auch schlechter werden. Diese ist unsere Meinung nach wegen der limitierten Datenmenge für dieses Modell. 
 
-+ Der Druckfeld verbessert anderseits das Geschwindigkeit-Modell. Dabei ist das PSNR ziemlich höher wenn dies mit betrachtet wird. Genau das Gegenteil ist aber beim Viskosität-Dichte Modell zu sehen. KUrz dazu, ich glaub es ist naheliegend zu vermuten, dass der Druckfeld die Komplexität des Trainieren-Problem erhöht. Unter Umständen dies kann sowohl gut als auch schlecht sein, weil in komplexeren Daten man mehrere quasi Relationen finden kann. Anderseits wenn die Daten zu komplex sind, werden die weniger modellierbar so zu sagen.
++ Der Druckfeld verbessert anderseits das Geschwindigkeit-Modell. Dabei ist die PSNR ziemlich höher wenn dies mit betrachtet wird. Genau das Gegenteil ist aber beim Viskosität-Dichte Modell zu sehen. Kurz dazu, ich glaub es ist naheliegend zu vermuten, dass der Druckfeld die Komplexität des Trainieren-Problem erhöht. Unter Umständen dies kann sowohl gut als auch schlecht sein, weil in komplexeren Daten man mehrere quasi Relationen finden kann. Anderseits wenn die Daten zu komplex sind, werden die weniger modellierbar so zu sagen.
 
 + Trotz allem, das dritte Modell hier ist gar nicht schlecht im Sinn von Bildqualität. Also zum Beispiel diese sind ein paar Bilder generiert damit und die sehen ziemlich treu zum Original.
 
 [image]
 
 
-Wenn wir die Ergebnisse bei der rekursiven Anwendung anschauen, können wir etwas wichtigen bemerken. Diese Sind plots von der Rekursiven Anwendung von dem Geschwindigkeit-Modell für eine feste Simulation. Links ist ein Plot wo die Simulation von der ersten Index angefangen wurde und recht von Index 120. Also das 120. Bild in der Simulation wurde als "seed"-Bild für das Netz genommen. Zu Bemerken ist wie klein die Skala hier links ist und wie da gewisse Anomalie zu sehen ist. Also erstmals ist das PSNR super klein und dann ein bisschen größer. Die Bilder zeigen, dass von diesen Simulationen (also start index 0) nichts benutzbar ist und man kann kaum was Verstehen.
+Wenn wir die Ergebnisse bei der rekursiven Anwendung anschauen, können wir etwas Wichtiges bemerken. Diese Sind plots von der Rekursiven Anwendung von dem Geschwindigkeit-Modell für eine feste Simulation. Links ist ein Plot wo die Simulation von der ersten Index angefangen wurde und recht von Index 120. Also das 120. Bild in der Simulation wurde als "seed"-Bild für das Netz genommen. Zu Bemerken ist wie klein die Skala hier links ist und wie da gewisse Anomalie zu sehen ist. Also erstmals ist das PSNR super klein und dann ein bisschen größer. Die Bilder zeigen, dass von diesen Simulationen (also start index 0) nichts benutzbar ist und man kann kaum was Verstehen.
 
 [plot]
 
-Es hat sich gezeigt, dass es einen großen Unterschied macht, welches Bild als erstes für das Netz verwendet wird. Also ob das Bild von ein bisschen nach vorn in der Simulation ist oder vom Anfang. Alle Ergebnisse (wie die hier) zeigen, dass es schwierig für die Netze ist, mit Bilder von einer sich nicht-entwickelten Simulation umzugehen. Das ganze kann viele Ursachen haben. Meine Vermutung ist aber, dass es viel weniger Bilder in den Test-Sets gibt, wo die
-Simulation an seiner Anfang ist. Also die Bilder zeigen in meinten Fällen eine Simulation, die weiterentwickelt ist.
+Es hat sich gezeigt, dass es einen großen Unterschied macht, welches Bild als erstes für das Netz verwendet wird. Also ob das Bild von ein bisschen nach vorne in der Simulation ist oder vom Anfang. Alle Ergebnisse (wie die hier) zeigen, dass es schwierig für die Netze ist, mit Bilder von einer sich nicht-entwickelten Simulation umzugehen. Das ganze kann viele Ursachen haben. Meine Vermutung ist aber, dass es viel weniger Bilder in den Test-Sets gibt, wo die Simulation an seiner Anfang ist. Also die Bilder zeigen in meinsten Fällen eine Simulation, die weiterentwickelt ist.
 
 Ansonsten, die schönen Ergebnisse zeigen einen konsistenten Verlauf nach unten. Für 40 Rekursive Evaluierungen erreichen wir PSNR von 15, was schlecht genug ist um die generierten Bilder nicht zu Trauen. In fast allen Fällen senken die Warte exponentiell und ab und zu habe ich Netze gesehen, die das negative Wachstum linear halten können und die sind eher Ausnahmen.
 
 
 ** Performance
+
+
 
 
 
