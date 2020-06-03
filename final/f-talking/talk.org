@@ -110,6 +110,7 @@ Wenn die Modellen trainiert sind, kommt die Evaluierung. Und das erkläre ich gl
 
 Verwendung von Druckfeld.
 
+
 ** Strategien
 
 Im Prinzip, hatten wir bei der Evaluierung zwei allgemeine Strategien oder Evaluierungsfälle. Diese sind individuelle Bild-Evaluierung und rekursive Evaluierung.
@@ -168,6 +169,7 @@ Es hat sich gezeigt, dass es einen großen Unterschied macht, welches Bild als e
 Simulation an seiner Anfang ist. Also die Bilder zeigen in meinten Fällen eine Simulation, die weiterentwickelt ist.
 
 Ansonsten, die schönen Ergebnisse zeigen einen konsistenten Verlauf nach unten. Für 40 Rekursive Evaluierungen erreichen wir PSNR von 15, was schlecht genug ist um die generierten Bilder nicht zu Trauen. In fast allen Fällen senken die Warte exponentiell und ab und zu habe ich Netze gesehen, die das negative Wachstum linear halten können und die sind eher Ausnahmen.
+
 
 ** Performance
 

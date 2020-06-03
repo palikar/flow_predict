@@ -26,7 +26,32 @@
 
 \section{Introduction}
 
-\begin{frame}
+
+\begin{frame}[t]
+  \frametitle{Introduction}
+  \textbf{Basic idea:} Apply machine learning and image processing in computational fluid dynamics context  
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Introduction}
+  \textbf{Basic idea:} Apply machine learning and image processing in computational fluid dynamics context
+
+  \begin{columns}[t]
+    \begin{column}{0.5\textwidth}
+
+      \begin{itemize}
+      \item Machine learning through deep neural networks
+      \item DNNs for image generation  
+      \end{itemize}
+      
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      
+    \end{column}
+  \end{columns}  
+\end{frame}
+
+\begin{frame}[t]
   \frametitle{Introduction}
   \textbf{Basic idea:} Apply machine learning and image processing in computational fluid dynamics context
 
@@ -48,38 +73,61 @@
       \end{itemize}
       
     \end{column}
-  \end{columns}
-  
+  \end{columns}  
 \end{frame}
 
 \begin{frame}
   \frametitle{Project}
   \begin{itemize}
-  \item \textbf{What} we aimed to do?
-  \item \textbf{Why} is our research being done?
-  \item \textbf{How} were our goals achieved?
+  \item \Large{\textbf{What} we aimed to do?}
+    \pause
+  \item \Large{\textbf{Why} is our research being done?}
+    \pause
+  \item \Large{\textbf{How} were our goals achieved?}
   \end{itemize}
 \end{frame}
+
 
 \section{What}
 
-\begin{frame}
+\begin{frame}[t]
   \frametitle{What}
   \begin{itemize}
-  \item Predcit the flow around an object in a channel.
+  \item Predict the flow around an object in a channel.
   \end{itemize}
 \end{frame}
 
-\begin{frame}
+\begin{frame}[t]
   \frametitle{What}
   \begin{itemize}
-  \item Predcit the flow around an object in a channel.
+  \item Predict the flow around an object in a channel.
+  \end{itemize}
+  
+  \begin{figure}[htb]
+    \includegraphics[scale=0.24]{images/channel/flow_2}
+    \caption{Simulation Setup}
+  \end{figure}
+  
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{What}
+  \begin{itemize}
+  \item Predict the flow around an object in a channel.
   \end{itemize}
 
+  \begin{figure}[htb]
+    \includegraphics[scale=0.14]{images/channel/flow_2}
+  \end{figure}
 
-    \begin{columns}[t]
+  \vspace{-1cm}
+  
+  \begin{columns}[t]
     \begin{column}{0.5\textwidth}
-
+      \begin{center}
+        \Large{Parameters}\\
+        \small{for the whole simulation}
+      \end{center}
       \begin{itemize}
       \item Inflow speed of the fluid
       \item Viscosity and density of the fluid
@@ -87,6 +135,10 @@
       
     \end{column}
     \begin{column}{0.5\textwidth}
+      \begin{center}
+        \Large{Solutions}\\
+        \small{for each timestep}
+      \end{center}
 
       \begin{itemize}
       \item Velocity field (x\&y directions)
@@ -98,23 +150,50 @@
 
 \end{frame}
 
-\begin{frame}
+\begin{frame}[t]
   \frametitle{What}
-  %Diagram of the network evaluation goes here
+  \begin{itemize}
+  \item Predict the flow around an object in a channel.
+  \item Network Principle
+  \end{itemize}
+  
 \end{frame}
 
-\begin{frame}
+
+\begin{frame}[t]
   \frametitle{What}
-  %Images of solutions go here go here
+
+  \begin{itemize}
+  \item Predict the flow around an object in a channel.
+  \item Network Principle
+  \end{itemize}
+  
+  \begin{figure}[htb]
+    \includegraphics[scale=0.24]{images/models/pressure_optional}
+  \end{figure}
+  
 \end{frame}
 
 \section{Why}
+
+\begin{frame}[t]
+  \frametitle{Why}
+
+\end{frame}
 
 \begin{frame}
   \frametitle{Why}
 
   \begin{columns}[t]
     \begin{column}{0.5\textwidth}
+
+      \vspace{-0.5cm}
+      \begin{center}
+        \begin{figure}[htb]
+          \includegraphics[scale=0.2]{images/final/pipeline}
+        \end{figure}
+      \end{center}
+      
       
     \end{column}
     \begin{column}{0.5\textwidth}
@@ -132,6 +211,13 @@
 
   \begin{columns}[t]
     \begin{column}{0.5\textwidth}
+
+      \vspace{-0.5cm}
+      \begin{center}
+        \begin{figure}[htb]
+          \includegraphics[scale=0.2]{images/final/net}
+        \end{figure}
+      \end{center}
       
     \end{column}
     \begin{column}{0.5\textwidth}
@@ -147,7 +233,11 @@
 
 \section{How}
 
-\begin{frame}
+\begin{frame}[t]
+  \frametitle{How}
+\end{frame}
+
+\begin{frame}[t]
   \frametitle{How}
   \begin{itemize}
   \item Machine Learning project
@@ -156,38 +246,58 @@
     \item Models architecture and training approach
     \item Models evaluation
     \end{itemize}
-  \item Not a single holistic model
-    \begin{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{How}
+  \begin{itemize}
+  \item Machine Learning project
+  \item Not a single holistic model    
+  \begin{itemize}
     \item constant model
     \item inflow speed model
     \item viscosity-density model
-    \end{itemize}
-    
+    \end{itemize}  
   \end{itemize}
 \end{frame}
 
 \section{Data Generation}
 
-\begin{frame}
+\begin{frame}[t]
+  \frametitle{Data Generation}
+\end{frame}
+
+\begin{frame}[t]
   \frametitle{Data Generation}
   \begin{itemize}
-  \item Process
+  \item Real simulation data gathering
     \begin{itemize}
     \item Large amount of simulations
     \item Solving --- HiFlow3 as numerical solver
     \item Rendering --- ParaView as visualization toolkit
     \end{itemize}
+  \end{itemize}
+\end{frame}
 
+
+\begin{frame}[t]
+  \frametitle{Data Generation}
+  \begin{itemize}
+  \item Real simulation data gathering
   \item Separate data sets for each model
     \begin{itemize}
     \item Single simulation for the constant model
+    \item multiple simulations for the other models
     \end{itemize}
   \end{itemize}
 \end{frame}
 
-\begin{frame}
+\begin{frame}[t]
   \frametitle{Data Generation}
   \begin{itemize}
+  \item Real simulation data gathering
+  \item Separate data sets for each model
   \item Parameters for the simulations
     \begin{itemize}
     \item Not chosen at random
@@ -197,15 +307,35 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}
+\begin{frame}[t]
   \frametitle{Data Generation}
-  % images come here
+  \begin{itemize}
+  \item Real simulation data gathering
+  \item Separate data sets for each model
+  \item Parameters for the simulations
+  \end{itemize}
+  \begin{center}
+    \begin{figure}[htb]
+      \includegraphics[scale=0.2]{images/flows/flow_x}
+      \caption{X velocity}
+      \vspace{-0.2cm}
+    \end{figure}
+    
+    \begin{figure}[htb]
+      \includegraphics[scale=0.2]{images/flows/flow_y}
+      \vspace{-0.2cm}
+      \caption{Y velocity}
+    \end{figure}
+  \end{center}
 \end{frame}
 
-\begin{frame}
+\begin{frame}[t]
   \frametitle{Data Generation}
 
   \begin{itemize}
+  \item Real simulation data gathering
+  \item Separate data sets for each model
+  \item Parameters for the simulations
   \item Test train splits
     \begin{itemize}
     \item 80\slash 20 split for all data sets
@@ -214,62 +344,223 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}
+
+\section{Models}
+
+\begin{frame}[t]
+  \frametitle{Networks Architectures}
+\end{frame}
+
+\begin{frame}[t]
   \frametitle{Networks Architectures}
   \begin{itemize}
   \item Real numbers handling
   \end{itemize}
 \end{frame}
 
-\begin{frame}
+\begin{frame}[t]
   \frametitle{Networks Architectures}
   \begin{itemize}
-  \item Approach based on Pix2Pix
+  \item Real numbers handling
+  \end{itemize}
+  \begin{center}
+    \begin{figure}[htb]
+      \includegraphics[scale=0.23]{images/models/num_answer}
+    \end{figure}  
+  \end{center}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Networks Architectures}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Networks Architectures}
+  \begin{itemize}
+  \item Approach based on Pix2Pix\footnotemark
     \begin{itemize}
     \item General image-to-image translation framework
-    \item impressive results
+    \item Impressive results in recent years
     \end{itemize}
   \end{itemize}
-  % images goes here
+
+  \begin{center}
+    \begin{figure}[htb]
+      \includegraphics[scale=0.23]{images/pix2pix_example}
+      \caption{Example image from the pix2pix paper}
+    \end{figure}  
+  \end{center}
+
+  \footnotetext{Ting-Chun Wang, Ming-Yu Liu, Jun-Yan Zhu, Andrew Tao, Jan Kautz, and Bryan Catanzaro. ``High-resolution image synthesis and semantic manipulation with conditional gans.''}
 \end{frame}
 
-\begin{frame}
+\begin{frame}[t]
   \frametitle{Networks Architectures}
   \begin{itemize}
   \item Approach based on Pix2Pix
-  \item Conditional GAN
+  \item Conditional GAN (cGAN)
   \end{itemize}
-  % image of cGAN goes here
+  \begin{center}
+    \begin{figure}[htb]
+      \includegraphics[scale=0.33]{images/pix2pix_cgan}
+      \caption{Training a cGAN}
+    \end{figure}  
+  \end{center}
+  
 \end{frame}
 
 
-\begin{frame}
+\begin{frame}[t]
   \frametitle{Networks Architectures}
   \begin{itemize}
   \item Approach based on Pix2Pix
-  \item Conditional GAN
+  \item Conditional GAN (cGAN)
   \item Generator Architecture
     \begin{itemize}
     \item UNet
     \end{itemize}
   \end{itemize}
-  % image of Unet goes here
+
+  \begin{center}
+    \begin{figure}[htb]
+      \includegraphics[scale=0.33]{images/nets/unet}
+      \caption{The UNet architecture}
+    \end{figure}  
+  \end{center}
+  
 \end{frame}
 
 
-\begin{frame}
+\begin{frame}[t]
   \frametitle{Networks Architectures}
   \begin{itemize}
   \item Approach based on Pix2Pix
-  \item Conditional GAN
+  \item Conditional GAN (cGAN)
   \item Generator Architecture
   \item Discriminator Architecture
     \begin{itemize}
     \item PatchGAN
     \end{itemize}
   \end{itemize}
-  % image of cGAN goes here
+  
 \end{frame}
+
+\section{Evaluation}
+
+\begin{frame}[t]
+  \frametitle{Evaluation}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Evaluation}
+  \begin{itemize}
+  \item Model variations
+    \begin{itemize}
+    \item Usage of the pressure field
+    \item No usage of the pressure field
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Evaluation}
+  \begin{itemize}
+  \item Model variations
+  \item Evaluation Strategies
+  \end{itemize}
+
+  \vspace{-0.7cm}
+
+  \begin{columns}[t]
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        {\large \underline{Individual Images}}
+        \includegraphics[scale=0.12]{images/simple_eval}
+      \end{center}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        {\large \underline{Recursive Application}}
+        \includegraphics[scale=0.12]{images/rec_eval}
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Evaluation}
+  \begin{itemize}
+  \item Model variations
+  \item Evaluation Strategies
+  \item Result Views
+    \begin{itemize}
+    \item Numerical point of view
+    \item Perceptual point of view
+    \end{itemize}
+  \end{itemize}  
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Evaluation}
+  \large{Numerical View}
+  \begin{itemize}
+  \item Average and Maximal Difference
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Evaluation}
+  \large{Numerical View}
+  \begin{table}
+  \begin{center}
+    \begin{tabular}{lcc|cc}
+      \textbf{Model type} & \multicolumn{2}{c|}{\textbf{Max difference(\%) }}  &  \multicolumn{2}{c}{\textbf{Average difference(\%)}}\\
+      \hline 
+      \multicolumn{3}{c|}{}&&\\
+                 & \underline{Pressure} & \underline{No Pressure}  &  \underline{Pressure}.& \underline{No Pressure}\\
+      
+      Constant           & 14.56 & 44.04 & 0.60  & 0.72   \\
+      Inflow speed       & 32.16 & 45.68 & 0.55  & 0.93   \\
+      Viscosity-density  & 57.00 & 14.70 & 13.85 & 0.37   \\
+    \end{tabular}
+  \end{center}
+\end{table}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Evaluation}
+  % Image with artifacts here
+\end{frame}
+
+
+\begin{frame}[t]
+  \frametitle{Evaluation}
+  \large{Perceptual view}
+  \begin{itemize}
+  \item Correlation
+  \item PSNR (Peak Signal to Noise Ration)
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Evaluation}
+  \large{Perceptual view}
+  \begin{center}
+  \includegraphics[scale=0.17]{images/final/single_const_psnr}
+  \includegraphics[scale=0.17]{images/final/single_speed_psnr}
+  \includegraphics[scale=0.17]{images/final/single_fluid_psnr}
+  \end{center}
+
+\end{frame}
+
+
+\begin{frame}[t]
+  \frametitle{Evaluation}
+  % Impressive image result here!
+\end{frame}
+
 
 \section{Conclusion}
 
