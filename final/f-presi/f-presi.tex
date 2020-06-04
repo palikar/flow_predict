@@ -154,13 +154,27 @@
 
 \end{frame}
 
+
+\begin{frame}[t]
+  \frametitle{What}
+  \begin{itemize}
+  \item Predict the flow around an object in a channel.
+  \end{itemize}
+  
+  \begin{figure}[htb]
+    \includegraphics[scale=0.19]{images/true/flow_x}
+    \includegraphics[scale=0.19]{images/true/flow_y}
+    \includegraphics[scale=0.19]{images/true/flow_p}
+  \end{figure}
+\end{frame}
+
+  
 \begin{frame}[t]
   \frametitle{What}
   \begin{itemize}
   \item Predict the flow around an object in a channel.
   \item Network Principle
   \end{itemize}
-
 \end{frame}
 
 
@@ -171,34 +185,27 @@
   \item Predict the flow around an object in a channel.
   \item Network Principle
   \end{itemize}
-
   \begin{figure}[htb]
-    \includegraphics[scale=0.24]{images/models/pressure_optional}
+    \includegraphics[scale=0.22]{images/models/net}
   \end{figure}
-
 \end{frame}
 
 \section{Why}
 
 \begin{frame}[t]
   \frametitle{Why}
-
 \end{frame}
 
 \begin{frame}
   \frametitle{Why}
-
   \begin{columns}[t]
     \begin{column}{0.5\textwidth}
-
       \vspace{-0.5cm}
       \begin{center}
         \begin{figure}[htb]
           \includegraphics[scale=0.2]{images/final/pipeline}
         \end{figure}
       \end{center}
-
-
     \end{column}
     \begin{column}{0.5\textwidth}
       \begin{itemize}
@@ -212,28 +219,24 @@
 
 \begin{frame}
   \frametitle{Why}
-
   \begin{columns}[t]
     \begin{column}{0.5\textwidth}
-
       \vspace{-0.5cm}
       \begin{center}
         \begin{figure}[htb]
           \includegraphics[scale=0.2]{images/final/net}
         \end{figure}
       \end{center}
-
     \end{column}
     \begin{column}{0.5\textwidth}
       \begin{itemize}
-      \item DNNs are well established in image processing tasks
       \item everything is learned during training
+      \item DNNs are well established in image processing tasks
       \item faster image generation
       \end{itemize}
     \end{column}
   \end{columns}
 \end{frame}
-
 
 \section{How}
 
@@ -277,9 +280,11 @@
   \begin{itemize}
   \item Real simulation data gathering
     \begin{itemize}
-    \item Large amount of simulations
-    \item Solving --- HiFlow3 as numerical solver
-    \item Rendering --- ParaView as visualization toolkit
+    \item Define large amount of simulations
+    \item Solving --- HiFlow3\footnotemark as numerical solver
+      \footnotetext{Ayachit, Utkarsh, ``The ParaView Guide: A Parallel Visualization Application, Kitware'' , 2015, ISBN 978-1930934306}
+    \item Rendering --- ParaView\footnotemark as visualization toolkit
+        \footnotetext{Gawlok, S., Gerstner, P., Haupt, S., Heuveline, V., Kratzke, J., Lösel, P., Mang, K., Schmidtobreick, M., Schoch, N., Schween, N., Schwegler, J., Song, C. and Wlotzka, M., ``HiFlow3 – Technical Report on Release 2.0''}
     \end{itemize}
   \end{itemize}
 \end{frame}
@@ -292,7 +297,7 @@
   \item Separate data sets for each model
     \begin{itemize}
     \item Single simulation for the constant model
-    \item multiple simulations for the other models
+    \item Multiple simulations for the other models
     \end{itemize}
   \end{itemize}
 \end{frame}
@@ -342,8 +347,8 @@
   \item Parameters for the simulations
   \item Test train splits
     \begin{itemize}
-    \item 80\slash 20 split for all data sets
-    \item no common Reynolds numbers between the simulation in the train- and test-sets
+    \item 80\slash20 split for all data sets
+    \item No common Reynolds numbers between the simulations in the train- and test-sets
     \end{itemize}
   \end{itemize}
 \end{frame}
@@ -376,11 +381,8 @@
 
 \begin{frame}[t]
   \frametitle{Networks Architectures}
-\end{frame}
-
-\begin{frame}[t]
-  \frametitle{Networks Architectures}
   \begin{itemize}
+  \item Real numbers handling
   \item Approach based on Pix2Pix\footnotemark
     \begin{itemize}
     \item General image-to-image translation framework
@@ -391,6 +393,7 @@
   \begin{center}
     \begin{figure}[htb]
       \includegraphics[scale=0.23]{images/pix2pix_example}
+      \vspace{-0.5cm}
       \caption{Example image from the pix2pix paper}
     \end{figure}
   \end{center}
@@ -401,6 +404,7 @@
 \begin{frame}[t]
   \frametitle{Networks Architectures}
   \begin{itemize}
+  \item Real numbers handling
   \item Approach based on Pix2Pix
   \item Conditional GAN (cGAN)
   \end{itemize}
@@ -417,6 +421,7 @@
 \begin{frame}[t]
   \frametitle{Networks Architectures}
   \begin{itemize}
+  \item Real numbers handling
   \item Approach based on Pix2Pix
   \item Conditional GAN (cGAN)
   \item Generator Architecture
@@ -438,6 +443,7 @@
 \begin{frame}[t]
   \frametitle{Networks Architectures}
   \begin{itemize}
+  \item Real numbers handling
   \item Approach based on Pix2Pix
   \item Conditional GAN (cGAN)
   \item Generator Architecture
@@ -472,9 +478,7 @@
   \item Model variations
   \item Evaluation Strategies
   \end{itemize}
-
   \vspace{-0.7cm}
-
   \begin{columns}[t]
     \begin{column}{0.5\textwidth}
       \begin{center}
@@ -496,10 +500,10 @@
   \begin{itemize}
   \item Model variations
   \item Evaluation Strategies
-  \item Result Views
+  \item Results Views
     \begin{itemize}
     \item Numerical point of view
-    \item Perceptual point of view
+    \item Perceptual\slash Visual point of view
     \end{itemize}
   \end{itemize}
 \end{frame}
@@ -508,9 +512,9 @@
   \frametitle{Evaluation}
   \large{Numerical View}
   \begin{itemize}
-  \item Average and Maximal Difference
+  \item Average difference
+  \item Maximal difference
   \end{itemize}
-
 \end{frame}
 
 \begin{frame}[t]
@@ -525,9 +529,9 @@
         \rowcolor{blue!50}
         \textbf{Model}    & \textbf{Max diff.} & \textbf{Average diff.} \\
         \hline
-        Constant          & 14.56 & 0.60  \\
-        Inflow speed      & 32.16 & 0.55  \\
-        Viscosity-density & 57.00 & 13.85 \\
+        Constant          & 14.56\% & 0.60\%  \\
+        Inflow speed      & 32.16\% & 0.55\%  \\
+        Viscosity-density & 57.00\% & 13.85\% \\
         \hline
       \end{tabular}
       \caption{All of the results are from models using the pressure field}
@@ -548,10 +552,10 @@
         \rowcolor{blue!50}
         \textbf{Model}                       & \textbf{Max diff.} & \textbf{Average diff.} \\
         \hline
-        \color{gray!!140}{Constant}          & \color{gray!!140}{14.56} & \color{gray!!140}{0.60}  \\
+        \color{gray!!140}{Constant}          & \color{gray!!140}{14.56\%} & \color{gray!!140}{0.60\%}  \\
         \rowcolor{gray!50}
-        \color{red}{Inflow speed}            & \color{red}{32.16} & \color{red}{0.55}  \\
-        \color{gray!!140}{Viscosity-density} & \color{gray!!140}{57.00} & \color{gray!!140}{13.85} \\
+        \color{red}{Inflow speed}            & \color{red}{32.16\%} & \color{red}{0.55\%}  \\
+        \color{gray!!140}{Viscosity-density} & \color{gray!!140}{57.00\%} & \color{gray!!140}{13.85\%} \\
         \hline
       \end{tabular}
       \caption{All of the results are from models using the pressure field}
@@ -561,7 +565,12 @@
 
 \begin{frame}[t]
   \frametitle{Evaluation}
-  
+  \large{Numerical View}
+  \vspace{1.5cm}
+  \begin{figure}[htb]
+    \includegraphics[scale=0.29]{images/bad_pattern}
+    \caption{Visible pattern in a generated image}
+  \end{figure}
 \end{frame}
 
 \begin{frame}[t]
@@ -585,6 +594,29 @@
 \begin{frame}[t]
   \frametitle{Evaluation}
   \large{Perceptual view}
+  \begin{itemize}
+  \item \textbf{Correlation}
+  \item PSNR (Peak Signal to Noise Ration)
+  \end{itemize}
+  \begin{center}
+    \begin{figure}[htb]
+      \includegraphics[scale=0.23]{images/final/vd_step}
+    \end{figure}
+  \end{center}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Evaluation}
+  \large{Perceptual view}
+  \begin{itemize}
+  \item Correlation
+  \item \textbf{PSNR (Peak Signal to Noise Ration)}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Evaluation}
+  \large{Perceptual view}
   \vspace{-0.5cm}
   \begin{columns}[t]
     \begin{column}{0.5\textwidth}
@@ -602,18 +634,15 @@
       \end{center}
     \end{column}
   \end{columns}
-
   \begin{center}
     \begin{figure}[htb]
       \includegraphics[scale=0.17]{images/final/single_fluid_psnr}
     \end{figure}
   \end{center}
-
 \end{frame}
 
 \begin{frame}[t]
   \frametitle{Evaluation}
-
   \begin{center}
     \begin{figure}[htb]
       \includegraphics[scale=0.15]{images/flows/x_speed_good}
@@ -630,7 +659,7 @@
 
 \begin{frame}[t]
   \frametitle{Evaluation}
-
+  \large{Perceptual view}
   \begin{center}
     \begin{figure}[htb]
       \includegraphics[scale=0.17]{images/rec_plot/inflow_39_s0}
@@ -638,30 +667,29 @@
       \caption{Fluid model recursive results}
     \end{figure}
   \end{center}
-
 \end{frame}
 
 
 \begin{frame}[t]
   \frametitle{Evaluation}
-
+  \large{Perceptual view}
   \begin{center}
     \begin{figure}[htb]
     \includegraphics[scale=0.15]{images/rec_flow/x_step_1}
     \includegraphics[scale=0.15]{images/rec_flow/x_step_10}
-
     \includegraphics[scale=0.15]{images/rec_flow/x_step_20}
     \includegraphics[scale=0.15]{images/rec_flow/x_step_30}
-
     \includegraphics[scale=0.15]{images/rec_flow/x_step_40}
     \includegraphics[scale=0.15]{images/rec_flow/x_step_50}
-
     \caption{Predicted simulation from the viscosity-density model}
   \end{figure}
   \end{center}
-
 \end{frame}
 
+\begin{frame}[t]
+  \frametitle{Performance}
+  
+\end{frame}
 
 \section{Conclusion}
 
