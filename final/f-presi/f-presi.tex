@@ -13,7 +13,7 @@
 \usepackage{svg}
 \usepackage{tabularx}
 
-\title[Project discussion]{Towards Bringing Together Numerical Methods for Partial Differential Equation and Deep Neural Networks}
+\title[Research Project]{Towards Bringing Together Numerical Methods for Partial Differential Equation and Deep Neural Networks}
 \subtitle{Project presentation, Supervisor - Markus Hoffmann}
 \author{Stanislav Arnaudov}
 \institute{Chair for Computer Architecture and Parallel Processing}
@@ -38,44 +38,35 @@
 
 \begin{frame}[t]
   \frametitle{Introduction}
-  \textbf{Basic idea:} Apply machine learning and image processing in computational fluid dynamics context
-
+  \textbf{Basic idea:} Apply machine learning and image processing in computational fluid dynamics (CFD) context
   \begin{columns}[t]
     \begin{column}{0.5\textwidth}
-
       \begin{itemize}
       \item Machine learning through deep neural networks
       \item DNNs for image generation
       \end{itemize}
-
     \end{column}
     \begin{column}{0.5\textwidth}
-
     \end{column}
   \end{columns}
 \end{frame}
 
 \begin{frame}[t]
   \frametitle{Introduction}
-  \textbf{Basic idea:} Apply machine learning and image processing in computational fluid dynamics context
-
+  \textbf{Basic idea:} Apply machine learning and image processing in computational fluid dynamics (CFD) context
   \begin{columns}[t]
     \begin{column}{0.5\textwidth}
-
       \begin{itemize}
       \item Machine learning through deep neural networks
       \item DNNs for image generation
       \end{itemize}
-
     \end{column}
     \begin{column}{0.5\textwidth}
-
       \begin{itemize}
       \item Simulation of fluids through mathematical models
       \item Differential equations
       \item Specialized solvers for the equations
       \end{itemize}
-
     \end{column}
   \end{columns}
 \end{frame}
@@ -84,9 +75,7 @@
   \frametitle{Project}
   \begin{itemize}
   \item \Large{\textbf{What} we aimed to do?}
-    \pause
   \item \Large{\textbf{Why} is our research being done?}
-    \pause
   \item \Large{\textbf{How} were our goals achieved?}
   \end{itemize}
 \end{frame}
@@ -209,9 +198,9 @@
     \end{column}
     \begin{column}{0.5\textwidth}
       \begin{itemize}
-      \item lots of parameters to tweak
-      \item complicated workflow
-      \item computationally costly
+      \item Lots of parameters to tweak
+      \item Complicated workflow
+      \item Computationally expensive
       \end{itemize}
     \end{column}
   \end{columns}
@@ -230,9 +219,9 @@
     \end{column}
     \begin{column}{0.5\textwidth}
       \begin{itemize}
-      \item everything is learned during training
+      \item Everything is learned during training
       \item DNNs are well established in image processing tasks
-      \item faster image generation
+      \item Faster image generation
       \end{itemize}
     \end{column}
   \end{columns}
@@ -247,11 +236,11 @@
 \begin{frame}[t]
   \frametitle{How}
   \begin{itemize}
-  \item Machine Learning project
-    \begin{itemize}
-    \item Data used for training
-    \item Models architecture and training approach
-    \item Models evaluation
+  \item Not a single holistic model
+  \begin{itemize}
+    \item Constant model
+    \item Inflow speed model
+    \item Viscosity-density model
     \end{itemize}
   \end{itemize}
 \end{frame}
@@ -259,12 +248,11 @@
 \begin{frame}[t]
   \frametitle{How}
   \begin{itemize}
-  \item Machine Learning project
   \item Not a single holistic model
-  \begin{itemize}
-    \item constant model
-    \item inflow speed model
-    \item viscosity-density model
+  \item Model variations
+    \begin{itemize}
+    \item Usage of the pressure field
+    \item No usage of the pressure field
     \end{itemize}
   \end{itemize}
 \end{frame}
@@ -464,18 +452,6 @@
 \begin{frame}[t]
   \frametitle{Evaluation}
   \begin{itemize}
-  \item Model variations
-    \begin{itemize}
-    \item Usage of the pressure field
-    \item No usage of the pressure field
-    \end{itemize}
-  \end{itemize}
-\end{frame}
-
-\begin{frame}[t]
-  \frametitle{Evaluation}
-  \begin{itemize}
-  \item Model variations
   \item Evaluation Strategies
   \end{itemize}
   \vspace{-0.7cm}
@@ -498,7 +474,6 @@
 \begin{frame}[t]
   \frametitle{Evaluation}
   \begin{itemize}
-  \item Model variations
   \item Evaluation Strategies
   \item Results Views
     \begin{itemize}
@@ -600,7 +575,7 @@
   \end{itemize}
   \begin{center}
     \begin{figure}[htb]
-      \includegraphics[scale=0.23]{images/final/vd_step}
+      \includegraphics[scale=0.23]{images/res/prediction}
     \end{figure}
   \end{center}
 \end{frame}
@@ -616,7 +591,7 @@
 
 \begin{frame}[t]
   \frametitle{Evaluation}
-  \large{Perceptual view}
+  \large{Perceptual view:} \textit{PSNR} --- higher is better
   \vspace{-0.5cm}
   \begin{columns}[t]
     \begin{column}{0.5\textwidth}
@@ -659,12 +634,12 @@
 
 \begin{frame}[t]
   \frametitle{Evaluation}
-  \large{Perceptual view}
+  \large{Perceptual view:} \textit{PSNR} --- higher is better
   \begin{center}
     \begin{figure}[htb]
       \includegraphics[scale=0.17]{images/rec_plot/inflow_39_s0}
       \includegraphics[scale=0.17]{images/rec_plot/inflow_39_s120}
-      \caption{Fluid model recursive results}
+      \caption{Inflow speed model recursive results}
     \end{figure}
   \end{center}
 \end{frame}
@@ -687,7 +662,27 @@
 \end{frame}
 
 \begin{frame}[t]
+  \frametitle{Performance}  
+\end{frame}
+
+\begin{frame}[t]
   \frametitle{Performance}
+  \vspace{1.5cm}
+    \begin{center}
+    \begin{table}
+      \rowcolors{2}{blue!15}{white}
+      \begin{tabular}{|c|c|c|c|}
+        \hline
+        \rowcolor{blue!50}
+        \textbf{Method} & \textbf{Single core} & \textbf{Multi-Core (12)} & \textbf{GPU} \\
+        \hline
+        Our Networks    & $\approx 600ms$   & $\approx 100ms$  &  $4ms$ \\
+        HiFlow3         & $\approx 8000ms$  & $\approx 1000ms$ & --  \\
+        \hline
+      \end{tabular}
+      \caption{Time in milliseconds needed per simulation-step}
+    \end{table}
+  \end{center}
   
 \end{frame}
 
@@ -713,3 +708,4 @@
 %%% mode: latex
 %%% TeX-master: t
 %%% End:
+

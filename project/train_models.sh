@@ -192,3 +192,6 @@ do
     
 done
 
+
+
+python train.py --data ./data/generated_data/ --model-type 'c' --model-name "time_1" --threads 4 --batch-size 3 --shuffle --epochs 1 --lr_policy step --seed ${RANDOM} --print-summeries --test-train-split 0.8 --val-train-split 0.1 --output-dir "./results_c/time_${RANDOM}/" --evaluate --g_nfg 32 --g_layers 5 --use-pressure --no-train

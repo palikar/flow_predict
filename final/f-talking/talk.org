@@ -16,10 +16,10 @@
 
 * Einleitung
  
-Hallo, ich bin Stanislav und heute präsentiere ich unseren finalen Vortrag zu Praxis der Forschung. Selbstverständlich bin ich schon mit meinem Projekt durch und jetzt erkläre ich wozu beim Projekt geht und was die Ergebnisse gewesen sind.
+Hallo, ich bin Stanislav und heute präsentiere ich unseren finalen Vortrag zu Praxis der Forschung. 
 
 ** Grund Idee
-Ganz am Anfang, wenn ich die grobe grundlegende Idee des Projekts wiedergeben soll: wir haben es versucht, Machine-Learning und Bild-Verarbeitung Methoden bei Computatinal Fluid Dynamics (oder CFD) anzuwenden. Ein bisschen konkreter, wir wollen untersuchen, in wie fern können Deep Neural Networks (DNNs) beim Durchführen und Visualisieren einer Strömung-Simulation angewandt werden.
+Ganz am Anfang, wenn ich die grobe grundlegende Idee unseres Projekts wiedergeben soll: wir haben es versucht, Machine-Learning Methoden bei Computatinal Fluid Dynamics (oder CFD) anzuwenden. Ein bisschen konkreter, wir wollen untersuchen, in wie fern können Deep Neural Networks (DNNs) beim Durchführen und Visualisieren einer Strömung-Simulation angewandt werden.
 
 *** Machine Learning
 Machine Learning und ins besondere DNNs werden heutzutage in ganz verschiedenen Anwendungsfällen verwendet. In den letzten Jahren ist es sogar möglich, Bilder mit DNNs zu generieren und unsere Arbeit ist in genau diese Richtung orientiert. Also mit DNNs gewisse Information (im Bildform) abarbeiten und anhand davon ein neues Bild erzeugen.
@@ -30,7 +30,7 @@ Auf der anderen Seite haben wir CFD. Bereich wo anhand von mathematischen Modell
 
 * Forschungsprojekt 
 
-Um zu erklären, was genau das Forschungs-Projekt enthält, werden wir die folgenden drei Fragen beantworten - "was", "warum" und "wie" es gemacht wurde. Es ist war, das die Antworten einigermaßen zusammenhängen, aber verseuchen wir da ganze Schrittweise durchzugehen.
+Um zu erklären, was genau das Forschungs-Projekt enthält, werden wir die folgenden drei Fragen beantworten - "was", "warum" und "wie" es gemacht wurde. Die Antworten hängen einigermaßen zusammen, aber verseuchen wir da ganze Schrittweise durchzugehen.
 
 ** Was
 Also erstmal "was?" - in ganz einfachen Wörtern, wir wollen die Strömung in einem Kanal um ein Objekt vorhersagen. Und zwar mit einem neuronalen Netz gegeben eine ungewöhnliche Repräsentation vom Raum. Ich sage mehr dazu später, jetzt stellen wir das Problem ein bisschen anschaulicher vor. 
@@ -70,6 +70,8 @@ Es wurde erwähnt, dass die Simulation drei Parameter besitzt. Wir haben aber un
 - Geschwindigkeit Modell - Netz, dass nur die Einfließ-Geschwindigkeit behandeln kann.
 - Viskosität-Dichte Modell - selbsterklärend, hier können die anderen zweit Parameter variiert werde.n
 
+Wir waren außerdem daran interessiert, ob der Druckfeld Unterschied bei der Leistung der Netzen macht. Deswegen haben wir pro Modell Typ, zwei Modellen trainiert - ein das den Druckfeld benutzt (bei der Ein- und Ausgabe) und ein das nicht. Mit der Evaluierung sehen wir dann, ob zwei solche Modelle sich wesentlich Unterscheiden.
+
 *** Daten Erzeugung
 
 *Data sets*: 
@@ -87,12 +89,13 @@ Wir haben uns auch drei Sets von Simualtionsbilder erzeugt wo verschiedenen Para
 *Test train split*: Die Datensätze wurden gesplittet in Training-Set und Test-Set. Wichtig hier zu sagen, dass in den Test-Sets gab's Simulationen mit Reynoldszählen, die für keine Simulationen in Training-Set zu finden ist. Also die Daten sind so gestaltet, so dass wir wirklich sehen können, ob das Netz die Parameter generalisieren und ungesehene Simulationen vorhersagen kann.
 
 *** Netze Architektur und Funktionsweise
-# Hier erklären wir was genau und wie die Netze die Ergebnisse ausrechnen.
+
+** Modelle
+
 Hier widmen wir ein bisschen Zeit um zu sagen, wie genau unsere Netze aussehen.
 
-Erstmals es soll schon klar sein, dass die Netze ein Lösungsbild der Simulation erzeugen unter Verwendung vom Bild vom vorherigen Zeitschritt. Das heißt, ganz am Anfang, gehen wir von einem Schon fertigen Bild aus. Das Netz rechnet also aus, ein Zeitschritt bei der Simulation, wo die Eingabe und die Ausgabe Bilder sind. Wir sagen nämlich Bilder, weil wie schon gesagt, pro Zeitschritt drei Felder die das Raum beschreiben gibt - die Geschwindigkeit der Flüssigkeit in die beiden Richtungen und auch den Druck-Feld.
 
-Da aber zwei von den Modellen auch Simulationsparameter betrachten können, ist für sie die die Netz-Eingabe ein bisschen erweitert. Die Parameter sind reelle Zahlen und die müssen mit dem Netz irgendwie passend integriert werden. Das was bei uns gut funktioniert hat, ist extra Bild-Kanäle mit konstantem Wert bei der Eingabe zu nehmen. Also ein (für die Einfließ-Geschwindigkeit) oder zwei (Dichte und Viskosität) Felder (oder Matrizen) mit dem Wert von dem entsprechenden Parameter als extra Eingabe für das Netz. Die Ausgabe für diese Netze bleibt aber unverändert.
+Wie haben schon gesagt, die Netze erzeugen ein Lösungsbild der Simulation unter Verwendung vom Bild vom vorherigen Zeitschritt. Da aber zwei von den Modellen auch Simulationsparameter betrachten können, ist für sie die die Netz-Eingabe ein bisschen erweitert. Die Parameter sind reelle Zahlen und die müssen mit dem Netz irgendwie passend integriert werden. Das was bei uns gut funktioniert hat, ist extra Bild-Kanäle mit konstantem Wert bei der Eingabe zu nehmen. Also ein (für die Einfließ-Geschwindigkeit) oder zwei (Dichte und Viskosität) Felder (oder Matrizen) mit dem Wert von dem entsprechenden Parameter als extra Eingabe für das Netz. Die Ausgabe für diese Netze bleibt aber unverändert.
 
 Kurz zu der Architektur von den Netzen. Unser Ansatz zu Bild-zu-Bild Abbildung ist auf pix2pix basiert. Pix2Pix ist ein Paper von 2015, das ein allgemeines Image-to-Image Translation Rahmenwerk vorstellt. Unsere Netze sind im Prinzip ein Versuch, dieser Ansatz im Kontext von Simulationen anzuwenden. 
 
@@ -105,11 +108,6 @@ Für den Generator haben wir die UNet Architektur verwendet. Wir haben es auch R
 * Evaluation
 
 Wenn die Modellen trainiert sind, kommt die Evaluierung. Und das erkläre ich gleich.
-
-** Modelle
-
-Erstens, wir wurden interessiert, ob der Druckfeld Unterschied bei der Leistung der Netzen macht. Deswegen haben wir pro Modell Typ, zwei Modellen trainiert - ein das den Druckfeld benutzt (bei der Ein- und Ausgabe) und ein das nicht. Mit der Evaluierung sehen wir dann, ob zwei solche Modelle sich wesentlich Unterscheiden.
-
 
 ** Strategien
 
@@ -167,11 +165,16 @@ Wenn wir die Ergebnisse bei der rekursiven Anwendung anschauen, können wir etwa
 
 Es hat sich gezeigt, dass es einen großen Unterschied macht, welches Bild als erstes für das Netz verwendet wird. Also ob das Bild von ein bisschen nach vorne in der Simulation ist oder vom Anfang. Alle Ergebnisse (wie die hier) zeigen, dass es schwierig für die Netze ist, mit Bilder von einer sich nicht-entwickelten Simulation umzugehen. Das ganze kann viele Ursachen haben. Meine Vermutung ist aber, dass es viel weniger Bilder in den Test-Sets gibt, wo die Simulation an seiner Anfang ist. Also die Bilder zeigen in meinsten Fällen eine Simulation, die weiterentwickelt ist.
 
-Ansonsten, die schönen Ergebnisse zeigen einen konsistenten Verlauf nach unten. Für 40 Rekursive Evaluierungen erreichen wir PSNR von 15, was schlecht genug ist um die generierten Bilder nicht zu Trauen. In fast allen Fällen senken die Warte exponentiell und ab und zu habe ich Netze gesehen, die das negative Wachstum linear halten können und die sind eher Ausnahmen.
+Ansonsten, die schönen Ergebnisse zeigen einen konsistenten Verlauf nach unten. Für 40 Rekursive Evaluierungen erreichen wir PSNR von 15, was schlecht genug ist um die generierten Bilder nicht zu Trauen. In fast allen Fällen senken die Warte exponentiell ab und ich hab fast keine Netze gesehen, die das negative Wachstum linear halten können und die sind eher Ausnahmen.
 
+Hier lohnt es sich auch die ein Paar Bilder von der Evaluierung anzuschauen. Wir haben gesagt, dass diese streifige Muster ab zu da sind, die vom Netz erzeugt sind aber sind kein Teil von der Strömung. Es gibt aber auch einen andren Typ von Artefakten, die die Struktur der Strömung beeinflussen. Was ich meine, hier zum Beispiel sehen wir, dass da oben bis zum 20 Schritt nichts ungewöhnliches zu sehen ist. Danach aber kommt dieser Bereich wo das Netz erliegt etwas was nicht in der Strömung sein soll. Also, irgendwie kleine Fehler am Anfang verursachen Raschen im Bild und das Rauschen wird eventuell als Teil der Strömung vom Netz gesehen und wird dann "simuliert" quasi oder weiterverfolgt.
+
+Bei den ersten Experimenten waren diese Fehler zimclich schlecht. Mit allen angewandten Techniken sind sie jetzt beherrschbarer aber wir haben es nicht geschafft, die komplett zu vermeiden.
 
 ** Performance
+Am Ende jetzt sagen auch etwas zu Performance bezüglich der Geschwindigkeit von den Modellen. Wir haben die Netze mit HiFlow verglichen und die wichtigen Ergebnissen hier zusammengefasst.
 
+Erwartet sind die Netze in der Regel schneller. Zu bemerken ist, dass HiFlow3 ziemlich stark variieren kann, weil je nach Initialisierung vom Solver (was zufällig ist), kann es entweder lang oder kurz dauern bis eine Iteration ausgerechnet ist. Anderseits die Netze sind konsistent schnell und skallirern erstaunlich gut wenn man ein GPU benutzt. Zu bemerken ist, dass HiFlow nur über die CPU Kerne parallesiert und dementsprechend kann man nicht direkt die GPU Ergebnisse für die Netze vergleichen.
 
 
 
