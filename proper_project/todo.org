@@ -1,0 +1,19 @@
+* TODO ML Methodology
+** Configuration
+- [ ] Save "reproducibility" string - what arguments to give next time to make this happen
+- [ ] CLI arguments can override the things that are in the configuration
+- [ ] Environment variables can override the thing that are in the configuration
+- [ ] =post_config= - called after the arguments have been parsed and the things are written to the object
+- [ ] =argparse= called to alter the parser add what is needed
+  - [ ] =_add_fields=
+** Main script
+** Training 
+** Evaluating
+** Visualizing
+** Utilities
+- [ ] STD-redirect and duplicate
+- [ ] Loading image
+- [ ] Save image
+- [ ] mkdir, mkdirs
+- [ ] Image merging
+- [ ] Carrying font with yourself
